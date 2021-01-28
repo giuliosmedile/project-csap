@@ -13,7 +13,7 @@
 char* signup() {
 	char username[BUF_SIZE];
 	char password[BUF_SIZE];
-	char* result[3*BUF_SIZE];
+	char result[3*BUF_SIZE];
 
 	printf("[-] Signing up\n");
 	printf("\033[1;31m");	//Red text
@@ -39,7 +39,7 @@ char* signup() {
 char* login() {
 	char username[BUF_SIZE];
 	char password[BUF_SIZE];
-	char* result[3*BUF_SIZE];
+	char result[3*BUF_SIZE];
 
 	printf("[-] Logging in\n");
 	printf("\033[1;31m");	//Red text

@@ -7,9 +7,16 @@
 #include <netdb.h>
 #include <string.h>
 
-// From main.c
+#include "signin.c"
+#include "connectToSocket.c"
 
-int tokenize(char* input, char*** output);  //splits a string into an array of strings
+// From main.c
+void tokenize(char* input, char*** output);  //splits a string into an array of strings
 void dowork(char** args, char* buf);        //command interpreter
 
 // From signin.c
+char* login();
+char* signup();
+
+// From connectToSocket.c
+int connectToSocket();

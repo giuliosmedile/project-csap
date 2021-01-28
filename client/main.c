@@ -7,7 +7,7 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <string.h>
-#include "connectToSocket.c"
+#include "main.h"
 
 #define SIZE 1024
 #define MAXARGS 64
@@ -38,7 +38,7 @@ void tokenize(char* input, char*** output) {
 
 void dowork(char** args, char* buf) {
     char command[BUF_SIZE];
-    
+    char str[BUF_SIZE];
     
 
     strcpy(command, args[0]);
@@ -46,33 +46,42 @@ void dowork(char** args, char* buf) {
 
     if (!strcmp(command, "connect")) {
         s = connectToSocket();
-    } else {
-    	// char** operations = malloc(commandArgs * sizeof(char**));
-    	char** result = malloc(sizeof(char**));
-        char* rcv = (char*)malloc(BUF_SIZE * sizeof(char));
-        // char* sentString = malloc(BUF_SIZE * sizeof(char));
-        // concatenate(argv, &sentString);
+        return;
+    } 
 
-        printf("BUFFER: %s", buf);
-    	// Write (or send) to socket
-        if (write(s, buf, strlen(buf))<0) {
-    		perror("write");
-    		exit(1);
-        }
-
-        // Read (or recv) from socket
-        if (read(s, rcv, sizeof(rcv))<0) {
-    		perror("read");
-    		exit(1);
-        }
-
-        printf("Received: %s\n", rcv);
-        // tokenize(sentString, &operations);
-
-        //TODO HANDLE RETURN FROM SERVER
-        
+    if (!strcmp(command, "login")) {
+        str = login();
     }
 
+    if (!strcmp(command, "signup")) {
+        str = signup();
+    }
+
+    sendToSocket(s, str);
+
+}
+
+void sendToSocket(int socket, char* buf) {
+    //char** result = malloc(sizeof(char**));
+    char* rcv = (char*)malloc(BUF_SIZE * sizeof(char));
+    // char* sentString = malloc(BUF_SIZE * sizeof(char));
+    // concatenate(argv, &sentString);
+
+    printf("BUFFER: %s", buf);
+    // Write (or send) to socket
+    if (write(s, buf, strlen(buf))<0) {
+        perror("write");
+        exit(1);
+    }
+
+    // Read (or recv) from socket
+    if (read(s, rcv, sizeof(rcv))<0) {
+        perror("read");
+        exit(1);
+    }
+    printf("Received: %s\n", rcv);
+
+    // TODO: HANDLE RECEIVING STUFF
 }
 
 void main (int argc, char** argv) {
