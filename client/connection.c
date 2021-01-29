@@ -9,6 +9,8 @@
 #include <netdb.h>
 #include <string.h>
 
+char commandSent[BUF_SIZE];
+
 int connectToSocket() {
 	int s,len;
     struct sockaddr_in saddr;
@@ -42,4 +44,31 @@ int connectToSocket() {
     puts("connect done");
 
     return s;
+}
+
+void sendToSocket(int s, char* buf) {
+    //char** result = malloc(sizeof(char**));
+    char* rcv = (char*)malloc(BUF_SIZE * sizeof(char));
+    // char* sentString = malloc(BUF_SIZE * sizeof(char));
+    // concatenate(argv, &sentString);
+
+    printf("BUFFER: %s", buf);
+    // Write (or send) to socket
+    if (write(s, buf, strlen(buf))<0) {
+        perror("write");
+        exit(1);
+    }
+    return;
+}
+
+char* readFromSocket(int s, char* rcv) {
+    rcv = (char*)malloc(BUF_SIZE * sizeof(char));
+	// Read (or recv) from socket
+    if (read(s, rcv, sizeof(rcv))<0) {
+        perror("read");
+        exit(1);
+    }
+    //rcv[strlen(rcv)-1] = '\0';
+    printf("[+] received: %s\n", rcv);
+    return rcv;
 }

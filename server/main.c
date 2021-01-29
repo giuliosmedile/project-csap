@@ -1,20 +1,21 @@
 /// 		MAIN SERVER CODE
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <netinet/in.h>
+#include <stdio.h>      /* for printf() and fprintf() */
+#include <sys/socket.h> /* for socket(), bind(), and connect() */
+#include <arpa/inet.h>  /* for sockaddr_in and inet_ntoa() */
+#include <stdlib.h>     /* for atoi() and exit() */
+#include <string.h>     /* for memset() */
+#include <unistd.h>     /* for close() */
 #include "signin.c"
 
-#define BUF_SIZE 64
+#define BUF_SIZE 256
 #define SEPARATOR " \t\r\n\v\f;"
+#define MAXPENDING 5
 
-// Functions from signin.c
-int signup (char* username, char* password);
-int login(char* username, char* password);
+void DieWithError(char* str) {
+	perror(str);
+	exit(1);
+}
 
 // Takes an input string, and tokenizes it into an output string array
 void tokenize(char* input, char*** output) {
@@ -37,9 +38,10 @@ void dowork(int socket) {
 	char** operations = (char**)malloc(3*BUF_SIZE);
 	char rcvString[BUF_SIZE];
  	int result;
-	if (read(socket, rcvString, sizeof(rcvString)) < 0) {
-		perror("read");
-		exit(1);
+
+ 	if (read(socket, rcvString, sizeof(rcvString)) < 0) {
+					perror("read");
+					exit(1);
 	}
 
 	printf("Received: %s\n", rcvString);
@@ -72,67 +74,59 @@ void dowork(int socket) {
 }
 
 int main(int argc, char** argv) {
-	int s,c,len;
-    struct sockaddr_in saddr;
-    //int ops[3];
-    int addr;
-    int running;
-    int maxspawn;
+	int servSock;                    /* Socket descriptor for server */
+    int clntSock;                    /* Socket descriptor for client */
+    struct sockaddr_in echoServAddr; /* Local address */
+    struct sockaddr_in echoClntAddr; /* Client address */
+    unsigned short echoServPort;     /* Server port */
+    unsigned int clntLen;            /* Length of client address data structure */
 
-    if ((s=socket(AF_INET,SOCK_STREAM,0))<0) {
-		perror("socket");
-		exit(1);
+    // if (argc != 2)     /* Test for correct number of arguments */
+    // {
+    //     fprintf(stderr, "Usage:  %s <Server Port>\n", argv[0]);
+    //     exit(1);
+    // }
+
+    echoServPort = 16000;
+    //echoServPort = atoi(argv[1]);  /* First arg:  local port */
+
+    /* Create socket for incoming connections */
+    if ((servSock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+        DieWithError("socket() failed");
+      
+    /* Construct local address structure */
+    memset(&echoServAddr, 0, sizeof(echoServAddr));   /* Zero out structure */
+    echoServAddr.sin_family = AF_INET;                /* Internet address family */
+    echoServAddr.sin_addr.s_addr = htonl(INADDR_ANY); /* Any incoming interface */
+    echoServAddr.sin_port = htons(echoServPort);      /* Local port */
+
+    /* Bind to the local address */
+    if (bind(servSock, (struct sockaddr *) &echoServAddr, sizeof(echoServAddr)) < 0)
+        DieWithError("bind() failed");
+
+    /* Mark the socket so it will listen for incoming connections */
+    if (listen(servSock, MAXPENDING) < 0)
+        DieWithError("listen() failed");
+
+/* Set the size of the in-out parameter */
+        clntLen = sizeof(echoClntAddr);
+
+        /* Wait for a client to connect */
+        if ((clntSock = accept(servSock, (struct sockaddr *) &echoClntAddr, 
+                               &clntLen)) < 0)
+            DieWithError("accept() failed");
+
+        /* clntSock is connected to a client! */
+
+        printf("Handling client %s\n", inet_ntoa(echoClntAddr.sin_addr));
+
+    for (;;) /* Run forever */
+    {
+        /* clntSock is connected to a client! */
+
+        printf("Handling client %s\n", inet_ntoa(echoClntAddr.sin_addr));
+
+        dowork(clntSock);
     }
-    puts("[+]socket done");
-
-    saddr.sin_family=AF_INET;
-    saddr.sin_port=htons(16000);
-    saddr.sin_addr.s_addr=INADDR_ANY;
-
-    if (bind(s,(struct sockaddr *)&saddr,sizeof(saddr))){
-		perror("bind");
-		exit(1);
-    }
-    puts("[+]bind done");
-
-    if (listen(s,5)) {
-	perror("listen");
-	exit(1);
-    }
-    puts("[+]listen done");
-    
-    running=0;
-    maxspawn=0;
-    
-    while (1) {
-	len = sizeof (saddr);
-	if ((c = accept (s, (struct sockaddr *) &saddr, &len)) < 0) {
-	    perror ("accept");
-	    exit (1);
-	}
-	addr = *(int *) &saddr.sin_addr;
-	printf ("[+]accept - connection from %d.%d.%d.%d\n",
-		(addr & 0xFF), (addr & 0xFF00) >> 8, (addr & 0xFF0000) >> 16,
-		(addr & 0xFF000000) >> 24);
-	switch (fork()) {
-	    case 0:
-		//close(s);
-			dowork(c);
-	    	continue;
-	    case -1:
-	    	perror("fork");
-	    	break;
-	    default:
-	    	close (c);	    
-	    	running +=1;
-		if (running > maxspawn) {
-		    maxspawn=running;
-		    //printf ("== Max:%d\n",maxspawn);
-		}
-		while (waitpid(-1,NULL, WNOHANG)>0) running -=1;
-	    	break;
-	}
-
-    }
-    close(s);
+    /* NOT REACHED */
 }
