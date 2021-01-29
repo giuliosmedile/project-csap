@@ -62,8 +62,9 @@ void dowork(int socket) {
 		result = signup(operations[1], operations[2]);
 	}
 
-	char output[BUF_SIZE];
+	char* output = (char*)malloc(BUF_SIZE * sizeof(char));
 	sprintf(output, "%d", result);
+	printf("[-]output: %s\n", output);
 	if (write(socket, output, sizeof(output)) < 0) {
 		perror("write");
 		exit(1);
