@@ -31,17 +31,20 @@ char* interpretInput(char* command, char* output) {
 
     if (!strcmp(command, "login")) {
         login(output);
-    }
-
-    if (!strcmp(command, "signup")) {
+    } else if (!strcmp(command, "signup")) {
         signup(output);
-    }
+    } else {
+    	// Command not found
+    	strcpy(output, "null");
+	}
 
     return output;
 }
 
 void main (int argc, char** argv) {
     char buf[BUF_SIZE];
+    char command[BUF_SIZE];
+    char* response = (char*)malloc(BUF_SIZE * sizeof(char));
     char output[BUF_SIZE];
     char **args;
     char* str = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -52,16 +55,25 @@ void main (int argc, char** argv) {
     printf("\t ---------------------------\n");
     printf("\t ---- Voicemail Service ----\n");
     printf("\t ---------------------------\n");
-
+    int i = 0;
     // Main loop
     for (;;) {
         // take the user input
         takeUserInput(buf);
+        strcpy(command, buf);
+        command[strlen(command)-1] = '\0';
         // interpret it basing on the command
         interpretInput(buf, output);
+        if (!strcmp(output, "null")) {
+        	printf("Command not recognized. Please try again.\n");
+        	continue;
+        }
         // send the command and arguments to socket
         sendToSocket(s, output);
         //wait for reply
-        readFromSocket(s, buf);
+        response = readFromSocket(s, buf);
+        // Then handle the server response
+        handleSocketReplies(command, response);
+        i++;
     }
 }

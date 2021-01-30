@@ -47,17 +47,13 @@ int connectToSocket() {
 }
 
 void sendToSocket(int s, char* buf) {
-    //char** result = malloc(sizeof(char**));
-    char* rcv = (char*)malloc(BUF_SIZE * sizeof(char));
-    // char* sentString = malloc(BUF_SIZE * sizeof(char));
-    // concatenate(argv, &sentString);
-
     printf("BUFFER: %s", buf);
     // Write (or send) to socket
     if (write(s, buf, strlen(buf))<0) {
         perror("write");
         exit(1);
     }
+    
     return;
 }
 

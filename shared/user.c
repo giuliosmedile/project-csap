@@ -3,14 +3,13 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
+#include "llist.h"
 
-typedef struct user_credentials {
+typedef struct user {
 	char* username;
-	char* password;
-} t_credentials;
-
-typedef struct user_data {
-	t_credentials credentials;
 	llist addressbook;
-} t_user_data;
+} t_user;
 
+t_user createUser(char* username) {
+	return;
+}

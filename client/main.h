@@ -10,6 +10,7 @@
 #include "signin.c"
 #include "connection.c"
 #include "utils.c"
+#include "handleSocketReplies.c"
 #include "../shared/llist.h"
 #include "../shared/user.c"
 
@@ -32,3 +33,9 @@ char* signup(char* result);
 int connectToSocket();
 void sendToSocket(int socket, char* str);
 char* readFromSocket(int socket, char* str);
+
+// From handleSocketReplies.c
+void handleSocketReplies(char* command, char* response);
+void handleLogin(char* response);
+void handleSignup(char* response);
+
