@@ -6,11 +6,10 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <string.h>
-//#include "../shared/credentials.c"
-
 #define REPO "data/credentials.dat"
 #define BUF_LEN 256
 #define DELIMIT ";\n"
+#include "../shared/user.c"
 
 
 void itoa(int, char*, int);
@@ -43,7 +42,7 @@ int signup (char* username, char* password) {
 	fclose(fp);
 
 	//Then I create a new entry in the users file
-	createUser(username);
+	user u = createUser(username);
 	return 1;
 }
 

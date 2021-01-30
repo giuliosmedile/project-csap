@@ -5,11 +5,12 @@
 #include <string.h>
 #include "llist.h"
 
-typedef struct user {
-	char* username;
-	llist addressbook;
-} t_user;
+// struct s_user {
+// 	char* username;
+// 	llist addressbook;
+// };
+// typedef struct s_user user;
 
-t_user createUser(char* username) {
+user createUser(char* username) {
 	return;
 }

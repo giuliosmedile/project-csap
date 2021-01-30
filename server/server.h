@@ -15,7 +15,7 @@ int signup(char* username, char* password);
 int login(char* username, char* password);
 
 //From user.c
-t_user createUser(char* username);
+user createUser(char* username);
 
 
 
