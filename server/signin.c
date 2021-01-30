@@ -21,6 +21,7 @@ char* arguments[3];
 int signup (char* username, char* password) {
 	char* line = malloc(sizeof(char*));
 	size_t len;
+	
 	char* l_username = malloc(sizeof(char*));
 
 	// First check if a user with that name already exists
