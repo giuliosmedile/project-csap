@@ -11,6 +11,7 @@
 #include "connection.c"
 #include "utils.c"
 #include "handleSocketReplies.c"
+#include "readConfig.c"
 #include "../shared/user.c"
 
 // Standard Definitions
@@ -37,4 +38,7 @@ char* readFromSocket(int socket, char* str);
 void handleSocketReplies(char* command, char* response);
 void handleLogin(char* response);
 void handleSignup(char* response);
+
+// From readConfig.c
+void readConfig (char** serv_add);
 

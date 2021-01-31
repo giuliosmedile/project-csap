@@ -34,6 +34,8 @@ char* interpretInput(char* command, char* output) {
         login(output);
     } else if (!strcmp(command, "signup")) {
         signup(output);
+    } else if (!strcmp(command, "exit")) {
+        exit(0);
     } else {
     	// Command not found
     	strcpy(output, "null");
@@ -51,7 +53,13 @@ void main (int argc, char** argv) {
     char* str = (char*)malloc(BUF_SIZE * sizeof(char));
 
     //TODO: AUTOMATIC CONNECTION TO SERVER
-    s = connectToSocket();
+
+    // Read the configuration file
+    char* serv_add = (char*)sizeof(BUF_SIZE * sizeof(char));
+    readConfig(&serv_add);
+    printf("Server address: %s\n", serv_add);
+
+    s = connectToSocket(serv_add);
 
     printf("\t ---------------------------\n");
     printf("\t ---- Voicemail Service ----\n");

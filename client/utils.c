@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SEPARATOR " \t\r\n\v\f;"
+#define SEPARATOR " \t\r\n\v\f;="
 
 void tokenize(char* input, char*** output) {
     printf("tokenize\n");

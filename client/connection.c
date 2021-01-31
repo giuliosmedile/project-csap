@@ -6,12 +6,13 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <netinet/in.h>
+#include <arpa/inet.h>
 #include <netdb.h>
 #include <string.h>
 
 char commandSent[BUF_SIZE];
 
-int connectToSocket() {
+int connectToSocket(char* serv_add) {
 	int s,len;
     struct sockaddr_in saddr;
     struct hostent *hst;
@@ -25,14 +26,15 @@ int connectToSocket() {
     puts("socket done");
 
     // Determine host address by its network name
-    if ((hst=gethostbyname("localhost"))==NULL) {
-	perror("gethostbyname");
-	exit(1);
-    }
-    printf("gethostbyname: %u %d\n",*(int*)hst->h_addr,hst->h_length);
+ //    if ((hst=gethostbyname("localhost"))==NULL) {
+	// perror("gethostbyname");
+	// exit(1);
+ //    }
+ //    printf("gethostbyname: %u %d\n",*(int*)hst->h_addr,hst->h_length);
 
-    // Fill structure
-    bcopy(hst->h_addr,&saddr.sin_addr,hst->h_length);
+ //    // Fill structure
+ //    bcopy(hst->h_addr,&saddr.sin_addr,hst->h_length);
+    saddr.sin_addr.s_addr = inet_addr(serv_add);
     saddr.sin_family=AF_INET;
     saddr.sin_port=htons(16000);
 

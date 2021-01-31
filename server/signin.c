@@ -7,7 +7,7 @@
 #include <netdb.h>
 #include <string.h>
 #include "../shared/user.c"
-#define REPO "data/credentials.dat"
+#define REPO "data/credentials"
 #define BUF_LEN 256
 #define DELIMIT ";\n"
 
@@ -59,11 +59,8 @@ int login(char* username, char* password) {
 		l_username = strtok(line, DELIMIT);
 		if (strcmp(username, l_username)==0) {
 			l_password = strtok(NULL, DELIMIT);
-
 			printf("%s, %s, %s, %s\n", username, password, l_username, l_password);
-
 			if (strcmp(password, l_password)==0) {
-				printf("Hooray!\n");
 				return 1;
 			}
 		} else {
