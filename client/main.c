@@ -55,7 +55,7 @@ void main (int argc, char** argv) {
     //TODO: AUTOMATIC CONNECTION TO SERVER
 
     // Read the configuration file
-    char* serv_add = (char*)sizeof(BUF_SIZE * sizeof(char));
+    char* serv_add = (char*)malloc(sizeof(BUF_SIZE * sizeof(char)));
     readConfig(&serv_add);
     printf("Server address: %s\n", serv_add);
 

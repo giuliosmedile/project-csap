@@ -54,7 +54,10 @@ int login(char* username, char* password) {
 	char* l_username = malloc(sizeof(char*));
 	char* l_password = malloc(sizeof(char*));
 	hash(&password);
-	if ((fp = fopen(REPO, "r")) == NULL) return -1;
+	if ((fp = fopen(REPO, "r")) == NULL) {
+		printf("[] can't read repo\n");
+		return -1;
+	}
 	while (getline(&line, &len, fp) != -1) {
 		l_username = strtok(line, DELIMIT);
 		if (strcmp(username, l_username)==0) {

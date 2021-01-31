@@ -61,3 +61,39 @@ char* readFromSocket(int s, char* rcv) {
     printf("[+] received: %s\n", rcv);
     return rcv;
 }
+
+// Function that sends a file through a socket
+void sendFile(int s, char* filename) {
+	char data[BUF_SIZE] = {0};
+	FILE* fp = fopen(filename, "r");
+
+	while(fgets(data, BUF_SIZE, fp) != NULL) {
+		if (send(s, data, sizeof(data), 0) == -1) {
+			perror("[-]Error in sending file.");
+			exit(1);
+		}
+		bzero(data, BUF_SIZE);
+	}
+	fclose(fp);
+}
+
+void receiveFile(int s, char* filename) {
+	int n;
+	FILE *fp;
+	char buffer[BUF_SIZE];
+
+	fp = fopen(filename, "w");
+	// Loops until the file has been all received
+	while (1) {
+		// If the file is over, I stop the loop
+		if (recv(s, buffer, BUF_SIZE, 0) <= 0) {
+			break;
+			return;
+		}
+		// Else write to a file
+		fprintf(fp, "%s", buffer);
+		bzero(buffer, BUF_SIZE);
+	}
+	fclose(fp);
+	return;
+}

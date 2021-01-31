@@ -9,10 +9,10 @@
 
 #include "signin.c"
 #include "connection.c"
-#include "utils.c"
 #include "handleSocketReplies.c"
 #include "readConfig.c"
 #include "../shared/user.c"
+#include "../shared/utils.c"
 
 // Standard Definitions
 #define BUF_SIZE 256
