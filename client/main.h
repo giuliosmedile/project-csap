@@ -11,7 +11,6 @@
 #include "connection.c"
 #include "utils.c"
 #include "handleSocketReplies.c"
-#include "../shared/llist.h"
 #include "../shared/user.c"
 
 // Standard Definitions

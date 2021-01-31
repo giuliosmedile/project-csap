@@ -12,7 +12,8 @@
 #define MAXARGS 64
 #define BUF_SIZE 256
 
-int s;
+int s;      // The socket I'm interacting with
+t_user u;   // The user that the socket sends after logging in
 
 char* takeUserInput(char* input) {
     printf("\033[1;31m");

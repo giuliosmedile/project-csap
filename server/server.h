@@ -3,7 +3,7 @@
 #include <string.h>
 
 #include "signin.c"
-#include "../shared/user.c"
+// #include "../shared/user.c"
 
 // From main.c
 void DieWithError(char* str);
@@ -15,7 +15,6 @@ int signup(char* username, char* password);
 int login(char* username, char* password);
 
 //From user.c
+struct s_user;
+typedef struct s_user user;
 user createUser(char* username);
-
-
-
