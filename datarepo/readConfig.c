@@ -27,10 +27,8 @@ void readConfig (char** serv_add) {
 
 		//Look at args[0] to see the left hand side of the assignment
 		if (!strcmp(args[0], "serveraddress")) {
-			printf("1\n");
 			printf("%s\n", args[1]);
 			strcpy(*serv_add, args[1]);
-			printf("2\n");
 		}
 	}
 	fclose(fp);
