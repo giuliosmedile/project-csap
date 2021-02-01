@@ -15,9 +15,9 @@ struct s_user {
 };
 typedef struct s_user t_user;
 
-t_user createUser(char* username) {
+t_user* createUser(char* username) {
 	// Allocate the space for that user
-	t_user* u = malloc(sizeof(t_user)+MAX_ADDRESSBOOK_SIZE*sizeof(char));
+	t_user* u = malloc(sizeof(t_user*)+MAX_ADDRESSBOOK_SIZE*sizeof(char));
 
 	// Fill the struct
 	u->username = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -39,11 +39,14 @@ void printUser(t_user* u, char* filename) {
 	strcat(buf, ";");
 
 	// Write the number of messages sent
-	strcat(buf, u->messagesno);
+	char tmp[10];
+	sprintf(tmp, "%d", u->messagesno);
+	strcat(buf, tmp);
 	strcat(buf, ";");
 
 	// Write the addressbook size
-	strcat(buf, u->addressbook_size);
+	sprintf(tmp, "%d", u->addressbook_size);
+	strcat(buf, tmp);
 	strcat(buf, ";");
 
 	// Write the addressbook
@@ -56,24 +59,24 @@ void printUser(t_user* u, char* filename) {
 	strcat(buf, "\n");
 
 	// Print this on the file
-	fprintf(fp, buf);
+	fprintf(fp, "%s", buf);
 
 }
 
 // Function that returns a user struct after reading a line
 // The line _MUST_ be formatted as shown in the function above this
-t_user readUser(char* line) {
+t_user* readUser(char* line) {
 
 	// Tokenize the line
 	char** args = (char**)malloc((MAX_ADDRESSBOOK_SIZE+3) * sizeof(char*));
 	tokenize(line, &args);
 	// Allocate the space for the new user
 	// I can use args[2] because I know that is the number of people in the addressbook
-	t_user* u = malloc(sizeof(t_user)+atoi(args[2])*sizeof(char));
+	t_user* u = malloc(sizeof(t_user*)+atoi(args[2])*sizeof(char));
 
 	// Now I can start filling the struct
 	u->username = args[0];
-	u->messagesno = args[1];
+	u->messagesno = atoi(args[1]);
 	u->addressbook_size = atoi(args[2]);
 	for (int i = 0; i < u->addressbook_size; i++) {
 		// I first allocate the memory for the string, then copy it over

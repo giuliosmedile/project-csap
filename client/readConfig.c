@@ -7,7 +7,7 @@
 void readConfig (char** serv_add) {
 	char* tmp = *serv_add;
 	char* buf = (char*)malloc(BUF_SIZE * sizeof(char));
-	char** args = (char**)malloc(MAX_ARGS);
+	char** args = (char**)malloc(MAX_ARGS * sizeof(char*));
 	size_t len;
 	FILE* fp;
 
