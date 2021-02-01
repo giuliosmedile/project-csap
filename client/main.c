@@ -7,7 +7,8 @@
 #include <netinet/in.h>
 #include <netdb.h>
 #include <string.h>
-#include "main.h"
+#include <stddef.h>
+#include "client.h"
 
 #define MAXARGS 64
 #define BUF_SIZE 256

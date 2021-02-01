@@ -7,9 +7,12 @@
 #include <sys/wait.h>       /* for waitpid() */
 #include <signal.h>         /* for sigaction() */
 
+#include "../shared/utils.c"
+#include "../shared/user.c"
 #include "signin.c"
 #include "connection.c"
-// #include "../shared/user.c"
+#include "readConfig.c"
+
 
 // From main.c
 void DieWithError(char* str);
@@ -20,7 +23,10 @@ void dowork(int socket);
 int signup(char* username, char* password);
 int login(char* username, char* password);
 
+// From readConfig.c
+void readConfig (int* port, int* clients, int* mds, char*** mds_addr);
+
 //From user.c
 struct s_user;
-typedef struct s_user user;
-user createUser(char* username);
+typedef struct s_user t_user;
+t_user* createUser(char* username);

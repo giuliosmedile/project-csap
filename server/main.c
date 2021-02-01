@@ -1,26 +1,6 @@
 /// 		MAIN SERVER CODE
 #include "server.h"
 
-#define BUF_SIZE 256
-#define SEPARATOR " \t\r\n\v\f;"
-
-// Takes an input string, and tokenizes it into an output string array
-void tokenize(char* input, char*** output) {
-	char** tmp = *output;
-	
-	int i = 0;
-	char* token = strtok(input, SEPARATOR);
-	while (token) {
-		printf("Token %d: %s\n", i, token);
-		tmp[i] = (char*)malloc(BUF_SIZE * sizeof(char));
-		strcpy(tmp[i], token);
-		token = strtok(NULL, SEPARATOR);
-		i++;
-	} 
-
-	return;
-}
-
 void dowork(int socket) {
 	char** operations = (char**)malloc(3*BUF_SIZE);
 	char rcvString[BUF_SIZE];
@@ -64,19 +44,20 @@ void dowork(int socket) {
 int main(int argc, char** argv) {
 	int servSock;                    /* Socket descriptor for server */
     int clntSock;                    /* Socket descriptor for client */
-    unsigned short echoServPort;     /* Server port */
+    int echoServPort;     /* Server port */
     pid_t processID;                 /* Process ID from fork() */
-    unsigned int childProcCount = 0; /* Number of child processes */
+    unsigned int childProcCount; /* Number of child processes */
     int clients;					 // Number of possible clients that the server will allow to connect at the same time
     int mds_no;						 // Number of mds's that the server will connect to
-    char** mds_addrs 			 // Array containing the IP addresses of the mds's
+    char** mds_addrs; 			 	 // Array containing the IP addresses of the mds's
 
     // Read the configuration file
     readConfig(&echoServPort, &clients, &mds_no, &mds_addrs);
+    printf("[-] End of reading configuration\n");
+    printf("[-] Testing: esp: %d, clients: %d, mdsno: %d\n", echoServPort, clients, mds_no);
     // echoServPort = atoi(argv[1]);  /* First arg:  local port */
 
     servSock = CreateTCPServerSocket(echoServPort);
-
     for (;;) /* Run forever */
     {
         clntSock = AcceptTCPConnection(servSock);
@@ -85,6 +66,7 @@ int main(int argc, char** argv) {
             DieWithError("fork() failed");
         else if (processID == 0)  /* If this is the child process */
         {
+        	printf("[-]Starting to do work for %d\n", clntSock);
             close(servSock);   /* Child closes parent socket */
             for (;;) {
             	dowork(clntSock);

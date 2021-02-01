@@ -7,12 +7,13 @@
 #include <netdb.h>
 #include <string.h>
 
+#include "../shared/utils.c"
+#include "../shared/user.c"
+
 #include "signin.c"
 #include "connection.c"
-#include "handleSocketReplies.c"
-#include "../shared/user.c"
-#include "../shared/utils.c"
 #include "readConfig.c"
+#include "handleSocketReplies.c"
 
 // Standard Definitions
 #define BUF_SIZE 256

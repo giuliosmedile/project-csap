@@ -8,11 +8,7 @@
 // in the same order as the variables appear in the function. Comments
 // are allowed by putting a character (by default, #, can be changed)
 // that will tell the function to skip the line.
-void readConfig (int* port, int* clients, int* mds, char*** mds_addr) {
-	int t_port = *port;
-	int t_clients = *clients;
-	int	t_mds = *mds;
-	char** t_mds_addr = *mds_addr;
+void readConfig (int *port, int *clients, int *mds, char ***mds_addr) {
 
 	char* buf = (char*)malloc(BUF_SIZE * sizeof(char));
 	char** args = (char**)malloc(MAX_ARGS);
@@ -36,22 +32,24 @@ void readConfig (int* port, int* clients, int* mds, char*** mds_addr) {
 
 		//Look at args[0] to see the left hand side of the assignment
 		if (!strcmp(args[0], "port")) {
-			t_port = atoi(args[1]);
+			*port = atoi(args[1]);
 			continue;
 		} 
 		if (!strcmp(args[0], "clients")) {
-			t_clients = atoi(args[1]);
+			*clients = atoi(args[1]);
 			continue;
 		}
 		if (!strcmp(args[0], "mds")) {
-			t_mds = atoi(args[1]);
-			t_mds_addr = (char**)malloc(t_mds * sizeof(char*));
+			*mds = atoi(args[1]);
+			*mds_addr = (char**)malloc(*mds * BUF_SIZE * sizeof(char*));
 			continue;
 		}
 		// I do this to store each mds address
 		if (!strncmp(args[0], "mds[", strlen("mds["))) {
-			t_mds_addr[mds_counter] = (char*)malloc(BUF_SIZE * sizeof(char));
-			strcpy(t_mds_addr[mds_counter], args[1]);
+			printf("\t mds: %d\n", mds_counter);
+		    (*mds_addr)[mds_counter] = (char*)malloc(BUF_SIZE * sizeof(char));
+			strcpy((*mds_addr)[mds_counter], args[1]);
+			printf("Test: %s %d\n", (*mds_addr)[mds_counter], mds_counter);
 			mds_counter++;
 		}
 
