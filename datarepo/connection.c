@@ -10,8 +10,6 @@
 #include <netdb.h>
 #include <string.h>
 
-char commandSent[BUF_SIZE];
-
 int connectToSocket(char* serv_add) {
 	int s,len;
     struct sockaddr_in saddr;

@@ -34,6 +34,9 @@ char* signup(char* result);
 int connectToSocket();
 void sendToSocket(int socket, char* str);
 char* readFromSocket(int socket, char* str);
+void sendFile(int s, char* filename);
+void receiveFile(int s, char* filename);
+
 
 // From handleSocketReplies.c
 void handleSocketReplies(char* command, char* response);
