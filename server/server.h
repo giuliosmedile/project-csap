@@ -12,12 +12,12 @@
 #include "signin.c"
 #include "connection.c"
 #include "readConfig.c"
+#include "dowork.c"
 
 
 // From main.c
 void DieWithError(char* str);
 void tokenize(char* input, char*** output);
-void dowork(int socket);
 
 // From signin.c
 int signup(char* username, char* password);
@@ -25,6 +25,9 @@ int login(char* username, char* password);
 
 // From readConfig.c
 void readConfig (int* port, int* clients, int* mds, char*** mds_addr);
+
+// From dowork.c
+void dowork(int servSock, int dataRepoSock);
 
 //From user.c
 struct s_user;

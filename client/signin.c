@@ -62,8 +62,3 @@ char* login(char* result) {
 	return result;
 }
 
-char* help() {
-	return "";
-}
-
-

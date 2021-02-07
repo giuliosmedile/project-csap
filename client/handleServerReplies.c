@@ -4,6 +4,14 @@
 #include <stdio.h>
 
 void handleLogin(char* response)  {
+	t_user* u = readUser(response);
+	if (u == NULL) {
+		printf("User not valid.\n");
+	}
+	char str = printUser(u, str);
+	printf("\033[1;31m");
+	printf(str);
+	printf("\033[0m");
 
 }
 
@@ -18,7 +26,7 @@ void handleSignup(char* response) {
 	return;
 }
 
-void handleSocketReplies(char* command, char* response) {
+void handleServerReplies(char* command, char* response) {
 
 	printf("PREHANDLING: \"%s\", \"%s\"\n", command, response);
 	if (!strcmp(command, "login")) {

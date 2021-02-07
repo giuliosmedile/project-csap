@@ -12,7 +12,9 @@
 #define MAXARGS 64
 #define BUF_SIZE 256
 
-int s;      // The socket I'm interacting with
+int dataRepoSock;      // "My" end of the socket
+int clntSock;
+int processID;
 
 void main (int argc, char** argv) {
 
@@ -20,22 +22,42 @@ void main (int argc, char** argv) {
 	char* reply = (char*)malloc(BUF_SIZE * sizeof(char));
 
     // Read the configuration file
-    char* serv_add = (char*)malloc(sizeof(BUF_SIZE * sizeof(char)));
-    readConfig(&serv_add);
-    printf("Server address: %s\n", serv_add);
+    unsigned short servPort;
+    readConfig(&servPort);
+    printf("My port: %s\n", servPort);
 
     // Connect to the server through the address given in the conf file
-    s = connectToSocket(serv_add);
+    dataRepoSock = CreateTCPServerSocket(servPort);
 
-    for (;;) {
-    	// Wait for request from socket
-    	request = readFromSocket(s, request);
-    	// Process request
-    	reply = processRequest(request);
-    	// Send Reply
-    	sendToSocket(s, reply);
+    for (;;) /* Run forever */
+    {
+        clntSock = AcceptTCPConnection(servSock);
+        /* Fork child process and report any errors */
+        if ((processID = fork()) < 0)
+            DieWithError("fork() failed");
+        else if (processID == 0)  /* If this is the child process */
+        {
+        	printf("[-]Starting to do work for %d\n", clntSock);
+            close(servSock);   /* Child closes parent socket */
+            for (;;) {
+            	dowork(clntSock);
+        	}
+            exit(0);           /* Child process terminates */
+        }
 
-    	bzero(request, BUF_SIZE);
-    	bzero(reply, BUF_SIZE);
+        printf("with child process: %d\n", (int) processID);
+        close(clntSock);       /* Parent closes child socket descriptor */
+        childProcCount++;      /* Increment number of outstanding child processes */
+
+        while (childProcCount) /* Clean up all zombies */
+        {
+            processID = waitpid((pid_t) -1, NULL, WNOHANG);  /* Non-blocking wait */
+            if (processID < 0)  /* waitpid() error? */
+                DieWithError("waitpid() failed");
+            else if (processID == 0)  /* No zombie to wait on */
+                break;
+            else
+                childProcCount--;  /* Cleaned up after a child */
+        }
     }
 }

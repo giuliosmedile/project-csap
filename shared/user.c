@@ -32,7 +32,29 @@ t_user* createUser(char* username) {
 	return u;
 }
 
-void printUser(t_user* u, char* filename) {
+// Similar to saveUser, just saves the result to a string
+char* printUser(t_user* u, char* string) {
+
+	char* tmp = malloc(BUF_SIZE * sizeof(char));
+	string = malloc(BUF_SIZE * sizeof(char));
+
+	sprintf(tmp, "username: %s\n", u->username);
+	strcat(string, tmp);
+
+	sprintf(tmp, "number of messages sent: %d\n", u->messagesno);
+	strcat(string, tmp);
+
+	sprintf(tmp, "-- Addressbook --\n");
+	strcat(string, tmp);
+	
+	for (int i = 1; i<=u->addressbook_size; i++) {
+		sprintf(tmp, "%d\t%s", i, u->addressbook[i]);
+		strcat(string, tmp);
+	}
+
+}
+
+void saveUser(t_user* u, char* filename) {
 	// First of all, remove duplicates, if exist
 	removeDuplicates(u->username, filename);
 
@@ -150,5 +172,25 @@ void removeDuplicates(char* username, char* filename)
     fclose(tmp_fp);
     remove(filename);  		    // remove the original file 
     rename(temp, filename); 	// rename the temporary file to original name
+}
+
+char* getUser(char* username) {
+	// Search for the user in the REPO file, and return it as it is written
+	FILE* fp;
+	size_t len;
+	char* buf = malloc(BUF_SIZE * sizeof(char));
+	char** args = malloc(MAX_ADDRESSBOOK_SIZE * sizeof(char*));
+	if ((fp = fopen(REPO, "r")) == NULL) return;
+
+	// Scan the whole file
+	while (getline(&buf, &len, fp) != -1) {
+		char* tmp = malloc(BUF_SIZE * sizeof(char));
+		strcpy(tmp, buf);
+		tokenize(tmp, &args);
+		// If I found a match, I return the whole string as it is in the file
+		if (!strcmp(args[0], username)) return buf;
+	}
+
+	return;
 }
 

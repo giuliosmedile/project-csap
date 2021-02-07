@@ -10,7 +10,7 @@
 #include <netdb.h>
 #include <string.h>
 
-int connectToSocket(char* serv_add) {
+int connectToSocket(char* serv_add, unsigned short port) {
 	int s,len;
     struct sockaddr_in saddr;
     struct hostent *hst;
@@ -25,7 +25,7 @@ int connectToSocket(char* serv_add) {
 
     saddr.sin_addr.s_addr = inet_addr(serv_add);
     saddr.sin_family=AF_INET;
-    saddr.sin_port=htons(16000);
+    saddr.sin_port=htons(port);
 
     // Connect to other socket
     if (connect(s,(struct sockaddr *)&saddr,sizeof(saddr))<0){

@@ -13,7 +13,7 @@
 #include "signin.c"
 #include "connection.c"
 #include "readConfig.c"
-#include "handleSocketReplies.c"
+#include "handleServerReplies.c"
 
 // Standard Definitions
 #define BUF_SIZE 256
@@ -37,11 +37,8 @@ char* readFromSocket(int socket, char* str);
 void sendFile(int s, char* filename);
 void receiveFile(int s, char* filename);
 
-
-// From handleSocketReplies.c
+// From handleServerReplies.c
 void handleSocketReplies(char* command, char* response);
-void handleLogin(char* response);
-void handleSignup(char* response);
 
 // From readConfig.c
 void readConfig (char** serv_add);

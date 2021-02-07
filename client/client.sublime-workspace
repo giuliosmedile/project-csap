@@ -1,0 +1,516 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"data",
+				"dataRepoSock"
+			],
+			[
+				"serv",
+				"serv_port"
+			],
+			[
+				"ser_",
+				"serv_port"
+			],
+			[
+				"proces",
+				"processID"
+			],
+			[
+				"vdr",
+				"vdr_addrs"
+			],
+			[
+				"add",
+				"addressbook"
+			],
+			[
+				"address",
+				"addressbook"
+			],
+			[
+				"print",
+				"printUser"
+			],
+			[
+				"remove",
+				"removeDuplicates"
+			],
+			[
+				"size",
+				"sizeof"
+			],
+			[
+				"usre",
+				"username"
+			],
+			[
+				"read",
+				"readUser"
+			],
+			[
+				"ad",
+				"addressbook"
+			],
+			[
+				"fp",
+				"fp"
+			],
+			[
+				"addre",
+				"addressbook"
+			],
+			[
+				"Crea",
+				"createUser"
+			],
+			[
+				"mds",
+				"mds_counter"
+			],
+			[
+				"mds_",
+				"mds_no"
+			],
+			[
+				"t_",
+				"t_mds_addr"
+			],
+			[
+				"messages",
+				"messagesno"
+			],
+			[
+				"mess",
+				"messagesno"
+			],
+			[
+				"me",
+				"MESSAGES_LOCATION"
+			],
+			[
+				"File",
+				"FILE"
+			],
+			[
+				"rcv",
+				"rcv"
+			],
+			[
+				"connect",
+				"connectToSocket"
+			],
+			[
+				"send",
+				"sendToSocket"
+			],
+			[
+				"BUF",
+				"BUF_SIZE"
+			],
+			[
+				"s",
+				"string.h\tstandard header"
+			],
+			[
+				"buf",
+				"BUF_SIZE"
+			],
+			[
+				"B",
+				"BUF_SIZE"
+			],
+			[
+				"con",
+				"concatenate"
+			],
+			[
+				"comman",
+				"commandArgs"
+			],
+			[
+				"toke",
+				"tokenize"
+			],
+			[
+				"MA",
+				"MAX_BUF_SIZE"
+			],
+			[
+				"a",
+				"argv"
+			],
+			[
+				"l_",
+				"l_username"
+			],
+			[
+				"str",
+				"strtok"
+			],
+			[
+				"bu",
+				"buff"
+			],
+			[
+				"b",
+				"buff"
+			],
+			[
+				"fil",
+				"fileNames"
+			],
+			[
+				"input",
+				"inputLineNumber"
+			],
+			[
+				"ma",
+				"math.h\tstandard header"
+			],
+			[
+				"std",
+				"stdlib.h\tstandard header"
+			],
+			[
+				"st",
+				"stdio.h\tstandard header"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"toggle",
+				"Toggle Comment"
+			],
+			[
+				"indent",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"toggle com",
+				"Toggle Comment"
+			],
+			[
+				"toglle",
+				"Toggle Block Comment"
+			],
+			[
+				"to",
+				"Toggle Comment"
+			],
+			[
+				"togg",
+				"Toggle Comment"
+			],
+			[
+				"t",
+				"Toggle Comment"
+			],
+			[
+				"comment",
+				"Toggle Comment"
+			],
+			[
+				"comme",
+				"Toggle Comment"
+			],
+			[
+				"intend",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"reindent",
+				"Indentation: Reindent Lines"
+			],
+			[
+				"inden",
+				"Indentation: Reindent Lines"
+			]
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 0.0,
+		"history":
+		[
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/smeds/Desktop/CSAP/project-csap/server/connection.c",
+		"/home/smeds/Desktop/CSAP/project-csap/shared/user.c",
+		"/home/smeds/Desktop/CSAP/project-csap/datarepo/dowork.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/connection.c",
+		"/home/smeds/Desktop/CSAP/project-csap/server/main.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/main.c",
+		"/home/smeds/Desktop/CSAP/project-csap/server/dowork.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/handleServerReplies.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/handleSocketReplies.c",
+		"/home/smeds/Desktop/CSAP/project-csap/datarepo/main.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/readConfig.c",
+		"/home/smeds/Desktop/CSAP/project-csap/server/readConfig.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/signin.c",
+		"/home/smeds/Desktop/CSAP/project-csap/server/signin.c",
+		"/home/smeds/Desktop/CSAP/project-csap/datarepo/processRequest.c",
+		"/home/smeds/Desktop/CSAP/project-csap/shared/test/user_test.c",
+		"/home/smeds/Desktop/CSAP/project-csap/shared/user_test.c",
+		"/home/smeds/Desktop/CSAP/project-csap/shared/utils.c",
+		"/home/smeds/Desktop/CSAP/project-csap/shared/test",
+		"/home/smeds/Desktop/CSAP/project-csap/datarepo/connection.c",
+		"/home/smeds/Desktop/CSAP/project-csap/shared/test.c",
+		"/home/smeds/Desktop/CSAP/project-csap/datarepo/readConfig.c",
+		"/home/smeds/Desktop/CSAP/project-csap/metadataserver/connect.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/utils.c",
+		"/home/smeds/Desktop/CSAP/sockexamples/TCPEchoServer-Fork-SIGCHLD.c",
+		"/home/smeds/Desktop/CSAP/sockexamples/TCPEchoServer-Fork.c",
+		"/home/smeds/Desktop/CSAP/sockexamples/CreateTCPServerSocket.c",
+		"/home/smeds/Desktop/CSAP/sockexamples/AcceptTCPConnection.c",
+		"/home/smeds/Desktop/CSAP/sockexamples/TCPEchoServer.c",
+		"/home/smeds/Desktop/CSAP/sockexamples/HandleTCPClient.c",
+		"/home/smeds/Desktop/CSAP/project-csap/server/main_old.c",
+		"/home/smeds/Desktop/CSAP/project-csap/shared/llist.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/connectToSocket.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/test.wav",
+		"/home/smeds/Desktop/CSAP/project-csap/shared/List.c",
+		"/home/smeds/Desktop/CSAP/procexamples/shell.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/main_old.c",
+		"/home/smeds/Desktop/CSAP/sockexamples/SigAction.c",
+		"/home/smeds/Desktop/CSAP/sockexamples/TCPEchoClient.c",
+		"/home/smeds/Desktop/CSAP/MIDTERM2/midterm.c",
+		"/home/smeds/Desktop/CSAP/project-csap/client/connect.c",
+		"/home/smeds/.xmodmap_giulio",
+		"/home/smeds/Desktop/CSAP/sockexamples/sclient.c",
+		"/home/smeds/Desktop/CSAP/sockexamples/sserver.c",
+		"/home/smeds/Desktop/CSAP/project-csap/server/test.c",
+		"/home/smeds/Desktop/CSAP/MoreExamples/File3.c",
+		"/home/smeds/Desktop/CSAP/procexamples/forkdata.c",
+		"/home/smeds/Desktop/CSAP/procexamples/forkwait2.c",
+		"/home/smeds/Desktop/CSAP/SamplePrograms/File2.c",
+		"/home/smeds/Desktop/CSAP/SamplePrograms/File3.c",
+		"/home/smeds/Desktop/CSAP/SamplePrograms/File1.c",
+		"/home/smeds/Desktop/CSAP/SamplePrograms/fgetword.c",
+		"/home/smeds/Desktop/CSAP/SamplePrograms/SimpleSort.c",
+		"/home/smeds/Desktop/CSAP/SamplePrograms/InputParams.c",
+		"/home/smeds/Desktop/CSAP/project-csap/testServer.c",
+		"/home/smeds/Desktop/Kathara/homework3_lab_1951902/s/etc/bind/db.exam.org",
+		"/home/smeds/Desktop/Kathara/lab_dns/dns/etc/bind/named.conf",
+		"/home/smeds/Desktop/Kathara/homework3_lab_1951902/s/etc/bind/named.conf",
+		"/home/smeds/.cache/.fr-gOEybZ/CreateTCPServerSocket.c",
+		"/home/smeds/Desktop/Kathara/homework3_lab_1951902/pc4/etc/network/interfaces",
+		"/home/smeds/Desktop/CSAP/pipexamples/Pipe4.c",
+		"/home/smeds/.cache/.fr-rIo0q3/midterm_1951902.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/Pipe3.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/Pipe2.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/Pipe1.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/chat/server.c",
+		"/home/smeds/.cache/.fr-6N0zz3/midterm_1951902.c",
+		"/home/smeds/.cache/.fr-g91ya1/midterm_1951902.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/Pipe5.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/PipeClient.c",
+		"/home/smeds/Desktop/CSAP/MIDTERM2/func.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/PipeServer.c",
+		"/home/smeds/.cache/.fr-UQzVvF/midterm2019/main.c",
+		"/home/smeds/.cache/.fr-b3gy94/midterm2019/main.c",
+		"/home/smeds/.cache/.fr-O7cXL8/midterm_1951902.c",
+		"/home/smeds/.cache/.fr-v2QZs8/midterm2019/func.c",
+		"/home/smeds/.cache/.fr-fDSuBD/midterm2019/func.c",
+		"/home/smeds/Desktop/CSAP/MIDTERM2/run.me",
+		"/home/smeds/.cache/.fr-88JTMF/midterm2019/func.c",
+		"/home/smeds/.cache/.fr-rfZAPF/midterm2019/main.c",
+		"/home/smeds/.cache/.fr-0GU3CJ/midterm2019/main.c",
+		"/home/smeds/.cache/.fr-JqLwEI/midterm2019/func.c",
+		"/home/smeds/.cache/.fr-XJo6zI/midterm2019/main.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/chat/client.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/PipeClient2.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/PipeWriteBlock.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/PipeSample.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/PipeServer2.c",
+		"/home/smeds/Desktop/CSAP/pipexamples/FakeShell.c",
+		"/home/smeds/Desktop/Kathara/homework2_lab_1951902/r1.startup",
+		"/home/smeds/Desktop/Kathara/lab_vpn_1/._client1_vpn",
+		"/home/smeds/Desktop/CSAP/sigexamples/alarm.c",
+		"/home/smeds/Desktop/CSAP/sigexamples/sigexample.c",
+		"/home/smeds/Desktop/CSAP/sigexamples/signal0.c",
+		"/home/smeds/Desktop/Kathara/lab_vpn_1/._r1",
+		"/home/smeds/Desktop/Kathara/lab_vpn_1/._p_host.startup",
+		"/home/smeds/Desktop/CSAP/procexamples/fork1.c",
+		"/home/smeds/Desktop/CSAP/procexamples/forkwait3.c",
+		"/home/smeds/Desktop/CSAP/procexamples/myuid.c",
+		"/home/smeds/Desktop/CSAP/sigexamples/signal1.c",
+		"/home/smeds/Desktop/CSAP/sigexamples/signal2.c",
+		"/home/smeds/Desktop/CSAP/sigexamples/signal4.c",
+		"/home/smeds/Desktop/CSAP/sigexamples/signal3.c",
+		"/home/smeds/Desktop/CSAP/sigexamples/signal.c",
+		"/home/smeds/Desktop/Kathara/homework2_lab_1951902/r5/root/server.csr",
+		"/home/smeds/Desktop/CSAP/procexamples/forkwait4.c",
+		"/home/smeds/Desktop/CSAP/procexamples/zombies.c",
+		"/home/smeds/Desktop/CSAP/procexamples/forkexample.c",
+		"/home/smeds/Desktop/CSAP/procexamples/forkwait1.c",
+		"/home/smeds/Desktop/CSAP/procexamples/forkexec.c",
+		"/home/smeds/Desktop/id_rsa.pub",
+		"/home/smeds/Desktop/authorized_keys",
+		"/home/smeds/.cache/.fr-tI9RoZ/Lebesgue_And_Riemann/Form1.cs",
+		"/home/smeds/Documents/Workspace/midterm1/main.c",
+		"/home/smeds/Desktop/Downloads/SamplePrograms/File3.c",
+		"/home/smeds/Desktop/Downloads/SamplePrograms/File2.c",
+		"/home/smeds/Desktop/Downloads/SamplePrograms/File1.c",
+		"/home/smeds/Desktop/midterm_1951902.c",
+		"/home/smeds/Desktop/Downloads/SamplePrograms/SimpleSort.c",
+		"/home/smeds/Desktop/Downloads/MoreExamples/File2.c",
+		"/home/smeds/Desktop/Downloads/MoreExamples/Tree.c",
+		"/home/smeds/Desktop/Downloads/SamplePrograms/stringarray1.c",
+		"/home/smeds/.cache/.fr-2YSMJh/midterm_1951902.c",
+		"/home/smeds/.cache/.fr-oVf2ei/midterm_1951902.c",
+		"/home/smeds/Desktop/Downloads/SamplePrograms/bubbleSort.c",
+		"/home/smeds/Desktop/Downloads/SamplePrograms/ReturnPointers.c",
+		"/home/smeds/Desktop/Downloads/MoreExamples/File3.c",
+		"/home/smeds/Desktop/Downloads/SamplePrograms/InputParams.c"
+	],
+	"find":
+	{
+		"height": 24.0
+	},
+	"find_in_files":
+	{
+		"height": 98.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 24.0
+	},
+	"input":
+	{
+		"height": 0.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "client.sublime-project",
+	"replace":
+	{
+		"height": 44.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

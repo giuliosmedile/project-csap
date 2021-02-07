@@ -22,13 +22,11 @@ void readConfig (int *port, int *clients, int *mds, char ***mds_addr) {
 	// Read the conf file line per line
 	while (getline(&buf, &len, fp) != -1) {
 		buf[strlen(buf)-1] = '\0';
-		printf("[-] Reading line. Content: \"%s\"\n", buf);
 		//If the first line is a comment, skip it
 		if (buf[0] == '#') continue;
 
 		//Tokenize the line
 		tokenize(buf, &args);
-		printf("[-] tokenized: \"%s\", \"%s\"\n", args[0], args[1]);
 
 		//Look at args[0] to see the left hand side of the assignment
 		if (!strcmp(args[0], "port")) {
@@ -46,10 +44,8 @@ void readConfig (int *port, int *clients, int *mds, char ***mds_addr) {
 		}
 		// I do this to store each mds address
 		if (!strncmp(args[0], "mds[", strlen("mds["))) {
-			printf("\t mds: %d\n", mds_counter);
 		    (*mds_addr)[mds_counter] = (char*)malloc(BUF_SIZE * sizeof(char));
 			strcpy((*mds_addr)[mds_counter], args[1]);
-			printf("Test: %s %d\n", (*mds_addr)[mds_counter], mds_counter);
 			mds_counter++;
 		}
 

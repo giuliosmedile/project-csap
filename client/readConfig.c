@@ -4,7 +4,7 @@
 #define COMMENT '#'					//character that defines a comment line
 #define MAX_ARGS 2					//every line is structured as lhs=rhs, so the tokenize array only needs 2 fields
 
-void readConfig (char** serv_add) {
+void readConfig (char** serv_add, unsigned short* serv_port) {
 	char* tmp = *serv_add;
 	char* buf = (char*)malloc(BUF_SIZE * sizeof(char));
 	char** args = (char**)malloc(MAX_ARGS * sizeof(char*));
@@ -26,6 +26,9 @@ void readConfig (char** serv_add) {
 		//Look at args[0] to see the left hand side of the assignment
 		if (!strcmp(args[0], "serveraddress")) {
 			strcpy(*serv_add, args[1]);
+		}
+		if (!strcmp(args[0], "port")) {
+			*serv_port = atoi(args[1]);
 		}
 	}
 	fclose(fp);

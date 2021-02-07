@@ -1,46 +1,6 @@
 /// 		MAIN SERVER CODE
 #include "server.h"
 
-void dowork(int socket) {
-	char** operations = (char**)malloc(3*BUF_SIZE);
-	char rcvString[BUF_SIZE];
- 	int result;
-
- 	if (read(socket, rcvString, sizeof(rcvString)) < 0) {
-					perror("read");
-					exit(1);
-	}
-
-	printf("Received: %s\n", rcvString);
-	// Insert the string received from the socket into the operations array
-	tokenize(rcvString, &operations);
-
-	printf("Inside dowork\n");
-
-	char* command = malloc(BUF_SIZE);
-	strcpy(command, operations[0]);
-	
-	if (strcmp(command, "login") == 0) {
-		printf("- Logging in -\n");
-		result = login(operations[1], operations[2]);
-	}
-	if (strcmp(command, "signup") == 0) {
-		printf("- Signing up - \n");
-		result = signup(operations[1], operations[2]);
-	}
-
-	char* output = (char*)malloc(BUF_SIZE * sizeof(char));
-	sprintf(output, "%d", result);
-	printf("[-]output: %s\n", output);
-	if (write(socket, output, sizeof(output)) < 0) {
-		perror("write");
-		exit(1);
-	}
-
-	free(operations);
-
-}
-
 int main(int argc, char** argv) {
 	int servSock;                    /* Socket descriptor for server */
     int clntSock;                    /* Socket descriptor for client */
@@ -48,14 +8,19 @@ int main(int argc, char** argv) {
     pid_t processID;                 /* Process ID from fork() */
     unsigned int childProcCount; /* Number of child processes */
     int clients;					 // Number of possible clients that the server will allow to connect at the same time
-    int mds_no;						 // Number of mds's that the server will connect to
-    char** mds_addrs; 			 	 // Array containing the IP addresses of the mds's
+    int vdr_no;						 // Number of mds's that the server will connect to
+    char** vdr_addrs; 			 	 // Array containing the IP addresses of the mds's
 
     // Read the configuration file
-    readConfig(&echoServPort, &clients, &mds_no, &mds_addrs);
-    printf("[-] End of reading configuration\n");
-    printf("[-] Testing: esp: %d, clients: %d, mdsno: %d\n", echoServPort, clients, mds_no);
-    // echoServPort = atoi(argv[1]);  /* First arg:  local port */
+    readConfig(&echoServPort, &clients, &vdr_no, &vdr_addrs);
+    
+    // Connect to all the VDR (I'm the "client", they're the servers)
+    int vdr[vdr_no];
+    for (int i = 0; i<=vdr_no; i++) {
+        // The ports the server will use to connect to the vdrs are
+        // sequentially increased from echoServPort
+        vdr[i] = connectToSocket(vdr_addrs[i], echoServPort+i);
+    }
 
     servSock = CreateTCPServerSocket(echoServPort);
     for (;;) /* Run forever */
