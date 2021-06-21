@@ -13,7 +13,6 @@ void readConfig (char** serv_add, unsigned short* serv_port) {
 
 	// Open and check if the file exists
 	if ((fp = fopen(CONFIG, "r")) == NULL) return;
-
 	// Read the conf file line per line
 	while (getline(&buf, &len, fp) != -1) {
 		buf[strlen(buf)-1] = '\0';

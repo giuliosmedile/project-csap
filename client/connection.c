@@ -27,10 +27,21 @@ int connectToSocket(char* serv_add, unsigned short port) {
     saddr.sin_family=AF_INET;
     saddr.sin_port=htons(port);
 
-    // Connect to other socket
-    if (connect(s,(struct sockaddr *)&saddr,sizeof(saddr))<0){
-	perror("connect");
-	exit(1);
+    // Connect to other socket. If it isn't already online, retry every 5 seconds for a
+    // minute, then abort
+    puts("[-] Trying to connect to server...");
+
+    for (int tries = 0; tries<=12; tries++) {
+        if (connect(s,(struct sockaddr *)&saddr,sizeof(saddr))<0) {
+            puts(".");
+            sleep(2);
+        } else {
+            break;
+        }
+        if (tries==12) {
+            perror("connect");
+	        exit(1);
+        }
     }
     puts("connect done");
 

@@ -4,29 +4,33 @@
 #define MAXARGS 64
 #define BUF_SIZE 256
 
+// The next two are for handling the color output in the console
+#define COLOR "\033[0;33m"
+#define STD_COL "\033[0m"
+
 int s;      // The socket I'm interacting with
 t_user u;   // The user that the socket sends after logging in
 
 void help() {
     printf("Currently supported commands:\n");
-    printf("\033[1;31m");
+    printf("%s", COLOR);
     printf("\tlogin\n");
     printf("\tsignup\n");
     printf("\texit\n");
     printf("\trecord\n");
     printf("\tlisten\n");
-    printf("\033[0m");
+    printf("%s", STD_COL);
     return;
 }
 
 char* takeUserInput(char* input) {
-    printf("\033[1;31m");
+    printf("%s", COLOR);
     printf("$: ");
     if (fgets(input,sizeof(input),stdin) == NULL) {
         printf("\n");
         exit(0);
     }
-    printf("\033[0m");
+    printf("%s", STD_COL);
 
     return input;
 }
@@ -86,7 +90,9 @@ void main (int argc, char** argv) {
         sendToSocket(s, output);
         //wait for reply
         response = readFromSocket(s, buf);
+        char* command = (char*)malloc(BUF_SIZE*sizeof(char));
+        strcpy(response, command);
         // Then handle the server response
-        handleServerReplies(response);
+        handleServerReplies(response, NULL);
     }
 }

@@ -18,6 +18,10 @@
 // Standard Definitions
 #define BUF_SIZE 256
 
+// The next two are for handling the color output in the console
+#define COLOR "\033[0;33m"
+#define STD_COL "\033[0m"
+
 // From main.c
 //void dowork(char* buf);                      //command interpreter
 char* takeUserInput(char* input);                    //take a user's input from keyboard
@@ -31,7 +35,7 @@ char* login(char* result);
 char* signup(char* result);
 
 // From connectToSocket.c
-int connectToSocket();
+int connectToSocket(char* serv_add, unsigned short serv_port);
 void sendToSocket(int socket, char* str);
 char* readFromSocket(int socket, char* str);
 void sendFile(int s, char* filename);
@@ -41,5 +45,5 @@ void receiveFile(int s, char* filename);
 void handleSocketReplies(char* command, char* response);
 
 // From readConfig.c
-void readConfig (char** serv_add);
+void readConfig (char** serv_add, unsigned short* serv_port);
 

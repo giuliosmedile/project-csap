@@ -180,7 +180,7 @@ char* getUser(char* username) {
 	size_t len;
 	char* buf = malloc(BUF_SIZE * sizeof(char));
 	char** args = malloc(MAX_ADDRESSBOOK_SIZE * sizeof(char*));
-	if ((fp = fopen(REPO, "r")) == NULL) return;
+	if ((fp = fopen(REPO, "r")) == NULL) return NULL;
 
 	// Scan the whole file
 	while (getline(&buf, &len, fp) != -1) {
@@ -191,6 +191,6 @@ char* getUser(char* username) {
 		if (!strcmp(args[0], username)) return buf;
 	}
 
-	return;
+	return NULL;
 }
 

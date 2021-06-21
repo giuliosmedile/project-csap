@@ -8,9 +8,9 @@ void handleLogin(char* response)  {
 	if (u == NULL) {
 		printf("User not valid.\n");
 	}
-	char str = printUser(u, str);
+	char* str = printUser(u, str);
 	printf("\033[1;31m");
-	printf(str);
+	printf("%s", str);
 	printf("\033[0m");
 
 }
