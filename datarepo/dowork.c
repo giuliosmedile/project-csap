@@ -1,3 +1,5 @@
+#define BUF_SIZE 256
+
 void dowork(int socket) {
 	char** ops = (char**)malloc(3*BUF_SIZE);
 	char rcvString[BUF_SIZE];

@@ -1,20 +1,14 @@
 ///			MAIN CLIENT CODE
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netinet/in.h>
-#include <netdb.h>
-#include <string.h>
-#include "main.h"
+#include "datarepo.h"
 
 #define MAXARGS 64
 #define BUF_SIZE 256
 
 int dataRepoSock;      // "My" end of the socket
+int servSock;
 int clntSock;
 int processID;
+int childProcCount;
 
 void main (int argc, char** argv) {
 
@@ -24,7 +18,7 @@ void main (int argc, char** argv) {
     // Read the configuration file
     unsigned short servPort;
     readConfig(&servPort);
-    printf("My port: %s\n", servPort);
+    printf("My port: %d\n", servPort);
 
     // Connect to the server through the address given in the conf file
     dataRepoSock = CreateTCPServerSocket(servPort);

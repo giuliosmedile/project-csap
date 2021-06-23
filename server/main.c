@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
         	printf("[-]Starting to do work for %d\n", clntSock);
             close(servSock);   /* Child closes parent socket */
             for (;;) {
-            	dowork(clntSock);
+            	dowork(clntSock, vdr[0]);
         	}
             exit(0);           /* Child process terminates */
         }

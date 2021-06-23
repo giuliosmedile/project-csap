@@ -6,7 +6,7 @@
 
 #define BUF_SIZE 256
 #define MAX_ADDRESSBOOK_SIZE 50
-#define REPO "test.txt"
+char* REPO = "test.txt";
 
 struct s_user {
 	char* username;			// the user's username
@@ -146,8 +146,7 @@ t_user* searchUser(char* username, char* filename) {
 	fclose(fp);
 }
 
-void removeDuplicates(char* username, char* filename) 
-{
+void removeDuplicates(char* username, char* filename) {
 	size_t len;
 	FILE *fp, *tmp_fp;
 	char* buf = malloc(BUF_SIZE * sizeof(char));

@@ -90,9 +90,7 @@ void main (int argc, char** argv) {
         sendToSocket(s, output);
         //wait for reply
         response = readFromSocket(s, buf);
-        char* command = (char*)malloc(BUF_SIZE*sizeof(char));
-        strcpy(response, command);
         // Then handle the server response
-        handleServerReplies(response, NULL);
+        handleServerReplies(command, response);
     }
 }

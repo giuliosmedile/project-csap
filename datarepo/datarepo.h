@@ -3,21 +3,26 @@
 #include <unistd.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <string.h>
 
+#include "dowork.c"
+#include "connection.c"
 #include "readConfig.c"
 #include "processRequest.c"
+#include "handleSocketReplies.c"
 #include "../shared/utils.c"
+#include "../shared/user.c"
 
 #define BUF_SIZE 256
 // Functions from readConfig.c
 void readConfig(char** serv_add);
 
 // Functions from connection.c
-int connectToSocket(char* serv_add);
+int connectToSocket(char* serv_add, unsigned short port);
 void sendToSocket(int s, char* buf);
 char* readFromSocket(int s, char* rcv);
 void sendfFile(int s, char* filename);

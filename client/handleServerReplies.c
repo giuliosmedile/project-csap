@@ -10,6 +10,7 @@ void handleLogin(char* response)  {
 	}
 	char* str = printUser(u, str);
 	printf("\033[1;31m");
+	printf("USER: ");
 	printf("%s", str);
 	printf("\033[0m");
 

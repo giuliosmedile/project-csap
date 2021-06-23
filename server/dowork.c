@@ -62,7 +62,7 @@ void dowork(int servSock, int dataRepoSock) {
 
 	// sprintf(output, "%d", result);
 	printf("[-]output: %s\n", output);
-	if (write(servSocksocket, output, sizeof(output)) < 0) {
+	if (write(servSock, output, sizeof(output)) < 0) {
 		perror("write");
 		exit(1);
 	}
