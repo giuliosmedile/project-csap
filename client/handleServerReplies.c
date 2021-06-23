@@ -4,6 +4,12 @@
 #include <stdio.h>
 
 void handleLogin(char* response)  {
+
+	if (!strcmp(response, "-1")) {
+		printf("[-] Could not authenticate you. Did you check your password before logging in?\n");
+		return;
+	}
+
 	t_user* u = readUser(response);
 	if (u == NULL) {
 		printf("User not valid.\n");
@@ -29,7 +35,9 @@ void handleSignup(char* response) {
 
 void handleServerReplies(char* command, char* response) {
 
-	printf("PREHANDLING: \"%s\", \"%s\"\n", command, response);
+#ifdef TEST
+	printf("[-] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response);
+#endif
 	if (!strcmp(command, "login")) {
 		handleLogin(response);
 	} else if (!strcmp(command, "signup")) {

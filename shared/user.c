@@ -57,6 +57,11 @@ char* printUser(t_user* u, char* string) {
 
 }
 
+/**
+ * Saves the user "u" in file "filename", formatting it in this way:
+ *		username;messagesno;addressbook_size;[addressbook]\n
+*/
+
 void saveUser(t_user* u, char* filename) {
 	// First of all, remove duplicates, if exist
 	removeDuplicates(u->username, filename);
@@ -66,7 +71,7 @@ void saveUser(t_user* u, char* filename) {
 	// Open the file to append this user
 	if ((fp = fopen(filename, "a")) == NULL) return;
 
-	char* buf = (char*)malloc(1000 * sizeof(char));
+	char* buf = (char*)malloc(10000 * sizeof(char));
 
 	// Write the username
 	strcat(buf, u->username);

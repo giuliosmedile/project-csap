@@ -43,7 +43,7 @@ void dowork(int servSock, int dataRepoSock) {
             output = readFromSocket(dataRepoSock, output);
         } else {
             // Didn't correctly log in
-            output = "LOGINFAILED";
+            output = "-1";
         }
     } else if (!strcmp(command, "signup")) {
         if (result) {
@@ -56,14 +56,15 @@ void dowork(int servSock, int dataRepoSock) {
             output = readFromSocket(dataRepoSock, output);
         } else {
             // Didn't correctly sign up
-            output = "SIGNUPFAILED";
+            output = "-1";
         }
     }
 
+    printf("[]output: \"%s\"\n", output);
 
 	// sprintf(output, "%d", result);
 	printf("[-]output: %s\n", output);
-	if (write(servSock, output, sizeof(output)) < 0) {
+	if (write(servSock, output, BUF_SIZE) < 0) {
 		perror("write");
 		exit(1);
 	}

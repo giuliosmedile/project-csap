@@ -16,11 +16,13 @@ int main(int argc, char** argv) {
     
     // Connect to all the VDR (I'm the "client", they're the servers)
     int vdr[vdr_no];
-    for (int i = 0; i<=vdr_no; i++) {
+    for (int i = 0; i<vdr_no; i++) {
+        printf("%d", i);
         // The ports the server will use to connect to the vdrs are
         // sequentially increased from echoServPort
         vdr[i] = connectToSocket(vdr_addrs[i], echoServPort+i);
     }
+    printf("done");
 
     servSock = CreateTCPServerSocket(echoServPort);
     for (;;) /* Run forever */

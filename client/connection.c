@@ -59,6 +59,9 @@ void sendToSocket(int s, char* buf) {
     return;
 }
 
+/**
+ * Function that reads the response from the socket, and stores it in rcv
+*/
 char* readFromSocket(int s, char* rcv) {
     rcv = (char*)malloc(BUF_SIZE * sizeof(char));
 	// Read (or recv) from socket

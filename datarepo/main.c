@@ -25,7 +25,7 @@ void main (int argc, char** argv) {
 
     for (;;) /* Run forever */
     {
-        clntSock = AcceptTCPConnection(servSock);
+        clntSock = AcceptTCPConnection(dataRepoSock);
         /* Fork child process and report any errors */
         if ((processID = fork()) < 0)
             DieWithError("fork() failed");

@@ -73,9 +73,10 @@ int connectToSocket(char* serv_add, unsigned short port) {
     // Connect to other socket
     if (connect(s,(struct sockaddr *)&saddr,sizeof(saddr))<0){
     perror("connect");
-    exit(1);
+    // exit(1);
+    } else {
+        puts("connect done");
     }
-    puts("connect done");
 
     return s;
 }

@@ -92,5 +92,12 @@ void main (int argc, char** argv) {
         response = readFromSocket(s, buf);
         // Then handle the server response
         handleServerReplies(command, response);
+
+        // Reset all strings
+        memset(buf,0,BUF_SIZE);
+        memset(command,0,BUF_SIZE);
+        memset(output,0,BUF_SIZE);
+        memset(response,0,BUF_SIZE);
+
     }
 }

@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <string.h>
+#include <stdbool.h>
 
 ///      IMPORTS
 
