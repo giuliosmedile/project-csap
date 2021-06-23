@@ -6,8 +6,11 @@
 
 #define BUF_SIZE 256
 #define MAX_ADDRESSBOOK_SIZE 50
+#ifdef TEST_USERS
 char* REPO = "test.txt";
-
+#else
+char* REPO = "../server/data/users.txt";
+#endif
 struct s_user {
 	char* username;			// the user's username
 	int messagesno;			// the number of messages the user has sent
@@ -133,6 +136,7 @@ int addUserToAddressBook(t_user* u, char* username) {
 	return 1;
 }
 
+
 t_user* searchUser(char* username, char* filename) {
 	FILE* fp;
 	char* buf = malloc(BUF_SIZE * sizeof(char));
@@ -146,6 +150,9 @@ t_user* searchUser(char* username, char* filename) {
 	fclose(fp);
 }
 
+/**
+ * removes duplicates of username from repo file
+*/
 void removeDuplicates(char* username, char* filename) {
 	size_t len;
 	FILE *fp, *tmp_fp;
@@ -173,13 +180,17 @@ void removeDuplicates(char* username, char* filename) {
     rename(temp, filename); 	// rename the temporary file to original name
 }
 
-char* getUser(char* username) {
-	// Search for the user in the REPO file, and return it as it is written
+/**
+ * username: 	the username i want to get
+ * returns: 	the formatted line of the user in the repo file
+*/
+char* getUser(char* username, char* filename) {
+	// Search for the user in the filename file, and return it as it is written
 	FILE* fp;
 	size_t len;
 	char* buf = malloc(BUF_SIZE * sizeof(char));
 	char** args = malloc(MAX_ADDRESSBOOK_SIZE * sizeof(char*));
-	if ((fp = fopen(REPO, "r")) == NULL) return NULL;
+	if ((fp = fopen(filename, "r")) == NULL) return NULL;
 
 	// Scan the whole file
 	while (getline(&buf, &len, fp) != -1) {

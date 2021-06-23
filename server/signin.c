@@ -43,8 +43,7 @@ int signup (char* username, char* password) {
 	fclose(fp);
 
 	//Then I create a new entry in the users file
-	t_user* u;
-	u = createUser(username);
+	t_user* u = createUser(username);
 	return 1;
 }
 

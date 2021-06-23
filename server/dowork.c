@@ -2,6 +2,7 @@
 // the data repository.
 // This function represent the main client-server-dataserver interaction
 // of the system.
+#define BUF_SIZE 256
 
 void dowork(int servSock, int dataRepoSock) {
 	char** ops = (char**)malloc(3*BUF_SIZE);

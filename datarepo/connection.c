@@ -110,7 +110,7 @@ void sendFile(int s, char* filename) {
 
     while(fgets(data, BUF_SIZE, fp) != NULL) {
         if (send(s, data, sizeof(data), 0) == -1) {
-            perror("[-]Error in sending file.");
+            perror("[-] Error in sending file.");
             exit(1);
         }
         bzero(data, BUF_SIZE);

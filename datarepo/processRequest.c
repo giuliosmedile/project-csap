@@ -2,7 +2,7 @@
 
 #define MESSAGES_LOCATION "messages"
 
-char* processRequest(int s, char* request) {
+char* processRequest(int socket, char* request) {
 	char** args = (char**)malloc(2*sizeof(char*));
 	// Each process is structured as "command;data", so i tokenize to get the actual request
 	tokenize(request, &args);
@@ -10,11 +10,10 @@ char* processRequest(int s, char* request) {
 	// TODO PER BENE
 	if (!strcmp(args[0], "send")) {
 		// The rest of the request is structured as "username;messageno", so I just look for that
-		char* filename = (char*)malloc(BUF_SIZE * sizeof(char));
-		searchMessage(&filename, args[1], atoi(args[2]));
+		char* filename = searchMessage(args[1], atoi(args[2]));
 
 		// Once I find the message, I just send it
-		sendFile(s, filename);
+		sendFile(socket, filename);
 
 	} else if (!strcmp(args[0], "receive")) {
 
@@ -25,7 +24,7 @@ char* processRequest(int s, char* request) {
 
 		// After I received this, the server will send the actual message data, so
 		// I listen on the socket for it
-		receiveFile(s, filename);
+		receiveFile(socket, filename);
 
 	} else if (!strcmp(args[0], "delete")) {
 

@@ -1,9 +1,14 @@
 #define BUF_SIZE 256
 
+#define USERS_REPO "./data/users.txt"
+#define MESSAGES_REPO "./data/messages.txt"
+
+
 void dowork(int socket) {
 	char** ops = (char**)malloc(3*BUF_SIZE);
 	char rcvString[BUF_SIZE];
- 	int result;
+ 	char* result;
+	t_user* user;
 
     // Wait for requests
  	if (read(socket, rcvString, sizeof(rcvString)) < 0) {
@@ -17,13 +22,18 @@ void dowork(int socket) {
 
 	printf("Inside dowork\n");
 
+	// Tell messages.c to set the messages repo as REPO
+	setMessagesRepository(MESSAGES_REPO);
+
 	char* command = malloc(BUF_SIZE);
 	strcpy(command, ops[0]);
 	
 	if (!strcmp(command, "login")) {
-		result = getUser(ops[1]);
+		user = searchUser(ops[1], USERS_REPO);
+		result = getUser(ops[1], USERS_REPO);
 	} else if (!strcmp(command, "adduser")) {
-		result = addUserToAddressBook(ops[1], ops[2]);
+		user = searchUser(ops[1], USERS_REPO);
+		sprintf(result, "%d", addUserToAddressBook(user, ops[2]));
 	}
 
 	char* output = (char*)malloc(BUF_SIZE * sizeof(char));

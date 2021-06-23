@@ -1,12 +1,12 @@
 // FUNCTIONS TO CORRECTLY READ THE CONFIGURATION FILE
 
-#define CONFIG "client.conf"		//name of the configuration file
+#define CONFIG "datarepo.conf"		//name of the configuration file
 #define COMMENT '#'					//character that defines a comment line
 #define MAX_ARGS 2					//every line is structured as lhs=rhs, so the tokenize array only needs 2 fields
 #define BUF_SIZE 256				//max buffer size
 
-void readConfig (char** serv_add) {
-	char* tmp = *serv_add;
+void readConfig (short unsigned int* serv_port) {
+	int tmp = *serv_port;
 	char* buf = (char*)malloc(BUF_SIZE * sizeof(char));
 	char** args = (char**)malloc(MAX_ARGS);
 	size_t len;
@@ -27,9 +27,9 @@ void readConfig (char** serv_add) {
 		printf("[-] tokenized: \"%s\", \"%s\"\n", args[0], args[1]);
 
 		//Look at args[0] to see the left hand side of the assignment
-		if (!strcmp(args[0], "serveraddress")) {
+		if (!strcmp(args[0], "port")) {
 			printf("%s\n", args[1]);
-			strcpy(*serv_add, args[1]);
+			*serv_port = atoi(args[1]);
 		}
 	}
 	fclose(fp);

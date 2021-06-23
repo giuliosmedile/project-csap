@@ -1,11 +1,14 @@
 CC=gcc
 
 client: ./client/*
-	$(CC) -o ./client/main ./client/main.c
+	cd client; \
+	$(CC) -o main main.c
 server: ./server/*
-	$(CC) -o ./server/main ./server/main.c
+	cd server; \
+	$(CC) -o main main.c
 datarepo: ./datarepo/*
-	$(CC) -o ./datarepo/main ./datarepo/main.c
+	cd datarepo; \
+	$(CC) -o main main.c
 all: ./*
 	make client
 	make server
