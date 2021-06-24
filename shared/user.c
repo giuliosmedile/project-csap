@@ -38,22 +38,31 @@ t_user* createUser(char* username) {
 // Similar to saveUser, just saves the result to a string
 char* printUser(t_user* u, char* string) {
 
-	char* tmp = malloc(BUF_SIZE * sizeof(char));
-	string = malloc(BUF_SIZE * sizeof(char));
+	char* buf = (char*)malloc(10000 * sizeof(char));
 
-	sprintf(tmp, "username: %s\n", u->username);
-	strcat(string, tmp);
+	// Write the username
+	strcat(buf, u->username);
+	strcat(buf, ";");
 
-	sprintf(tmp, "number of messages sent: %d\n", u->messagesno);
-	strcat(string, tmp);
+	// Write the number of messages sent
+	char tmp[10];
+	sprintf(tmp, "%d", u->messagesno);
+	strcat(buf, tmp);
+	strcat(buf, ";");
 
-	sprintf(tmp, "-- Addressbook --\n");
-	strcat(string, tmp);
-	
-	for (int i = 1; i<=u->addressbook_size; i++) {
-		sprintf(tmp, "%d\t%s", i, u->addressbook[i]);
-		strcat(string, tmp);
+	// Write the addressbook size
+	sprintf(tmp, "%d", u->addressbook_size);
+	strcat(buf, tmp);
+	strcat(buf, ";");
+
+	// Write the addressbook
+	for (int i = 1; i<u->addressbook_size+1; i++) {
+		strcat(buf, u->addressbook[i]);
+		strcat(buf, ";");
 	}
+
+	free(buf);
+	return buf;
 
 }
 
@@ -186,7 +195,7 @@ void removeDuplicates(char* username, char* filename) {
 }
 
 /**
- * username: 	the username i want to get
+ * @username: 	the username i want to get
  * returns: 	the formatted line of the user in the repo file
 */
 char* getUser(char* username, char* filename) {

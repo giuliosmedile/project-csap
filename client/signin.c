@@ -63,6 +63,7 @@ char* login(char* result) {
 	printf("\033[0m");		//Reset to old color
 
 	sprintf(result, "login %s %s", username, password);
+    result[strlen(result)-1] = '\0';    //Avoid \n
 	return result;
 }
 

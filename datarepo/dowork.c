@@ -33,23 +33,25 @@ void dowork(int socket) {
 	setMessagesRepository(MESSAGES_REPO);
 	printf("post\n");
 
-
 	if (!strcmp(command, "login")) {
 		printf("login\n");
 		user = searchUser(ops[1], USERS_REPO);
 		result = getUser(ops[1], USERS_REPO);
-		printf("end login\n");
-	} else if (!strcmp(command, "adduser")) {
-		printf("adduser\n");
-		user = searchUser(ops[1], USERS_REPO);
-		sprintf(result, "%d", addUserToAddressBook(user, ops[2]));
-		printf("end adduser\n");
+		printf("end login: %s\n", result);
+	} else if (!strcmp(command, "signup")) {
+		printf("signup\n");
+		user = createUser(ops[1]);
+		saveUser(user, USERS_REPO);
+		printUser(user, result);
+		printf("result: \"%s\"\n", result);
+		printf("end signups\n");
+	} else {
+		printf("operation not supported");
+		result = "noop";
 	}
 
-	char* output = (char*)malloc(BUF_SIZE * sizeof(char));
-	strcpy(output, result);
-	printf("[-]output: %s\n", output);
-	if (write(socket, output, sizeof(output)) < 0) {
+
+	if (write(socket, result, strlen(result)+1) < 0) {
 		perror("write");
 		exit(1);
 	}
