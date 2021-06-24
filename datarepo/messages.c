@@ -5,8 +5,11 @@ char* repo;
  * Function to set the repository from which look for messages
 */
 void setMessagesRepository(char* input) {
+    free(repo);
     repo = (char*)malloc(BUF_SIZE * sizeof(char));
-    strcpy(repo, input);
+    //strcpy(repo, input);
+    sprintf(repo, "%s", input);
+    printf("set repo as %s\n", repo);
     return;
 }
 

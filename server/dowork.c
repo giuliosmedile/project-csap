@@ -6,21 +6,21 @@
 
 void dowork(int servSock, int dataRepoSock) {
 	char** ops = (char**)malloc(3*BUF_SIZE);
-	char rcvString[BUF_SIZE];
- 	int result;
+    char* command = (char*)malloc(BUF_SIZE * sizeof(char));
+    char* output = (char*)malloc(BUF_SIZE * sizeof(char));
+	char* rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
+ 	int result = 0;
 
     // Wait for requests
- 	if (read(servSock, rcvString, sizeof(rcvString)) < 0) {
-					perror("read");
-					exit(1);
+ 	if (read(servSock, rcvString, BUF_SIZE) < 0) {
+		perror("read");
+		exit(1);
 	}
 
-	printf("Received: %s\n", rcvString);
+	printf("Received: \"%s\"\n", rcvString);
 	// Insert the string received from the socket into the ops array
 	tokenize(rcvString, &ops);
 
-	char* command = malloc(BUF_SIZE);
-    char* output = (char*)malloc(BUF_SIZE * sizeof(char));
 	strcpy(command, ops[0]);
 	
 	if (strcmp(command, "login") == 0) {
@@ -38,6 +38,7 @@ void dowork(int servSock, int dataRepoSock) {
             // If I logged in correctly, ask the mdr for the user (ops[1])
             char* tmp = malloc(BUF_SIZE * sizeof(char));
             sprintf(tmp, "login;%s", ops[1]);
+            printf("tmp: %s\n", tmp);
             sendToSocket(dataRepoSock, tmp);
             // Wait for response from the data repo
             output = readFromSocket(dataRepoSock, output);
@@ -70,5 +71,8 @@ void dowork(int servSock, int dataRepoSock) {
 	}
 
 	free(ops);
+    free(rcvString);
+    free(command);
+    free(output);
 
 }

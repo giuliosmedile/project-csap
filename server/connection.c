@@ -83,7 +83,7 @@ int connectToSocket(char* serv_add, unsigned short port) {
 
 void sendToSocket(int s, char* buf) {
     // Write (or send) to socket
-    if (write(s, buf, strlen(buf))<0) {
+    if (write(s, buf, strlen(buf)+1)<0) {
         perror("write");
         exit(1);
     }

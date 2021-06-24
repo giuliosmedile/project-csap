@@ -65,7 +65,7 @@ void sendToSocket(int s, char* buf) {
 char* readFromSocket(int s, char* rcv) {
     rcv = (char*)malloc(BUF_SIZE * sizeof(char));
 	// Read (or recv) from socket
-    if (read(s, rcv, sizeof(rcv))<0) {
+    if (read(s, rcv, sizeof(rcv)+1)<0) {
         perror("read");
         exit(1);
     }
@@ -80,7 +80,7 @@ void sendFile(int s, char* filename) {
     FILE* fp = fopen(filename, "r");
 
     while(fgets(data, BUF_SIZE, fp) != NULL) {
-        if (send(s, data, sizeof(data), 0) == -1) {
+        if (send(s, data, sizeof(data)+1, 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }

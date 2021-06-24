@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
         printf("%d", i);
         // The ports the server will use to connect to the vdrs are
         // sequentially increased from echoServPort
-        vdr[i] = connectToSocket(vdr_addrs[i], echoServPort+i);
+        vdr[i] = connectToSocket(vdr_addrs[i], echoServPort+i+1);
     }
     printf("done");
 

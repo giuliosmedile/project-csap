@@ -55,10 +55,10 @@ char* interpretInput(char* command, char* output) {
 }
 
 void main (int argc, char** argv) {
-    char buf[BUF_SIZE];
-    char command[BUF_SIZE];
+    char* buf = (char*)malloc(BUF_SIZE * sizeof(char));
+    char* command = (char*)malloc(BUF_SIZE * sizeof(char));
     char* response = (char*)malloc(BUF_SIZE * sizeof(char));
-    char output[BUF_SIZE];
+    char* output = (char*)malloc(BUF_SIZE * sizeof(char));
     char **args;
     char* str = (char*)malloc(BUF_SIZE * sizeof(char));
 
@@ -77,6 +77,10 @@ void main (int argc, char** argv) {
     printf("\t ---------------------------\n");
     // Main loop
     for (;;) {
+        buf = (char*)malloc(BUF_SIZE * sizeof(char));
+        command = (char*)malloc(BUF_SIZE * sizeof(char));
+        output = (char*)malloc(BUF_SIZE * sizeof(char));
+        response = (char*)malloc(BUF_SIZE * sizeof(char));
         // take the user input
         takeUserInput(buf);
         strcpy(command, buf);
@@ -94,10 +98,10 @@ void main (int argc, char** argv) {
         handleServerReplies(command, response);
 
         // Reset all strings
-        memset(buf,0,BUF_SIZE);
-        memset(command,0,BUF_SIZE);
-        memset(output,0,BUF_SIZE);
-        memset(response,0,BUF_SIZE);
+        free(buf);
+        free(command);
+        free(output);
+        free(response);
 
     }
 }
