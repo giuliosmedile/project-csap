@@ -3,6 +3,27 @@
 #include <stdlib.h>
 #include <stdio.h>
 
+/**
+ * Decodes a user struct from the response from the MDS.
+ * @response:	The response from the MDS.
+*/
+void decodeUser(char* response) {
+
+	t_user* u = readUser(response);
+	if (u == NULL) {
+		printf("User not valid.\n");
+		return;
+	}
+	printf("Information for user %s: \n", u->username);
+	char* str = formatPrintUser(u, str);
+	printf("\033[1;31m");
+	printf("%s", str);
+	printf("\033[0m\n");
+
+	return;
+
+}
+
 void handleLogin(char* response)  {
 
 	if (!strcmp(response, "-1")) {
@@ -10,21 +31,14 @@ void handleLogin(char* response)  {
 		return;
 	}
 
-	t_user* u = readUser(response);
-	if (u == NULL) {
-		printf("User not valid.\n");
-	}
-	char* str = printUser(u, str);
-	printf("\033[1;31m");
-	printf("USER: ");
-	printf("%s", str);
-	printf("\033[0m");
+	decodeUser(response);
+	return;
 
 }
 
 void handleSignup(char* response) {
 	response[strlen(response)-1] = '\0';
-	if (!strcmp(response, "1")) {
+	if (strcmp(response, "")) {
 		printf("[-] You successfully signed up. Now you can use your credentials to log in and start using the service.\n");
 	} else {
 		printf("[-] The username you tried to sign up with has already been taken. Please try again with another username.\n");

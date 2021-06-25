@@ -11,6 +11,8 @@ void dowork(int servSock, int dataRepoSock) {
 	char* rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
  	int result = 0;
 
+    /* --------------- WAIT FOR INPUT ----------------- */
+
     // Wait for requests
  	if (read(servSock, rcvString, BUF_SIZE) < 0) {
 		perror("read");
@@ -18,10 +20,15 @@ void dowork(int servSock, int dataRepoSock) {
 	}
 
 	printf("Received: \"%s\"\n", rcvString);
+
+    /* --------------- PROCESS INPUT ----------------- */
+
 	// Insert the string received from the socket into the ops array
 	tokenize(rcvString, &ops);
 
 	strcpy(command, ops[0]);
+
+     /* --------------- FIRST OPERATIONS ----------------- */
 	
 	if (strcmp(command, "login") == 0) {
 		printf("- Logging in -\n");
@@ -31,6 +38,8 @@ void dowork(int servSock, int dataRepoSock) {
 		printf("- Signing up - \n");
 		result = signup(ops[1], ops[2]);
 	}
+
+     /* --------------- COMMUNICATIONS WITH DATA REPO ----------------- */
 
     // Ask data to the data repository, using the same command string
     if (!strcmp(command, "login")) {
@@ -63,12 +72,15 @@ void dowork(int servSock, int dataRepoSock) {
 
     printf("[]output: \"%s\"\n", output);
 
-	// sprintf(output, "%d", result);
+     /* --------------- SEND BACK TO CLIENT ----------------- */
+
 	printf("[-]output: %s\n", output);
 	if (write(servSock, output, BUF_SIZE) < 0) {
 		perror("write");
 		exit(1);
 	}
+
+
 
 	free(ops);
     free(rcvString);

@@ -22,6 +22,13 @@ typedef struct s_user t_user;
 void removeDuplicates(char* username, char* filename);
 t_user* searchUser(char* username, char* filename);
 
+/**
+ * Initializes a user. 
+ * All numeric parameters are set to zero.
+ * 
+ * @username: the username of the new user
+ * @return: the user struct of the new user
+*/
 t_user* createUser(char* username) {
 	// Allocate the space for that user
 	t_user* u = malloc(sizeof(t_user*)+MAX_ADDRESSBOOK_SIZE*sizeof(char));
@@ -60,11 +67,46 @@ char* printUser(t_user* u, char* string) {
 		strcat(buf, u->addressbook[i]);
 		strcat(buf, ";");
 	}
+	printf("- End print: buf: \"%s\"\n", buf);
 
-	free(buf);
 	return buf;
 
 }
+
+/**
+ * Fancily prints an input user
+ * @u:		the user taken in input
+ * @string:	the string i want to save the output in
+ * @returns the formatted string i want to save the output in
+*/
+char* formatPrintUser(t_user* u, char* string) {
+
+	char* tmp = malloc(BUF_SIZE * sizeof(char));
+	string = malloc(BUF_SIZE * sizeof(char));
+
+	sprintf(tmp, "username: %s\n", u->username);
+	strcat(string, tmp);
+
+	sprintf(tmp, "number of messages sent: %d\n", u->messagesno);
+	strcat(string, tmp);
+
+	if (u->addressbook_size == 0) {
+		sprintf(tmp, "There is nobody saved in your addressbook.\n");
+		strcat(string, tmp);
+	} else {
+		sprintf(tmp, "-- Addressbook --\n");
+		strcat(string, tmp);
+
+		for (int i = 1; i<=u->addressbook_size; i++) {
+			sprintf(tmp, "%d\t%s", i, u->addressbook[i]);
+			strcat(string, tmp);
+		}
+	}
+
+	return string;
+
+}
+
 
 /**
  * Saves the user "u" in file "filename", formatting it in this way:
@@ -78,8 +120,10 @@ void saveUser(t_user* u, char* filename) {
 	FILE* fp;
 
 	// Open the file to append this user
-	if ((fp = fopen(filename, "a")) == NULL) return;
-
+	if ((fp = fopen(filename, "a")) == NULL) {
+		printf("err: could not open file %s", filename);
+		return;
+	}
 	char* buf = (char*)malloc(10000 * sizeof(char));
 
 	// Write the username
@@ -195,8 +239,10 @@ void removeDuplicates(char* username, char* filename) {
 }
 
 /**
+ * Function to retrieve a user from its username as a structured line from passed file
  * @username: 	the username i want to get
- * returns: 	the formatted line of the user in the repo file
+ * @filename:	the file in which the user is stored
+ * @returns: 	the formatted line of the user in the repo file, null if not present
 */
 char* getUser(char* username, char* filename) {
 	// Search for the user in the filename file, and return it as it is written

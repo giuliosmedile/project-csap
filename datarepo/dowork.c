@@ -24,25 +24,20 @@ void dowork(int socket) {
 	printf("Inside dowork\n");
 	printf("ops: %s\n", ops[0]);
 	sprintf(command, "%s", ops[0]);
-	//strcpy(command, ops[0]);
-	printf("command: %s\n", command);
 
 
 	// Tell messages.c to set the messages repo as REPO
-	printf("pre\n");
 	setMessagesRepository(MESSAGES_REPO);
-	printf("post\n");
 
 	if (!strcmp(command, "login")) {
 		printf("login\n");
-		user = searchUser(ops[1], USERS_REPO);
 		result = getUser(ops[1], USERS_REPO);
 		printf("end login: %s\n", result);
 	} else if (!strcmp(command, "signup")) {
 		printf("signup\n");
 		user = createUser(ops[1]);
 		saveUser(user, USERS_REPO);
-		printUser(user, result);
+		result = getUser(user->username, USERS_REPO);
 		printf("result: \"%s\"\n", result);
 		printf("end signups\n");
 	} else {
