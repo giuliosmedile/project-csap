@@ -27,29 +27,28 @@ int connectToSocket(char* serv_add, unsigned short port) {
     saddr.sin_family=AF_INET;
     saddr.sin_port=htons(port);
 
-    // Connect to other socket. If it isn't already online, retry every 5 seconds for a
+    // Connect to other socket. If it isn't already online, retry every 2 seconds for a
     // minute, then abort
-    puts("[-] Trying to connect to server...");
+    printf("[-] Trying to connect to server...");
 
-    for (int tries = 0; tries<=12; tries++) {
+    for (int tries = 0; tries<=30; tries++) {
         if (connect(s,(struct sockaddr *)&saddr,sizeof(saddr))<0) {
-            puts(".");
+            printf(".");
+            fflush(stdout);
             sleep(2);
         } else {
             break;
         }
-        if (tries==12) {
+        if (tries==30) {
             perror("connect");
 	        exit(1);
         }
     }
-    puts("connect done");
-
+    printf("\n");
     return s;
 }
 
 void sendToSocket(int s, char* buf) {
-    printf("BUFFER: %s", buf);
     // Write (or send) to socket
     if (write(s, buf, strlen(buf))<0) {
         perror("write");
@@ -70,7 +69,7 @@ char* readFromSocket(int s, char* rcv) {
         exit(1);
     }
     //rcv[strlen(rcv)-1] = '\0';
-    printf("[+] received: %s\n", rcv);
+    printf("[+] received: \"%s\"\n", rcv);
     return rcv;
 }
 

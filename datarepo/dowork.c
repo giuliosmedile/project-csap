@@ -17,7 +17,7 @@ void dowork(int socket) {
 		exit(1);
 	}
 
-	printf("Received: \"%s\"\n", rcvString);
+	printf("[-] Received: \"%s\"\n", rcvString);
 	// Insert the string received from the socket into the ops array
 	tokenize(rcvString, &ops);
 
@@ -29,17 +29,24 @@ void dowork(int socket) {
 	// Tell messages.c to set the messages repo as REPO
 	setMessagesRepository(MESSAGES_REPO);
 
+	// HANDLE LOGIN
 	if (!strcmp(command, "login")) {
 		printf("login\n");
 		result = getUser(ops[1], USERS_REPO);
-		printf("end login: %s\n", result);
+		if (result[strlen(result)-1] = '\n') result[strlen(result)-1] = '\0';	//Make sure the string is null terminated, not \n terminated		
+		printf("end login: \"%s\"\n", result);
+
+	// HANDLE SIGNUP
 	} else if (!strcmp(command, "signup")) {
 		printf("signup\n");
 		user = createUser(ops[1]);
 		saveUser(user, USERS_REPO);
 		result = getUser(user->username, USERS_REPO);
+
 		printf("result: \"%s\"\n", result);
 		printf("end signups\n");
+
+	// HANDLE DEFAULT
 	} else {
 		printf("operation not supported");
 		result = "noop";

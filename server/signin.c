@@ -19,7 +19,7 @@ char* arguments[3];
 
 //function that allows a user to sign up in the system by writing in the repo
 int signup (char* username, char* password) {
-	char* line = malloc(sizeof(char*));
+	char* line = (char*)malloc(BUF_LEN * sizeof(char));
 	size_t len;
 	
 	char* l_username = malloc(sizeof(char*));

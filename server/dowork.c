@@ -19,7 +19,7 @@ void dowork(int servSock, int dataRepoSock) {
 		exit(1);
 	}
 
-	printf("Received: \"%s\"\n", rcvString);
+	printf("[-] Received: \"%s\"\n", rcvString);
 
     /* --------------- PROCESS INPUT ----------------- */
 
