@@ -48,7 +48,7 @@ int AcceptTCPConnection(int servSock)
     
     /* clntSock is connected to a client! */
     
-    printf("Handling client %s\n", inet_ntoa(echoClntAddr.sin_addr));
+    printf("[-] Handling client %s\n", inet_ntoa(echoClntAddr.sin_addr));
 
     return clntSock;
 }
@@ -82,6 +82,7 @@ int connectToSocket(char* serv_add, unsigned short port) {
 }
 
 void sendToSocket(int s, char* buf) {
+    printf("[-] About to send to socket %d: \"%s\"\n", s, buf);
     // Write (or send) to socket
     if (write(s, buf, strlen(buf)+1)<0) {
         perror("write");

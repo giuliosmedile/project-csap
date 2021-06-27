@@ -53,13 +53,11 @@ void dowork(int socket) {
 	}
 
 
-	if (write(socket, result, strlen(result)+1) < 0) {
-		perror("write");
-		exit(1);
-	}
+	sendToSocket(socket, result);
 
 	free(ops);
 	free(rcvString);
+	free(command);
 	free(result);
 	free(user);
 

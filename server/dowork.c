@@ -3,6 +3,7 @@
 // This function represent the main client-server-dataserver interaction
 // of the system.
 #define BUF_SIZE 256
+int counter = 0;
 
 void dowork(int servSock, int dataRepoSock) {
 	char** ops = (char**)malloc(3*BUF_SIZE);
@@ -18,6 +19,8 @@ void dowork(int servSock, int dataRepoSock) {
 		perror("read");
 		exit(1);
 	}
+
+    printf("[+] Counter: %d\n", counter);
 
 	printf("[-] Received: \"%s\"\n", rcvString);
 
@@ -70,17 +73,15 @@ void dowork(int servSock, int dataRepoSock) {
         }
     }
 
-    printf("[]output: \"%s\"\n", output);
+    printf("[+] about to send to client: \"%s\"\n", output);
 
      /* --------------- SEND BACK TO CLIENT ----------------- */
-
-	printf("[-]output: %s\n", output);
 	if (write(servSock, output, BUF_SIZE) < 0) {
 		perror("write");
 		exit(1);
 	}
 
-
+    counter++;
 
 	free(ops);
     free(rcvString);
