@@ -2,11 +2,13 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
 
 /**
  * Decodes a user struct from the response from the MDS.
  * @response:	The response from the MDS.
 */
+
 void decodeUser(char* response) {
 
 	t_user* u = readUser(response);
@@ -48,7 +50,6 @@ void handleSignup(char* response) {
 }
 
 void handleServerReplies(char* command, char* response) {
-
 #ifdef TEST
 	printf("[-] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response);
 #endif

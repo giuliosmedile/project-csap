@@ -8,8 +8,10 @@
 #define COLOR "\033[0;33m"
 #define STD_COL "\033[0m"
 
-int s;      // The socket I'm interacting with
+int s;      // The socket I'm interacting with (server)
 t_user u;   // The user that the socket sends after logging in
+
+void restartOnError(void);  //definition of signal handler
 
 void help() {
     printf("Currently supported commands:\n");
@@ -62,6 +64,8 @@ void main (int argc, char** argv) {
     char **args;
     char* str = (char*)malloc(BUF_SIZE * sizeof(char));
 
+    signal(SIGSEGV, restartOnError);
+
     //TODO: AUTOMATIC CONNECTION TO SERVER
 
     // Read the configuration file
@@ -77,31 +81,44 @@ void main (int argc, char** argv) {
     printf("\t ---------------------------\n");
     // Main loop
     for (;;) {
+        // init variables
         buf = (char*)malloc(BUF_SIZE * sizeof(char));
         command = (char*)malloc(BUF_SIZE * sizeof(char));
         output = (char*)malloc(BUF_SIZE * sizeof(char));
         response = (char*)malloc(BUF_SIZE * sizeof(char));
+
         // take the user input
         takeUserInput(buf);
         strcpy(command, buf);
         command[strlen(command)-1] = '\0';
+
         // interpret it basing on the command
         interpretInput(buf, output);
         if (!strcmp(output, "null")) {
         	continue;
         }
+
         // send the command and arguments to socket
         sendToSocket(s, output);
+
         //wait for reply
         response = readFromSocket(s, buf);
+
         // Then handle the server response
         handleServerReplies(command, response);
 
-        // Reset all strings
+        // finally reset all variables
         free(buf);
         free(command);
         free(output);
         free(response);
 
     }
+}
+
+
+/* Function that restarts the client from main when SISEGV gets caught */
+void restartOnError(void) {
+	printf("\033[0;33mAn error has occurred. Restarting software.\033[0m\n");
+	main(0, NULL);
 }

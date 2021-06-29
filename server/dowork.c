@@ -4,23 +4,33 @@
 // of the system.
 #define BUF_SIZE 256
 int counter = 0;
+char* rcvString;
+char** ops;
+char* command;
+char* output;
+int result;
 
 void dowork(int servSock, int dataRepoSock) {
-	char** ops = (char**)malloc(3*BUF_SIZE);
-    char* command = (char*)malloc(BUF_SIZE * sizeof(char));
-    char* output = (char*)malloc(BUF_SIZE * sizeof(char));
-	char* rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
- 	int result = 0;
+    printf("-- Dowork-- \n");
+
+	rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
+ 	result = 0;
 
     /* --------------- WAIT FOR INPUT ----------------- */
 
+    printf("[-] Waiting for client...\n");
     // Wait for requests
- 	if (read(servSock, rcvString, BUF_SIZE) < 0) {
-		perror("read");
-		exit(1);
-	}
+    readFromSocket(servSock, rcvString);
+ 	// if (read(servSock, rcvString, BUF_SIZE) < 0) {
+	// 	perror("read");
+	// 	exit(1);
+	// }
 
-    printf("[+] Counter: %d\n", counter);
+    ops = (char**)malloc(3*BUF_SIZE);
+    command = (char*)malloc(BUF_SIZE * sizeof(char));
+    output = (char*)malloc(BUF_SIZE * sizeof(char));
+
+    printf("---------------------- [+] Counter: %d\n", counter);
 
 	printf("[-] Received: \"%s\"\n", rcvString);
 
@@ -71,15 +81,17 @@ void dowork(int servSock, int dataRepoSock) {
             // Didn't correctly sign up
             output = "-1";
         }
-    }
+    } 
 
     printf("[+] about to send to client: \"%s\"\n", output);
 
      /* --------------- SEND BACK TO CLIENT ----------------- */
-	if (write(servSock, output, BUF_SIZE) < 0) {
-		perror("write");
-		exit(1);
-	}
+    sendToSocket(servSock, output);
+
+	// if (write(servSock, output, BUF_SIZE) < 0) {
+	// 	perror("write");
+	// 	exit(1);
+	// }
 
     counter++;
 
@@ -87,5 +99,4 @@ void dowork(int servSock, int dataRepoSock) {
     free(rcvString);
     free(command);
     free(output);
-
 }

@@ -5,17 +5,18 @@
 
 
 void dowork(int socket) {
-	char** ops = (char**)malloc(3*BUF_SIZE);
 	char* rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
-	char* command = (char*)malloc(BUF_SIZE * sizeof(char));
- 	char* result;
-	t_user* user;
 
     // Wait for requests
  	if (read(socket, rcvString, BUF_SIZE) < 0) {
 		perror("read");
 		exit(1);
 	}
+
+	char** ops = (char**)malloc(3*BUF_SIZE);
+	char* command = (char*)malloc(BUF_SIZE * sizeof(char));
+ 	char* result;
+	t_user* user;
 
 	printf("[-] Received: \"%s\"\n", rcvString);
 	// Insert the string received from the socket into the ops array
@@ -26,8 +27,8 @@ void dowork(int socket) {
 	sprintf(command, "%s", ops[0]);
 
 
-	// Tell messages.c to set the messages repo as REPO
-	setMessagesRepository(MESSAGES_REPO);
+	// TODO: Tell messages.c to set the messages repo as REPO
+	//setMessagesRepository(MESSAGES_REPO);
 
 	// HANDLE LOGIN
 	if (!strcmp(command, "login")) {

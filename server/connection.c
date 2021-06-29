@@ -93,14 +93,15 @@ void sendToSocket(int s, char* buf) {
 }
 
 char* readFromSocket(int s, char* rcv) {
+    free(rcv);
     rcv = (char*)malloc(BUF_SIZE * sizeof(char));
     // Read (or recv) from socket
-    if (read(s, rcv, sizeof(rcv))<0) {
+    if (read(s, rcv, BUF_SIZE)<0) {
         perror("read");
         exit(1);
     }
-    //rcv[strlen(rcv)-1] = '\0';
-    //printf("[+] received: %s\n", rcv);
+    // rcv[strlen(rcv)-1] = '\0';
+    printf("[+] received from %d: \"%s\"\n", s, rcv);
     return rcv;
 }
 
@@ -111,7 +112,7 @@ void sendFile(int s, char* filename) {
 
     while(fgets(data, BUF_SIZE, fp) != NULL) {
         if (send(s, data, sizeof(data), 0) == -1) {
-            perror("[-]Error in sending file.");
+            perror("[-] Error in sending file.");
             exit(1);
         }
         bzero(data, BUF_SIZE);

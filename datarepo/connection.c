@@ -82,16 +82,19 @@ int connectToSocket(char* serv_add, unsigned short port) {
 }
 
 void sendToSocket(int s, char* buf) {
-    printf("[+] About to send to %d: \"%s\"\n", s, buf);
+    printf("[-] About to send to socket %d: \"%s\"\n", s, buf);
+    buf[strlen(buf)] = '\0';
     // Write (or send) to socket
-    if (write(s, buf, strlen(buf))<0) {
+    if (write(s, buf, strlen(buf)+1)<0) {
         perror("write");
         exit(1);
-    }    
+    }
+    
     return;
 }
 
 char* readFromSocket(int s, char* rcv) {
+    free(rcv);
     rcv = (char*)malloc(BUF_SIZE * sizeof(char));
     // Read (or recv) from socket
     if (read(s, rcv, sizeof(rcv))<0) {
@@ -99,7 +102,7 @@ char* readFromSocket(int s, char* rcv) {
         exit(1);
     }
     //rcv[strlen(rcv)-1] = '\0';
-    //printf("[+] received: %s\n", rcv);
+    printf("[+] received from %d: \"%s\"\n", s, rcv);
     return rcv;
 }
 

@@ -29,7 +29,7 @@ int connectToSocket(char* serv_add, unsigned short port) {
 
     // Connect to other socket. If it isn't already online, retry every 2 seconds for a
     // minute, then abort
-    printf("[-] Trying to connect to server...");
+    printf("[-] Trying to connect to server");
 
     for (int tries = 0; tries<=30; tries++) {
         if (connect(s,(struct sockaddr *)&saddr,sizeof(saddr))<0) {
@@ -49,6 +49,8 @@ int connectToSocket(char* serv_add, unsigned short port) {
 }
 
 void sendToSocket(int s, char* buf) {
+    // Make sure the string is null terminated
+    buf[strlen(buf)] = '\0';
     // Write (or send) to socket
     if (write(s, buf, strlen(buf))<0) {
         perror("write");
@@ -64,11 +66,11 @@ void sendToSocket(int s, char* buf) {
 char* readFromSocket(int s, char* rcv) {
     rcv = (char*)malloc(BUF_SIZE * sizeof(char));
 	// Read (or recv) from socket
-    if (read(s, rcv, sizeof(rcv)+1)<0) {
+    if (read(s, rcv, BUF_SIZE)<0) {
         perror("read");
         exit(1);
     }
-    //rcv[strlen(rcv)-1] = '\0';
+    // rcv[strlen(rcv)-1] = '\0';
     printf("[+] received: \"%s\"\n", rcv);
     return rcv;
 }
@@ -99,7 +101,6 @@ void receiveFile(int s, char* filename) {
         // If the file is over, I stop the loop
         if (recv(s, buffer, BUF_SIZE, 0) <= 0) {
             break;
-            return;
         }
         // Else write to a file
         fprintf(fp, "%s", buffer);
