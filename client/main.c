@@ -25,8 +25,8 @@ void help() {
     printf("%s", STD_COL);
 
     printf("TEST USER\n");
-    char tmp[BUF_SIZE];
-    formatPrintUser(u, tmp);
+    char* tmp;
+    tmp = formatPrintUser(u, tmp);
     printf("%s", tmp);
     return;
 }
@@ -116,7 +116,7 @@ void main (int argc, char** argv) {
         response = readFromSocket(s, buf);
 
         // Then handle the server response
-        handleServerReplies(command, response, u);
+        u = handleServerReplies(command, response, u);
 
         // finally reset all variables
         free(buf);

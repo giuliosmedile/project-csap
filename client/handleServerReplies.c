@@ -24,15 +24,15 @@ t_user* decodeUser(char* response, t_user* u) {
 	return u;
 }
 
-void handleLogin(char* response, t_user* user)  {
+t_user* handleLogin(char* response, t_user* user)  {
 
 	if (!strcmp(response, "NOLOGIN")) {
 		printf("[-] Could not authenticate you. Did you check your password before logging in?\n");
-		return;
+		return NULL;
 	}
 
 	user = decodeUser(response, user);
-	return;
+	return user;
 
 }
 
@@ -47,18 +47,19 @@ void handleSignup(char* response) {
 	return;
 }
 
-void handleServerReplies(char* command, char* response, t_user* user) {
+t_user* handleServerReplies(char* command, char* response, t_user* user) {
 #ifdef TEST
 	printf("[-] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response);
 #endif
 	if (!strcmp(command, "login")) {
-		handleLogin(response, user);
+		user = handleLogin(response, user);
 	} else if (!strcmp(command, "signup")) {
 		handleSignup(response);
 	} else {
 		printf("How did you even get here?\n");
-		return;
 	}
-	return;
+
+
+	return user;
 }
 

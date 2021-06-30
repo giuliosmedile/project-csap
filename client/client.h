@@ -43,7 +43,7 @@ void sendFile(int s, char* filename);
 void receiveFile(int s, char* filename);
 
 // From handleServerReplies.c
-void handleServerReplies(char* command, char* response, t_user* u);
+t_user* handleServerReplies(char* command, char* response, t_user* u);
 
 // From readConfig.c
 void readConfig (char** serv_add, unsigned short* serv_port);
