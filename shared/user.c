@@ -98,7 +98,7 @@ char* formatPrintUser(t_user* u, char* string) {
 		strcat(string, tmp);
 
 		for (int i = 1; i<=u->addressbook_size; i++) {
-			sprintf(tmp, "%d\t%s", i, u->addressbook[i]);
+			sprintf(tmp, "%d\t%s\n", i, u->addressbook[i]);
 			strcat(string, tmp);
 		}
 	}
