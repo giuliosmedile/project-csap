@@ -47,6 +47,18 @@ void handleSignup(char* response) {
 	return;
 }
 
+t_user* handleAdd(char* response, t_user* user)  {
+
+	if (!strcmp(response, "NOADD")) {
+		printf("[!] Could not find the other user you tried adding. Does this user exist?\n");
+		return NULL;
+	}
+
+	user = decodeUser(response, user);
+	return user;
+
+}
+
 t_user* handleServerReplies(char* command, char* response, t_user* user) {
 #ifdef TEST
 	printf("[-] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response);
@@ -55,6 +67,8 @@ t_user* handleServerReplies(char* command, char* response, t_user* user) {
 		user = handleLogin(response, user);
 	} else if (!strcmp(command, "signup")) {
 		handleSignup(response);
+	} else if (!strcmp(command, "add")) {
+		handleAdd(response, user);
 	} else {
 		printf("How did you even get here?\n");
 	}

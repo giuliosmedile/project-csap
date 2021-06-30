@@ -14,15 +14,20 @@
 
 #define BUF_SIZE 256
 
-char* signup(char* result, t_user* u) {
+/** Signup routine.
+ *  @result the line that the client typed in stdin
+ *  @u_p address of a user struct. Needed to check if already logged in
+ *  @returns the string to send to the server
+*/
+char* signup(char* result, t_user** u_p) {
 	char* username = (char*)malloc(BUF_SIZE * sizeof(char));
 	char* password = (char*)malloc(BUF_SIZE * sizeof(char));
 
 	printf("[-] Signing up\n");
 	printf("%s", COLOR);	//Red text
 
-    if (u != NULL) {
-        printf("[-] It seems you are already logged in as a registered user.\n[-] Log out before trying to sign up.\n");
+    if (*u_p != NULL) {
+        printf("[!] It seems you are already logged in as a registered user.\n[-] Log out before trying to sign up.\n");
         sprintf(result, "null");
         return "null";
     }
@@ -33,7 +38,7 @@ char* signup(char* result, t_user* u) {
         exit(0);
     }
     username[strlen(username) - 1] = '\0';
-    printf("\033[0m");		//Reset to old color
+    printf(STD_COL);		//Reset to old color
 
     printf("%s", COLOR);	//Red text
     printf("Password for %s: ", username);
@@ -42,7 +47,7 @@ char* signup(char* result, t_user* u) {
     //     printf("\n");
     //     exit(0);
     // }
-	printf("\033[0m");		//Reset to old color
+	printf(STD_COL);		//Reset to old color
 
 	sprintf(result, "signup %s %s", username, password);
 
@@ -51,14 +56,19 @@ char* signup(char* result, t_user* u) {
 	return result;
 }
 
-char* login(char* result, t_user* u) {
+/** Login routine.
+ *  @result the line that the client typed in stdin
+ *  @u_p address of a user struct. Needed to check if already logged in
+ *  @returns the string to send to the server
+*/
+char* login(char* result, t_user** u_p) {
 	char* username = (char*)malloc(BUF_SIZE * sizeof(char));
 	char* password = (char*)malloc(BUF_SIZE * sizeof(char));
 
 	printf("[-] Logging in\n");
 
-    if (u != NULL) {
-        printf("[-] It seems you are already logged in as a registered user.\n[-] Log out before trying to log in again.\n");
+    if (*u_p != NULL) {
+        printf("[!] It seems you are already logged in as a registered user.\n[-] Log out before trying to log in again.\n");
         sprintf(result, "null");
         return "null";
     }
@@ -70,7 +80,7 @@ char* login(char* result, t_user* u) {
         exit(0);
     }
     username[strlen(username) - 1] = '\0';
-    printf("\033[0m");		//Reset to old color
+    printf(STD_COL);		//Reset to old color
 
     printf("%s", COLOR);	//Red text
     printf("Password for %s: ", username);
@@ -78,7 +88,7 @@ char* login(char* result, t_user* u) {
         printf("\n");
         exit(0);
     }
-	printf("\033[0m");		//Reset to old color
+	printf(STD_COL);		//Reset to old color
 
 	sprintf(result, "login %s %s", username, password);
     result[strlen(result)-1] = '\0';    //Avoid \n
@@ -87,9 +97,14 @@ char* login(char* result, t_user* u) {
 	return result;
 }
 
-char* logout(char* output, t_user* u) {
-    free(u);
-    u = NULL;
+/** Logout routine.
+ *  @output the line that the client typed in stdin
+ *  @u_p address of a user struct. Needed to check if already logged in
+ *  @returns the string to send to the server
+*/
+char* logout(char* output, t_user** u_p) {
+    free(*u_p);
+    *u_p = NULL;
     printf("[-] Succesfully logged out. \n");
     sprintf(output, "null");
     return "null";

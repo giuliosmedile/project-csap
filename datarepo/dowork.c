@@ -46,14 +46,24 @@ void dowork(int socket) {
 
 		printf("result: \"%s\"\n", result);
 		printf("end signups\n");
+	
+	// HANDLE ADD
+	} else if (!strcmp(command, "add")) {
+		printf("add\n");
+		user = readUser(ops[1]);
+		addUserToAddressBook(user, ops[2]);
+		saveUser(user, USERS_REPO);
+		result = getUser(user->username, USERS_REPO);
+
+		printf("result: \"%s\"\n", result);
+		printf("end add\n");
 
 	// HANDLE DEFAULT
 	} else {
 		printf("operation not supported");
 		result = "noop";
 	}
-
-
+	
 	sendToSocket(socket, result);
 
 	free(ops);

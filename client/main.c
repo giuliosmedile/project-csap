@@ -16,19 +16,15 @@ void restartOnError(void);  //definition of signal handler
 void help() {
     printf("Currently supported commands:\n");
     printf("%s", COLOR);
-    printf("\tlogin\n");
-    printf("\tlogout\n");
-    printf("\tsignup\n");
-    printf("\texit\n");
-    printf("\trecord\n");
-    printf("\tlisten\n");
+    printf("\tlogin\t\tallows to log in with credentials\n");
+    printf("\tlogout\t\tlogs out from the service\n");
+    printf("\tsignup\t\tallows to sign in to the service\n");
+    printf("\tadd\t\tadds a user to your addressbook\n");
+    printf("\trecord\t\trecords a new voice message\n");
+    printf("\tlisten\t\tlistens to incoming voice messages\n");
+    printf("\texit\t\tterminates the program\n");
     printf("%s", STD_COL);
 
-    printf("TEST USER\n");
-    char* tmp;
-    tmp = formatPrintUser(u, tmp);
-    printf("%s", tmp);
-    return;
 }
 
 char* takeUserInput(char* input) {
@@ -47,15 +43,18 @@ char* interpretInput(char* command, char* output) {
     command[strlen(command)-1] = '\0';
 
     if (!strcmp(command, "login")) {
-        login(output, u);
+        login(output, &u);
     } else if (!strcmp(command, "signup")) {
-        signup(output, u);
+        signup(output, &u);
     } else if (!strcmp(command, "logout")) {
-        logout(output, u);
+        logout(output, &u);
+    } else if (!strcmp(command, "add")) {
+        add(output, &u);
     } else if (!strcmp(command, "exit")) {
         exit(0);
     } else if (!strcmp(command, "help")) {
         help();
+        strcpy(output, "null");
     } else {
     	// Command not found
     	strcpy(output, "null");

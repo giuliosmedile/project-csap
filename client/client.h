@@ -15,6 +15,7 @@
 #include "connection.c"
 #include "readConfig.c"
 #include "handleServerReplies.c"
+#include "messages.c"
 
 // Standard Definitions
 #define BUF_SIZE 256
@@ -32,8 +33,9 @@ char* interpretInput(char* command, char* output);   //interpret the command
 void tokenize(char* input, char*** output);  //splits a string into an array of strings
 
 // From signin.c
-char* login(char* result, t_user* u);
-char* signup(char* result, t_user* u);
+char* login(char* result, t_user** u);
+char* signup(char* result, t_user** u);
+char* logout(char* result, t_user** u);
 
 // From connectToSocket.c
 int connectToSocket(char* serv_add, unsigned short serv_port);
@@ -47,4 +49,7 @@ t_user* handleServerReplies(char* command, char* response, t_user* u);
 
 // From readConfig.c
 void readConfig (char** serv_add, unsigned short* serv_port);
+
+//From messages.c
+char* add(char* output, t_user** u_p);
 
