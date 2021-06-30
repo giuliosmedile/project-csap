@@ -10,7 +10,7 @@ char* command;
 char* output;
 int result;
 
-void dowork(int servSock, int dataRepoSock) {
+void dowork(int clientSock, int dataRepoSock) {
     printf("-- Dowork-- \n");
 
 	rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -20,7 +20,7 @@ void dowork(int servSock, int dataRepoSock) {
 
     printf("[-] Waiting for client...\n");
     // Wait for requests
-    readFromSocket(servSock, rcvString);
+    readFromSocket(clientSock, rcvString);
 
     ops = (char**)malloc(3*BUF_SIZE);
     command = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -39,14 +39,16 @@ void dowork(int servSock, int dataRepoSock) {
 
      /* --------------- FIRST OPERATIONS ----------------- */
 	
-	if (strcmp(command, "login") == 0) {
+	if (!strcmp(command, "login")) {
 		printf("- Logging in -\n");
 		result = login(ops[1], ops[2]);
-	}
-	if (strcmp(command, "signup") == 0) {
+	} else if (!strcmp(command, "signup")) {
 		printf("- Signing up - \n");
 		result = signup(ops[1], ops[2]);
-	}
+	} else if (!strcmp(command, "add")) {
+        printf("- Adding to addressbook - \n");
+        result = add(ops[1], ops[2]);
+    }
 
      /* --------------- COMMUNICATIONS WITH DATA REPO ----------------- */
 
@@ -78,12 +80,25 @@ void dowork(int servSock, int dataRepoSock) {
             // Didn't correctly sign up
             output = "NOSIGNUP";
         }
+    } else if (!strcmp(command, "add")) {
+        if (result) {
+            // If the other user exists, I can safely ask
+            // the mdr to add it into the user struct
+            char* tmp = malloc(BUF_SIZE * sizeof(char));
+            sprintf(tmp, "add;%s;%s", ops[1], ops[2]);
+            sendToSocket(dataRepoSock, tmp);
+            // Wait for response from the data repo
+            output = readFromSocket(dataRepoSock, output);
+            free(tmp);
+        } else {
+            output = "NOADD";
+        }
     }
 
     printf("[+] about to send to client: \"%s\"\n", output);
 
      /* --------------- SEND BACK TO CLIENT ----------------- */
-    sendToSocket(servSock, output);
+    sendToSocket(clientSock, output);
 
     counter++;
 
