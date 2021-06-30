@@ -8,8 +8,8 @@
 #define COLOR "\033[0;33m"
 #define STD_COL "\033[0m"
 
-int s;      // The socket I'm interacting with (server)
-t_user u;   // The user that the socket sends after logging in
+int s;       // The socket I'm interacting with (server)
+t_user* u = NULL;   // The user that the socket sends after logging in
 
 void restartOnError(void);  //definition of signal handler
 
@@ -17,11 +17,17 @@ void help() {
     printf("Currently supported commands:\n");
     printf("%s", COLOR);
     printf("\tlogin\n");
+    printf("\tlogout\n");
     printf("\tsignup\n");
     printf("\texit\n");
     printf("\trecord\n");
     printf("\tlisten\n");
     printf("%s", STD_COL);
+
+    printf("TEST USER\n");
+    char tmp[BUF_SIZE];
+    formatPrintUser(u, tmp);
+    printf("%s", tmp);
     return;
 }
 
@@ -41,9 +47,11 @@ char* interpretInput(char* command, char* output) {
     command[strlen(command)-1] = '\0';
 
     if (!strcmp(command, "login")) {
-        login(output);
+        login(output, u);
     } else if (!strcmp(command, "signup")) {
-        signup(output);
+        signup(output, u);
+    } else if (!strcmp(command, "logout")) {
+        logout(output, u);
     } else if (!strcmp(command, "exit")) {
         exit(0);
     } else if (!strcmp(command, "help")) {
@@ -52,7 +60,6 @@ char* interpretInput(char* command, char* output) {
     	// Command not found
     	strcpy(output, "null");
 	}
-
     return output;
 }
 
@@ -95,6 +102,10 @@ void main (int argc, char** argv) {
         // interpret it basing on the command
         interpretInput(buf, output);
         if (!strcmp(output, "null")) {
+            free(buf);
+            free(command);
+            free(output);
+            free(response);
         	continue;
         }
 
@@ -105,7 +116,7 @@ void main (int argc, char** argv) {
         response = readFromSocket(s, buf);
 
         // Then handle the server response
-        handleServerReplies(command, response);
+        handleServerReplies(command, response, u);
 
         // finally reset all variables
         free(buf);

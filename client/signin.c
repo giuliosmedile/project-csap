@@ -14,12 +14,19 @@
 
 #define BUF_SIZE 256
 
-char* signup(char* result) {
-	char username[BUF_SIZE];
-	char password[BUF_SIZE];
+char* signup(char* result, t_user* u) {
+	char* username = (char*)malloc(BUF_SIZE * sizeof(char));
+	char* password = (char*)malloc(BUF_SIZE * sizeof(char));
 
 	printf("[-] Signing up\n");
 	printf("%s", COLOR);	//Red text
+
+    if (u != NULL) {
+        printf("[-] It seems you are already logged in as a registered user.\n[-] Log out before trying to sign up.\n");
+        sprintf(result, "null");
+        return "null";
+    }
+
 	printf("Username: ");
 	if (fgets(username,sizeof(username),stdin) == NULL) {
         //printf("\n");
@@ -30,21 +37,32 @@ char* signup(char* result) {
 
     printf("%s", COLOR);	//Red text
     printf("Password for %s: ", username);
-    if (fgets(password,sizeof(password),stdin) == NULL) {
-        printf("\n");
-        exit(0);
-    }
+    password = getpass("");
+    // if (fgets(password,sizeof(password),stdin) == NULL) {
+    //     printf("\n");
+    //     exit(0);
+    // }
 	printf("\033[0m");		//Reset to old color
 
 	sprintf(result, "signup %s %s", username, password);
+
+    free(username);
+    free(password);
 	return result;
 }
 
-char* login(char* result) {
-	char username[BUF_SIZE];
-	char password[BUF_SIZE];
+char* login(char* result, t_user* u) {
+	char* username = (char*)malloc(BUF_SIZE * sizeof(char));
+	char* password = (char*)malloc(BUF_SIZE * sizeof(char));
 
 	printf("[-] Logging in\n");
+
+    if (u != NULL) {
+        printf("[-] It seems you are already logged in as a registered user.\n[-] Log out before trying to log in again.\n");
+        sprintf(result, "null");
+        return "null";
+    }
+
 	printf("%s", COLOR);	//Red text
 	printf("Username: ");
 	if (fgets(username,sizeof(username),stdin) == NULL) {
@@ -64,6 +82,16 @@ char* login(char* result) {
 
 	sprintf(result, "login %s %s", username, password);
     result[strlen(result)-1] = '\0';    //Avoid \n
+    free(username);
+    free(password);
 	return result;
+}
+
+char* logout(char* output, t_user* u) {
+    free(u);
+    u = NULL;
+    printf("[-] Succesfully logged out. \n");
+    sprintf(output, "null");
+    return "null";
 }
 

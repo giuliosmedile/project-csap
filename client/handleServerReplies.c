@@ -8,13 +8,12 @@
  * Decodes a user struct from the response from the MDS.
  * @response:	The response from the MDS.
 */
+t_user* decodeUser(char* response, t_user* u) {
 
-void decodeUser(char* response) {
-
-	t_user* u = readUser(response);
+	u = readUser(response);
 	if (u == NULL) {
 		printf("User not valid.\n");
-		return;
+		return NULL;
 	}
 	printf("Information for user %s: \n", u->username);
 	char* str = formatPrintUser(u, str);
@@ -22,25 +21,24 @@ void decodeUser(char* response) {
 	printf("%s", str);
 	printf("\033[0m\n");
 
-	return;
-
+	return u;
 }
 
-void handleLogin(char* response)  {
+void handleLogin(char* response, t_user* user)  {
 
-	if (!strcmp(response, "-1")) {
+	if (!strcmp(response, "NOLOGIN")) {
 		printf("[-] Could not authenticate you. Did you check your password before logging in?\n");
 		return;
 	}
 
-	decodeUser(response);
+	user = decodeUser(response, user);
 	return;
 
 }
 
 void handleSignup(char* response) {
 	response[strlen(response)-1] = '\0';
-	if (strcmp(response, "")) {
+	if (strcmp(response, "NOSIGNUP")) {
 		printf("[-] You successfully signed up. Now you can use your credentials to log in and start using the service.\n");
 	} else {
 		printf("[-] The username you tried to sign up with has already been taken. Please try again with another username.\n");
@@ -49,12 +47,12 @@ void handleSignup(char* response) {
 	return;
 }
 
-void handleServerReplies(char* command, char* response) {
+void handleServerReplies(char* command, char* response, t_user* user) {
 #ifdef TEST
 	printf("[-] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response);
 #endif
 	if (!strcmp(command, "login")) {
-		handleLogin(response);
+		handleLogin(response, user);
 	} else if (!strcmp(command, "signup")) {
 		handleSignup(response);
 	} else {

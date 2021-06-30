@@ -32,8 +32,8 @@ char* interpretInput(char* command, char* output);   //interpret the command
 void tokenize(char* input, char*** output);  //splits a string into an array of strings
 
 // From signin.c
-char* login(char* result);
-char* signup(char* result);
+char* login(char* result, t_user* u);
+char* signup(char* result, t_user* u);
 
 // From connectToSocket.c
 int connectToSocket(char* serv_add, unsigned short serv_port);
@@ -43,7 +43,7 @@ void sendFile(int s, char* filename);
 void receiveFile(int s, char* filename);
 
 // From handleServerReplies.c
-void handleSocketReplies(char* command, char* response);
+void handleServerReplies(char* command, char* response, t_user* u);
 
 // From readConfig.c
 void readConfig (char** serv_add, unsigned short* serv_port);

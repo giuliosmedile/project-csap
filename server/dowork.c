@@ -21,10 +21,6 @@ void dowork(int servSock, int dataRepoSock) {
     printf("[-] Waiting for client...\n");
     // Wait for requests
     readFromSocket(servSock, rcvString);
- 	// if (read(servSock, rcvString, BUF_SIZE) < 0) {
-	// 	perror("read");
-	// 	exit(1);
-	// }
 
     ops = (char**)malloc(3*BUF_SIZE);
     command = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -66,7 +62,7 @@ void dowork(int servSock, int dataRepoSock) {
             output = readFromSocket(dataRepoSock, output);
         } else {
             // Didn't correctly log in
-            output = "-1";
+            output = "NOLOGIN";
         }
     } else if (!strcmp(command, "signup")) {
         if (result) {
@@ -77,26 +73,22 @@ void dowork(int servSock, int dataRepoSock) {
             sendToSocket(dataRepoSock, tmp);
             // Wait for response from the data repo
             output = readFromSocket(dataRepoSock, output);
+            free(tmp);
         } else {
             // Didn't correctly sign up
-            output = "-1";
+            output = "NOSIGNUP";
         }
-    } 
+    }
 
     printf("[+] about to send to client: \"%s\"\n", output);
 
      /* --------------- SEND BACK TO CLIENT ----------------- */
     sendToSocket(servSock, output);
 
-	// if (write(servSock, output, BUF_SIZE) < 0) {
-	// 	perror("write");
-	// 	exit(1);
-	// }
-
     counter++;
 
 	free(ops);
     free(rcvString);
     free(command);
-    free(output);
+    return;
 }

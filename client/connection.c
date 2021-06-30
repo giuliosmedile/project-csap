@@ -51,6 +51,7 @@ int connectToSocket(char* serv_add, unsigned short port) {
 void sendToSocket(int s, char* buf) {
     // Make sure the string is null terminated
     buf[strlen(buf)] = '\0';
+    printf("[-] About to send to %d: \"%s\"\n", s, buf);
     // Write (or send) to socket
     if (write(s, buf, strlen(buf))<0) {
         perror("write");
