@@ -13,11 +13,22 @@ t_user* u = NULL;   // The user that the socket sends after logging in
 
 void restartOnError(void);  //definition of signal handler
 
+// Shows info about the current user
+void info() {
+    if (u==NULL) {
+        printf("[-] You're not logged in.\n");
+    } else {
+        printf("%s", formatPrintUser(u, ""));
+    }
+}
+
+// Shows all commands a user can do
 void help() {
     printf("Currently supported commands:\n");
     printf("%s", COLOR);
     printf("\tlogin\t\tallows to log in with credentials\n");
     printf("\tlogout\t\tlogs out from the service\n");
+    printf("\tinfo\t\tdisplays information about the logged in user\n");
     printf("\tsignup\t\tallows to sign in to the service\n");
     printf("\tadd\t\tadds a user to your addressbook\n");
     printf("\trecord\t\trecords a new voice message\n");
@@ -29,7 +40,12 @@ void help() {
 
 char* takeUserInput(char* input) {
     printf("%s", COLOR);
-    printf("$: ");
+
+    if (u == NULL) {
+        printf("$: ");
+    } else {
+        printf("$%s: ", u->username);
+    }
     if (fgets(input,sizeof(input),stdin) == NULL) {
         printf("\n");
         exit(0);
@@ -48,6 +64,9 @@ char* interpretInput(char* command, char* output) {
         signup(output, &u);
     } else if (!strcmp(command, "logout")) {
         logout(output, &u);
+    } else if (!strcmp(command, "info")) {
+        info();
+        strcpy(output, "null");
     } else if (!strcmp(command, "add")) {
         add(output, &u);
     } else if (!strcmp(command, "exit")) {

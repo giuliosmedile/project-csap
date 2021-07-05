@@ -9,7 +9,7 @@
 #ifdef TEST_USERS
 char* REPO = "test.txt";
 #else
-char* REPO = "../server/data/users.txt";
+char* REPO = "../datarepo/data/users.txt";
 #endif
 struct s_user {
 	char* username;			// the user's username
@@ -181,17 +181,22 @@ t_user* readUser(char* line) {
 	return u;
 }
 
-int addUserToAddressBook(t_user* u, char* username) {
+t_user* addUserToAddressBook(t_user* u, char* username) {
 	// First check if the user I'm adding exists
+	printf("\ta\n");
 	t_user* tmp = searchUser(username, REPO);
-	if(tmp==NULL) return 0;
+	printf("\t%s\n", tmp->username);
+	if(tmp==NULL) return NULL;
 
 	// After I checked, I can add the user
-	//u->addressbook_size++;
+	printf("\ta\n");
 	int i = ++(u->addressbook_size);
+	printf("\tb\n");
 	u->addressbook[i] = malloc(BUF_SIZE * sizeof(char));
+	printf("\tc\n");
 	strcpy(u->addressbook[i], username);
-	return 1;
+	printf("\td\n");
+	return u;
 }
 
 

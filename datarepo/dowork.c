@@ -23,7 +23,7 @@ void dowork(int socket) {
 	tokenize(rcvString, &ops);
 
 	printf("Inside dowork\n");
-	printf("ops: %s\n", ops[0]);
+	printf("ops: \"%s\"\n", ops[0]);
 	sprintf(command, "%s", ops[0]);
 
 
@@ -50,9 +50,12 @@ void dowork(int socket) {
 	// HANDLE ADD
 	} else if (!strcmp(command, "add")) {
 		printf("add\n");
-		user = readUser(ops[1]);
-		addUserToAddressBook(user, ops[2]);
+		user = searchUser(ops[1], USERS_REPO);
+		printf("\t1\n");
+		user = addUserToAddressBook(user, ops[2]);
+		printf("\t%s\n", formatPrintUser(user, ""));
 		saveUser(user, USERS_REPO);
+		printf("\t3\n");
 		result = getUser(user->username, USERS_REPO);
 
 		printf("result: \"%s\"\n", result);

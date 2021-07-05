@@ -69,6 +69,8 @@ t_user* handleServerReplies(char* command, char* response, t_user* user) {
 		handleSignup(response);
 	} else if (!strcmp(command, "add")) {
 		handleAdd(response, user);
+	} else if (!strcmp(command, "")){
+		printf("How did you even get here?\n");
 	} else {
 		printf("How did you even get here?\n");
 	}
