@@ -11,7 +11,7 @@
 int s;       // The socket I'm interacting with (server)
 t_user* u = NULL;   // The user that the socket sends after logging in
 
-void restartOnError(void);  //definition of signal handler
+void restartOnError(int);  //definition of signal handler
 
 // Shows info about the current user
 void info() {
@@ -42,9 +42,9 @@ char* takeUserInput(char* input) {
     printf("%s", COLOR);
 
     if (u == NULL) {
-        printf("$: ");
+        printf("[]: ");
     } else {
-        printf("$%s: ", u->username);
+        printf("[%s]: ", u->username);
     }
     if (fgets(input,sizeof(input),stdin) == NULL) {
         printf("\n");
@@ -69,6 +69,8 @@ char* interpretInput(char* command, char* output) {
         strcpy(output, "null");
     } else if (!strcmp(command, "add")) {
         add(output, &u);
+    } else if (!strcmp(command, "record")) {
+        output = record(output, &u);
     } else if (!strcmp(command, "exit")) {
         exit(0);
     } else if (!strcmp(command, "help")) {
@@ -147,7 +149,7 @@ void main (int argc, char** argv) {
 
 
 /* Function that restarts the client from main when SISEGV gets caught */
-void restartOnError(void) {
+void restartOnError(int signum) {
 	printf("\033[0;33mAn error has occurred. Restarting software.\033[0m\n");
 	main(0, NULL);
 }

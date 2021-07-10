@@ -1,8 +1,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <time.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
@@ -16,6 +19,7 @@
 #include "readConfig.c"
 #include "handleServerReplies.c"
 #include "messages.c"
+
 
 // Standard Definitions
 #define BUF_SIZE 256
@@ -52,4 +56,5 @@ void readConfig (char** serv_add, unsigned short* serv_port);
 
 //From messages.c
 char* add(char* output, t_user** u_p);
+char* record(char* result, t_user** u_p);
 
