@@ -120,7 +120,7 @@ void main(int argc, char** argv) {
     }
 
     // Now let's play the result. Again, let's call a child to do this...
-        switch(pid=fork()) {
+    switch(pid=fork()) {
         // Error
         case -1:
             perror("fork");

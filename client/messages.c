@@ -16,6 +16,10 @@
 #define true 1
 #define false 0
 
+void interceptSigInt(int signum) {
+	printf("This does absoluely nothing.\n");
+}
+
 /**
  * Function to check if this machine can run a certain command 
  * Shamelessly stolen from https://stackoverflow.com/questions/41230547/check-if-program-is-installed-in-c
@@ -89,6 +93,8 @@ char* record(char* result, t_user** u_p) {
     char *args[3];                                              // Arguments for rec command
     int pid, status;
     int res;
+    // to exit rec, a SIGINT must be sent, so we intercept it and do nothing, or else the program will exit
+    signal(SIGINT, interceptSigInt);
 
     printf("%s", COLOR);
 
@@ -115,18 +121,16 @@ char* record(char* result, t_user** u_p) {
 	if (fgets(other,sizeof(other),stdin) == NULL) {
         return "null";
     }
+    other[strlen(other)-1] ='\0';
+    
+    time_t rawtime = (time_t)malloc(sizeof(time_t));
+    struct tm * timeinfo;
 
-    time_t current_time;
-	struct tm * time_info;
-	char timeString[9];  // space for "HH:MM:SS\0"
+    time ( &rawtime );
+    timeinfo = localtime ( &rawtime );
 
-	time(&current_time);
-	time_info = localtime(&current_time);
+    sprintf(file, "%s/%s-%d:%d:%d.wav", TMP_DIR, other, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
 
-	strftime(timeString, sizeof(timeString), "%H:%M:%S", time_info);
-	puts(timeString);
-    sprintf(file, "%s/%s-%s.wav", TMP_DIR, other, timeString);
-puts("5");
     // Fork child to record audio message
     switch(pid=fork()) {
         // Error
@@ -136,25 +140,26 @@ puts("5");
 
         // Child
         case 0:
-            ;   //must put this here or else the association on the next line won't work
+            ;
             // Exec program
             args[0] = REC;
             args[1] = file;
+            args[2] = NULL;     // must be here or else execvp won't work...
 
-            res = execvp(REC, args);
-
-            // ?? Exec failed
-            fprintf(stderr,"%s:", REC);
-            perror("execvp");
-            exit(1);
-            break;       
+            if (res = execvp(REC, args) < 0) {
+                // ?? Exec failed
+                fprintf(stderr,"%s:", REC);
+                perror("execvp");
+                exit(1);
+            } else break;     
 
         // Parent
         default:
         	// Let's wait for the child to finish...
-            pid = wait(&status);
-            printf("Result: %d\n", res);
-            break;
+            pid = wait(&status);printf("[-] Succesfully recorded audio at\n\t%s\n", file);
+            printf("%s", STD_COL);
+
+            return "null";
     }
 
     printf("[-] Succesfully recorded audio at\n\t%s\n", file);
