@@ -70,7 +70,7 @@ char* interpretInput(char* command, char* output) {
     } else if (!strcmp(command, "add")) {
         add(output, &u);
     } else if (!strcmp(command, "record")) {
-        output = record(output, &u);
+        record(output, &u);
     } else if (!strcmp(command, "exit")) {
         exit(0);
     } else if (!strcmp(command, "help")) {

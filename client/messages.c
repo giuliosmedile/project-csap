@@ -121,7 +121,6 @@ char* record(char* result, t_user** u_p) {
         mkdir(TMP_DIR, 0755);
     }
 
-puts("1");
 
     // Take input
     printf("Username of the user you want to send a message to: ");
@@ -130,17 +129,15 @@ puts("1");
     }
     other[strlen(other)-1] ='\0';
 
-puts("2");
-
     time_t rawtime = (time_t)malloc(sizeof(time_t));
     struct tm * timeinfo;
 
     time ( &rawtime );
     timeinfo = localtime ( &rawtime );
 
-puts("3");
-    sprintf(file, "%s/%s-%d:%d:%d.wav", TMP_DIR, other, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-puts("4");
+    // The file name is set as follows:
+    // sender_receiver-YYYY-MM-DD-HH:MM:SS.wav
+    sprintf(file, "%s/%s_%s-%d-%d-%d-%d:%d:%d.wav", TMP_DIR, (*u_p)->username, other, timeinfo->tm_year + 1900, timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
     // Fork child to record audio message
     switch(pid=fork()) {
         // Error
@@ -169,12 +166,9 @@ puts("4");
             pid = wait(&status);printf("[-] Succesfully recorded audio at\n\t%s\n", file);
             printf("%s", STD_COL);
 
-            return "null";
+            sprintf(result, "%s", file);
+            return result;
     }
 
-    printf("[-] Succesfully recorded audio at\n\t%s\n", file);
-    printf("%s", STD_COL);
-
-    return "null";   //TEMP!!!!!!
-    // TODO return file;
+    // This won't be reached    
 }
