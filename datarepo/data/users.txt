@@ -5,4 +5,5 @@ roberto;0;0;
 robertok;0;0;
 lollo;0;0;
 lollobrigida;0;0;
-test;0;1;lollo;
+lollo1;0;0;
+test;0;0;

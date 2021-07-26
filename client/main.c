@@ -152,5 +152,5 @@ void main (int argc, char** argv) {
 /* Function that restarts the client from main when SISEGV gets caught */
 void restartOnError(int signum) {
 	printf("\033[0;33mAn error %d has occurred. Restarting software.\033[0m\n", signum);
-	main(0, NULL);
+	main(0, 0);
 }

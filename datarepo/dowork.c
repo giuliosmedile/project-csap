@@ -34,8 +34,12 @@ void dowork(int socket) {
 	if (!strcmp(command, "login")) {
 		printf("login\n");
 		result = getUser(ops[1], USERS_REPO);
-		if (result[strlen(result)-1] = '\n') result[strlen(result)-1] = '\0';	//Make sure the string is null terminated, not \n terminated		
-		printf("end login: \"%s\"\n", result);
+		if (result == NULL) {
+			result = "USERNOTFOUND";
+		} else {
+			if (result[strlen(result)-1] = '\n') result[strlen(result)-1] = '\0';	//Make sure the string is null terminated, not \n terminated		
+			printf("end login: \"%s\"\n", result);
+		}
 
 	// HANDLE SIGNUP
 	} else if (!strcmp(command, "signup")) {

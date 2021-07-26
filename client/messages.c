@@ -63,6 +63,10 @@ int can_run_command(const char *cmd) {
     return false;
 }
 
+/* Function to add a user to the currently logged in user's addressbook
+ * @param result the string that will be sent to the server 
+ * @param u_p pointer to the current user
+*/
 char* add(char* result, t_user** u_p) {
     // the new user i am trying to add
     char* other = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -93,6 +97,7 @@ char* record(char* result, t_user** u_p) {
     char *args[3];                                              // Arguments for rec command
     int pid, status;
     int res;
+
     // to exit rec, a SIGINT must be sent, so we intercept it and do nothing, or else the program will exit
     signal(SIGINT, interceptSigInt);
 
@@ -116,21 +121,26 @@ char* record(char* result, t_user** u_p) {
         mkdir(TMP_DIR, 0755);
     }
 
+puts("1");
+
     // Take input
     printf("Username of the user you want to send a message to: ");
 	if (fgets(other,sizeof(other),stdin) == NULL) {
         return "null";
     }
     other[strlen(other)-1] ='\0';
-    
+
+puts("2");
+
     time_t rawtime = (time_t)malloc(sizeof(time_t));
     struct tm * timeinfo;
 
     time ( &rawtime );
     timeinfo = localtime ( &rawtime );
 
+puts("3");
     sprintf(file, "%s/%s-%d:%d:%d.wav", TMP_DIR, other, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
-
+puts("4");
     // Fork child to record audio message
     switch(pid=fork()) {
         // Error

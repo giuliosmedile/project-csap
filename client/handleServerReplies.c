@@ -70,11 +70,10 @@ t_user* handleServerReplies(char* command, char* response, t_user* user) {
 	} else if (!strcmp(command, "add")) {
 		handleAdd(response, user);
 	} else if (!strcmp(command, "")){
-		printf("How did you even get here?\n");
+		printf("There must have been an error in the response from the server.\n");
 	} else {
 		printf("How did you even get here?\n");
 	}
-
 
 	return user;
 }
