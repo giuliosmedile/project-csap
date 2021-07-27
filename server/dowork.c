@@ -2,7 +2,9 @@
 // the data repository.
 // This function represent the main client-server-dataserver interaction
 // of the system.
+
 #define BUF_SIZE 256
+
 int counter = 0;
 char* rcvString;
 char** ops;
@@ -48,6 +50,8 @@ void dowork(int clientSock, int dataRepoSock) {
 	} else if (!strcmp(command, "add")) {
         printf("- Adding to addressbook - \n");
         result = add(ops[1], ops[2]);
+    } else if (!strcmp(command, "record")) {
+        result = record(ops[1], clientSock);
     }
 
      /* --------------- COMMUNICATIONS WITH DATA REPO ----------------- */
@@ -93,7 +97,13 @@ void dowork(int clientSock, int dataRepoSock) {
         } else {
             output = "NOADD";
         }
-    }
+    } else if (!strcmp(command, "record")) {
+        if (result) {
+
+        } else {
+            output = "NORECORD";
+        }
+     }
 
     printf("[+] about to send to client: \"%s\"\n", output);
 

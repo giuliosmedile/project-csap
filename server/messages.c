@@ -5,6 +5,9 @@
 #include <unistd.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/stat.h>
+
+#define TMP_DIR "/var/tmp/project-csap/server"     //the temporary directory in which the files will be saved"
 
 /**
  *  Function to add a user to another's addressbook.
@@ -31,4 +34,24 @@ int add(char* user, char* other) {
     // If i'm here, it means i haven't found anyone matching
     fclose(fp);
     return 0;
+}
+
+// TODO: add hash check to see if file was sent correctly
+int record(char* filename, int socket) {
+
+	// Create the temp directory, it if is not there
+    struct stat st = {0};
+    if (stat(TMP_DIR, &st) == -1) {
+        mkdir(TMP_DIR, 0755);
+    }
+
+	// Define the path I'll save into
+	char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+	sprintf(path, "%s/%s", TMP_DIR, filename);
+
+	// Wait for the file from the socket
+	receiveFile(socket, path);
+
+
+	return 0;
 }

@@ -91,8 +91,8 @@ char* add(char* result, t_user** u_p) {
 
 }
 
-char* record(char* result, t_user** u_p) {
-    char* file = (char*)malloc(BUF_SIZE * sizeof(char));        // The file path in which the temp recording will be
+char* record(char* result, t_user** u_p, char* file) {
+    char* path = (char*)malloc(BUF_SIZE * sizeof(char));        // The file path in which the temp recording will be
     char* other = (char*)malloc(BUF_SIZE * sizeof(char));       // user who will receive the file
     char *args[3];                                              // Arguments for rec command
     int pid, status;
@@ -139,7 +139,8 @@ char* record(char* result, t_user** u_p) {
 
     // The file name is set as follows:
     // sender_receiver-YYYY-MM-DD-HH:MM:SS.wav
-    sprintf(file, "%s/%s_%s-%d-%d-%d-%d:%d:%d.wav", TMP_DIR, (*u_p)->username, other, timeinfo->tm_year + 1900, timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+    sprintf(file, "%s_%s-%d-%d-%d-%d:%d:%d.wav", (*u_p)->username, other, timeinfo->tm_year + 1900, timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+    sprintf(path, "%s/%s", TMP_DIR, file);
     // Fork child to record audio message
     switch(pid=fork()) {
         // Error
@@ -152,7 +153,7 @@ char* record(char* result, t_user** u_p) {
             ;
             // Exec program
             args[0] = REC;
-            args[1] = file;
+            args[1] = path;
             args[2] = NULL;     // must be here or else execvp won't work...
 
             if (res = execvp(REC, args) < 0) {
@@ -165,10 +166,10 @@ char* record(char* result, t_user** u_p) {
         // Parent
         default:
         	// Let's wait for the child to finish...
-            pid = wait(&status);printf("[-] Recorded audio at\n\t%s\n", file);
+            pid = wait(&status);printf("[-] Recorded audio at\n\t%s\n", path);
             printf("%s", STD_COL);
 
-            sprintf(result, "%s", file);
+            sprintf(result, "record %s", file);
             return result;
     }
 

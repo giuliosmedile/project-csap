@@ -121,7 +121,7 @@ void sendFile(int s, char* filename) {
 }
 
 void receiveFile(int s, char* filename) {
-    int n;
+    int i = 0;
     FILE *fp;
     char buffer[BUF_SIZE];
 
@@ -130,13 +130,14 @@ void receiveFile(int s, char* filename) {
     while (1) {
         // If the file is over, I stop the loop
         if (recv(s, buffer, BUF_SIZE, 0) <= 0) {
-            break;
+            fclose(fp);
+            printf("\tReceived %d blocks\n", i);
             return;
         }
         // Else write to a file
         fprintf(fp, "%s", buffer);
         bzero(buffer, BUF_SIZE);
+        i++;
     }
-    fclose(fp);
-    return;
+    
 }

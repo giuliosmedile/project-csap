@@ -63,5 +63,5 @@ void readConfig (char** serv_add, unsigned short* serv_port);
 //From messages.c
 
 char* add(char* output, t_user** u_p);
-char* record(char* result, t_user** u_p);
+char* record(char* result, t_user** u_p, char* filename);
 

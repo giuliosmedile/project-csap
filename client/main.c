@@ -8,7 +8,7 @@
 #define COLOR "\033[0;33m"
 #define STD_COL "\033[0m"
 
-int s;       // The socket I'm interacting with (server)
+int s;              // The socket I'm interacting with (server)
 t_user* u = NULL;   // The user that the socket sends after logging in
 
 void restartOnError(int);  //definition of signal handler
@@ -70,7 +70,17 @@ char* interpretInput(char* command, char* output) {
     } else if (!strcmp(command, "add")) {
         add(output, &u);
     } else if (!strcmp(command, "record")) {
-        record(output, &u);
+        char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
+        record(output, &u, filename);
+        sendToSocket(s, output);
+        char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+        sprintf(path, "%s/%s", TMP_DIR, filename);
+        printf("[-] Sending file to %d\n", s);
+        sendFile(s, path);
+
+        free(filename);
+        free(path);
+        strcpy(output, "null");
     } else if (!strcmp(command, "exit")) {
         exit(0);
     } else if (!strcmp(command, "help")) {

@@ -78,21 +78,26 @@ char* readFromSocket(int s, char* rcv) {
 
 // Function that sends a file through a socket
 void sendFile(int s, char* filename) {
+    int i = 0;
     char data[BUF_SIZE] = {0};
     FILE* fp = fopen(filename, "r");
 
+    printf("[-] Sending data to %d...\n", s);
     while(fgets(data, BUF_SIZE, fp) != NULL) {
-        if (send(s, data, sizeof(data)+1, 0) == -1) {
+        printf("."); fflush(stdout);
+        
+        if (send(s, data, sizeof(data), 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }
         bzero(data, BUF_SIZE);
+        i++;
     }
     fclose(fp);
+    printf("\tSent %d blocks\n", i);
 }
 
 void receiveFile(int s, char* filename) {
-    int n;
     FILE *fp;
     char buffer[BUF_SIZE];
 
