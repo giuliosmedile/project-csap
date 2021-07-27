@@ -17,7 +17,7 @@
 #define false 0
 
 void interceptSigInt(int signum) {
-	printf("This does absoluely nothing.\n");
+	printf("\n");
 }
 
 /**
@@ -105,13 +105,15 @@ char* record(char* result, t_user** u_p) {
 
     // Check if i am logged in
     if (*u_p == NULL) {
-        printf("[!] Before adding a user to your addressbook, perhaps you should try logging in first.\n");
+        printf("[!] Before recording a message, perhaps you should try logging in first.\n");
+        sprintf(result, "null");
         return "null";
     }
 
     // Check if i can run rec
     if (!can_run_command("rec")) {
         printf("[!] Be sure to have installed rec and play through\n\tsudo apt install sox\n");
+        sprintf(result, "null");
         return "null";
     }
 
@@ -163,7 +165,7 @@ char* record(char* result, t_user** u_p) {
         // Parent
         default:
         	// Let's wait for the child to finish...
-            pid = wait(&status);printf("[-] Succesfully recorded audio at\n\t%s\n", file);
+            pid = wait(&status);printf("[-] Recorded audio at\n\t%s\n", file);
             printf("%s", STD_COL);
 
             sprintf(result, "%s", file);
