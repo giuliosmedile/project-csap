@@ -80,19 +80,20 @@ char* readFromSocket(int s, char* rcv) {
 void sendFile(int s, char* filename) {
     int n;
     int i = 0;
-    char data[BUF_SIZE] = {0};
+    char* data = (char*)malloc(BUF_SIZE * sizeof(char));
 
-    FILE* fp = fopen(filename, "r");
+    FILE* fp = fopen(filename, "rb");
     if (fp == NULL) {
         perror("[-]Error in reading file.");
         exit(1);
     }
 
-    while(fgets(data, BUF_SIZE, fp) != NULL) {
-        if (send(s, data, sizeof(data), 0) == -1) {
+    while(fread(data, sizeof(char), BUF_SIZE, fp) > 0) {
+        if (send(s, (void* )data, sizeof(data), 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }
+        i++;
         printf("%s", data);
         bzero(data, BUF_SIZE);
     }

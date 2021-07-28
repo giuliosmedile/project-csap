@@ -132,15 +132,16 @@ void receiveFile(int s, char* filename) {
     FILE *fp;
     char buffer[BUF_SIZE];
 
-    fp = fopen(filename, "w");
+    fp = fopen(filename, "wb");
     while (1) {
-        n = recv(s, buffer, BUF_SIZE, 0);
+        n = recv(s, (void*)buffer, BUF_SIZE, 0);
         if (n <= 0){
             break;
             return;
         }
-       // printf("\t%d\n", ++i);
-        fprintf(fp, "%s", buffer);
+
+        fwrite(buffer, sizeof(char), BUF_SIZE, fp);
+
         printf("%s", buffer);
         bzero(buffer, BUF_SIZE);
     }

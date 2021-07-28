@@ -7,7 +7,7 @@
 void write_file(int sockfd){
   int n;
   FILE *fp;
-  char *filename = "recv.wav";
+  char *filename = "recv.wav.txt";
   char buffer[SIZE];
 
   fp = fopen(filename, "w");
@@ -17,6 +17,7 @@ void write_file(int sockfd){
       break;
       return;
     }
+    printf("%s", buffer);
     fprintf(fp, "%s", buffer);
     bzero(buffer, SIZE);
   }

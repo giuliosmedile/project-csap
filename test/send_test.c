@@ -14,6 +14,7 @@ void send_file(FILE *fp, int sockfd){
       perror("[-]Error in sending file.");
       exit(1);
     }
+    printf("%s", data);
     bzero(data, SIZE);
   }
 }
@@ -26,7 +27,7 @@ int main(){
   int sockfd;
   struct sockaddr_in server_addr;
   FILE *fp;
-  char *filename = "test.wav";
+  char *filename = "test.wav.txt";
 
   sockfd = socket(AF_INET, SOCK_STREAM, 0);
   if(sockfd < 0) {
