@@ -52,6 +52,5 @@ int record(char* filename, int socket) {
 	// Wait for the file from the socket
 	receiveFile(socket, path);
 
-
 	return 0;
 }

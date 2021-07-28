@@ -78,40 +78,42 @@ char* readFromSocket(int s, char* rcv) {
 
 // Function that sends a file through a socket
 void sendFile(int s, char* filename) {
+    int n;
     int i = 0;
     char data[BUF_SIZE] = {0};
-    FILE* fp = fopen(filename, "r");
 
-    printf("[-] Sending data to %d...\n", s);
+    FILE* fp = fopen(filename, "r");
+    if (fp == NULL) {
+        perror("[-]Error in reading file.");
+        exit(1);
+    }
+
     while(fgets(data, BUF_SIZE, fp) != NULL) {
-        printf("."); fflush(stdout);
-        
         if (send(s, data, sizeof(data), 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }
+        printf("%s", data);
         bzero(data, BUF_SIZE);
-        i++;
     }
     fclose(fp);
-    printf("\tSent %d blocks\n", i);
+    printf("Sent %d blocks\n", i);
 }
 
 void receiveFile(int s, char* filename) {
+    int n;
     FILE *fp;
     char buffer[BUF_SIZE];
 
     fp = fopen(filename, "w");
-    // Loops until the file has been all received
     while (1) {
-        // If the file is over, I stop the loop
-        if (recv(s, buffer, BUF_SIZE, 0) <= 0) {
+        n = recv(s, buffer, BUF_SIZE, 0);
+        if (n <= 0){
             break;
+            return;
         }
-        // Else write to a file
         fprintf(fp, "%s", buffer);
         bzero(buffer, BUF_SIZE);
     }
-    fclose(fp);
     return;
 }
