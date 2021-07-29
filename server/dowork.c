@@ -51,7 +51,7 @@ void dowork(int clientSock, int dataRepoSock) {
         printf("- Adding to addressbook - \n");
         result = add(ops[1], ops[2]);
     } else if (!strcmp(command, "record")) {
-        result = record(ops[1], ops[2], clientSock);
+        result = record(ops[1], clientSock);
     }
 
      /* --------------- COMMUNICATIONS WITH DATA REPO ----------------- */

@@ -107,53 +107,65 @@ char* readFromSocket(int s, char* rcv) {
 
 // Function that sends a file through a socket
 void sendFile(int s, char* filename, int filesize) {
-    int n;
-    int i = 0;
-    char* data = (char*)malloc(BUF_SIZE * sizeof(char));
+    int n;                                  // Number of bytes sent
+    int i = 0;                              // Debug counter
+    void* data = (void*)malloc(filesize);   // Pointer to the data to be sent
 
+    // Open the file
     FILE* fp = fopen(filename, "rb");
     if (fp == NULL) {
         perror("[-]Error in reading file.");
         exit(1);
     }
 
-    while(fread(data, 1, BUF_SIZE, fp) > 0) {
-        if (send(s, (void* )data, sizeof(data), 0) == -1) {
+    // Read the file
+    // note: even though we are sending the file in one block as big as the file itself, I still prefer to
+    // iterate through the file, because it is easier to debug
+    while(fread(data, 1, filesize, fp) > 0) {
+        // Send the data
+        if (send(s, (void* )data, filesize, 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }
-        i++;
         printf("%s", data);
         bzero(data, BUF_SIZE);
     }
+
+    // Close the file
     fclose(fp);
-    printf("Sent %d blocks\n", i);
+    return;
 }
 
-void receiveFile(int s, char* filename, int filesize) {
-    int n = 1;
-    int i = 0;
-    FILE *fp;
-    char buffer[BUF_SIZE];
+// Function to receive a binary file sent through a socket
+void receiveFile(int s, char* filename) {
+    int n = 1;                                        // Number of bytes read
+    int i = 0;                                        // Debug counter
+    FILE *fp;                                         // File pointer
+    char buffer[BUF_SIZE];                            // Buffer to store data
 
-    printf("filesize: %d\n", filesize);
-
+    // Open file
     fp = fopen(filename, "wb");
+
+    // While there is data to be read
     while (n > 0) {
+        // Read from socket
         n = recv(s, (void*)buffer, BUF_SIZE, 0);
-        printf("%d\t%d\n", n, i);
+
+        // If data was received less than BUF_SIZE, the file is over
         if (n < BUF_SIZE) {
+            // Write the remaining data and save the file
             fwrite(buffer, 1, BUF_SIZE, fp);
-            printf("\n\tEnding...\n");
             fclose(fp);
             return;
         }
 
+        // Write to file
         fwrite(buffer, 1, BUF_SIZE, fp);
-
-        //printf("%s", buffer);
-        i++;
+        
+        // Reset for next loop
         bzero(buffer, BUF_SIZE);
     }
+
+    // This won't be reached, but still...
     return;
 }

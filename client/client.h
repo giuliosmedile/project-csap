@@ -50,7 +50,7 @@ int connectToSocket(char* serv_add, unsigned short serv_port);
 void sendToSocket(int socket, char* str);
 char* readFromSocket(int socket, char* str);
 void sendFile(int s, char* filename, int filesize);
-void receiveFile(int s, char* filename, int filesize);
+void receiveFile(int s, char* filename);
 
 // From handleServerReplies.c
 

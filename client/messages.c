@@ -170,8 +170,8 @@ char* record(char* result, t_user** u_p, char* file) {
             printf("%s", STD_COL);
 
             // Data is then formatted to be sent to the server as
-            // record [filename] [file size]
-            sprintf(result, "record %s %d", file, get_file_size(path));
+            // record [filename]
+            sprintf(result, "record %s", file);
             return result;
     }
 
