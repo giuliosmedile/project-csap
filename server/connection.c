@@ -106,43 +106,53 @@ char* readFromSocket(int s, char* rcv) {
 }
 
 // Function that sends a file through a socket
-void sendFile(int s, char* filename) {
+void sendFile(int s, char* filename, int filesize) {
     int n;
-    char data[BUF_SIZE] = {0};
+    int i = 0;
+    char* data = (char*)malloc(BUF_SIZE * sizeof(char));
 
-    FILE* fp = fopen(filename, "r");
+    FILE* fp = fopen(filename, "rb");
     if (fp == NULL) {
         perror("[-]Error in reading file.");
         exit(1);
     }
 
-    while(fgets(data, BUF_SIZE, fp) != NULL) {
-        if (send(s, data, sizeof(data), 0) == -1) {
+    while(fread(data, 1, BUF_SIZE, fp) > 0) {
+        if (send(s, (void* )data, sizeof(data), 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }
+        i++;
+        printf("%s", data);
         bzero(data, BUF_SIZE);
     }
     fclose(fp);
+    printf("Sent %d blocks\n", i);
 }
 
-void receiveFile(int s, char* filename) {
-    int n;
+void receiveFile(int s, char* filename, int filesize) {
+    int n = 1;
     int i = 0;
     FILE *fp;
     char buffer[BUF_SIZE];
 
+    printf("filesize: %d\n", filesize);
+
     fp = fopen(filename, "wb");
-    while (1) {
+    while (n > 0) {
         n = recv(s, (void*)buffer, BUF_SIZE, 0);
-        if (n <= 0){
-            break;
+        printf("%d\t%d\n", n, i);
+        if (n < BUF_SIZE) {
+            fwrite(buffer, 1, BUF_SIZE, fp);
+            printf("\n\tEnding...\n");
+            fclose(fp);
             return;
         }
 
-        fwrite(buffer, sizeof(char), BUF_SIZE, fp);
+        fwrite(buffer, 1, BUF_SIZE, fp);
 
-        printf("%s", buffer);
+        //printf("%s", buffer);
+        i++;
         bzero(buffer, BUF_SIZE);
     }
     return;

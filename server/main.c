@@ -1,15 +1,28 @@
 /// 		MAIN SERVER CODE
 #include "server.h"
 
-int main(int argc, char** argv) {
 	int servSock;                    /* Socket descriptor for server */
     int clntSock;                    /* Socket descriptor for client */
-    int echoServPort;     /* Server port */
+    int echoServPort;                /* Server port */
     pid_t processID;                 /* Process ID from fork() */
-    unsigned int childProcCount; /* Number of child processes */
+    unsigned int childProcCount;     /* Number of child processes */
     int clients;					 // Number of possible clients that the server will allow to connect at the same time
     int vdr_no;						 // Number of mds's that the server will connect to
     char** vdr_addrs; 			 	 // Array containing the IP addresses of the mds's
+
+void haltProgram(int signum) {
+    printf("[-] Intercepted signal %d. Closing program...\n", signum);
+    close(servSock);
+    close(clntSock);
+    close(echoServPort);
+    close(echoServPort+1);
+    exit(0);
+}
+
+int main(int argc, char** argv) {
+
+    // Override SIGINT's handler to properly close the socket
+    signal(SIGINT, haltProgram);
 
     // Read the configuration file
     readConfig(&echoServPort, &clients, &vdr_no, &vdr_addrs);

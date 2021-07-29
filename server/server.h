@@ -25,7 +25,7 @@ int login(char* username, char* password);
 
 // From messages.c
 int add(char* user, char* other);
-int record(char* filename, int socket);
+int record(char* filename, char* _filesize, int socket);
 
 // From readConfig.c
 void readConfig (int* port, int* clients, int* mds, char*** mds_addr);

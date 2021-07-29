@@ -37,8 +37,9 @@ int add(char* user, char* other) {
 }
 
 // TODO: add hash check to see if file was sent correctly
-int record(char* filename, int socket) {
+int record(char* filename, char* _filesize, int socket) {
 
+	int filesize = atoi(_filesize);
 	// Create the temp directory, it if is not there
     struct stat st = {0};
     if (stat(TMP_DIR, &st) == -1) {
@@ -50,7 +51,7 @@ int record(char* filename, int socket) {
 	sprintf(path, "%s/%s", TMP_DIR, filename);
 
 	// Wait for the file from the socket
-	receiveFile(socket, path);
+	receiveFile(socket, path, filesize);
 
 	return 0;
 }

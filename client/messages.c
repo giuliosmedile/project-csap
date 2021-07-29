@@ -169,7 +169,9 @@ char* record(char* result, t_user** u_p, char* file) {
             pid = wait(&status);printf("[-] Recorded audio at\n\t%s\n", path);
             printf("%s", STD_COL);
 
-            sprintf(result, "record %s", file);
+            // Data is then formatted to be sent to the server as
+            // record [filename] [file size]
+            sprintf(result, "record %s %d", file, get_file_size(path));
             return result;
     }
 

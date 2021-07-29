@@ -10,7 +10,21 @@ int clntSock;
 int processID;
 int childProcCount;
 
+void haltProgram(int signum) {
+
+    printf("Halting program with signal %d.\n", signum);
+
+    // Close all sockets
+    close(dataRepoSock);
+    close(servSock);
+    close(clntSock);
+    exit(1);
+}
+
 void main (int argc, char** argv) {
+
+    // Override SIGINT's handler to properly close the socket
+    signal(SIGINT, haltProgram);
 
 	char* request = (char*)malloc(BUF_SIZE *  sizeof(char));
 	char* reply = (char*)malloc(BUF_SIZE * sizeof(char));

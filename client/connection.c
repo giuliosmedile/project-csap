@@ -77,10 +77,10 @@ char* readFromSocket(int s, char* rcv) {
 }
 
 // Function that sends a file through a socket
-void sendFile(int s, char* filename) {
+void sendFile(int s, char* filename, int filesize) {
     int n;
     int i = 0;
-    char* data = (char*)malloc(BUF_SIZE * sizeof(char));
+    void* data = (void*)malloc(filesize);
 
     FILE* fp = fopen(filename, "rb");
     if (fp == NULL) {
@@ -88,8 +88,8 @@ void sendFile(int s, char* filename) {
         exit(1);
     }
 
-    while(fread(data, sizeof(char), BUF_SIZE, fp) > 0) {
-        if (send(s, (void* )data, sizeof(data), 0) == -1) {
+    while(fread(data, 1, filesize, fp) > 0) {
+        if (send(s, (void* )data, filesize, 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }
@@ -101,19 +101,23 @@ void sendFile(int s, char* filename) {
     printf("Sent %d blocks\n", i);
 }
 
-void receiveFile(int s, char* filename) {
+void receiveFile(int s, char* filename, int filesize) {
     int n;
+    int i = 0;
     FILE *fp;
     char buffer[BUF_SIZE];
 
-    fp = fopen(filename, "w");
+    fp = fopen(filename, "wb");
     while (1) {
-        n = recv(s, buffer, BUF_SIZE, 0);
+        n = recv(s, (void*)buffer, BUF_SIZE, 0);
         if (n <= 0){
             break;
             return;
         }
-        fprintf(fp, "%s", buffer);
+
+        fwrite(buffer, 1, BUF_SIZE, fp);
+
+        printf("%s", buffer);
         bzero(buffer, BUF_SIZE);
     }
     return;

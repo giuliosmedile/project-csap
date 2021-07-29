@@ -76,7 +76,7 @@ char* interpretInput(char* command, char* output) {
         char* path = (char*)malloc(BUF_SIZE * sizeof(char));
         sprintf(path, "%s/%s", TMP_DIR, filename);
         printf("[-] Sending file to %d\n", s);
-        sendFile(s, path);
+        sendFile(s, path, get_file_size(path));
 
         free(filename);
         free(path);
