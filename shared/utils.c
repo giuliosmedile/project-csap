@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define SEPARATOR " \t\r\n\v\f;="
+#define SEPARATOR " \t\r\n\v\f;=_"
 #define BUF_SIZE 256
 
 /** Function that tokenizes a string. Uses marks defined in SEPARATOR to separate strings from one another 

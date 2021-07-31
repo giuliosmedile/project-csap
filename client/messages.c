@@ -139,7 +139,7 @@ char* record(char* result, t_user** u_p, char* file) {
 
     // The file name is set as follows:
     // sender_receiver-YYYY-MM-DD-HH:MM:SS.wav
-    sprintf(file, "%s_%s-%d-%d-%d-%d:%d:%d.wav", (*u_p)->username, other, timeinfo->tm_year + 1900, timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+    sprintf(file, "%s_%s_%d_%d_%d_%d_%d_%d.wav", (*u_p)->username, other, timeinfo->tm_year + 1900, timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
     sprintf(path, "%s/%s", TMP_DIR, file);
     // Fork child to record audio message
     switch(pid=fork()) {

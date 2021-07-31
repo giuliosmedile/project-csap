@@ -107,20 +107,37 @@ char* readFromSocket(int s, char* rcv) {
 }
 
 // Function that sends a file through a socket
-void sendFile(int s, char* filename) {
-    char data[BUF_SIZE] = {0};
-    FILE* fp = fopen(filename, "r");
+void sendFile(int s, char* filename, int filesize) {
+    int n;                                  // Number of bytes sent
+    int i = 0;                              // Debug counter
+    void* data = (void*)malloc(filesize);   // Pointer to the data to be sent
 
-    while(fgets(data, BUF_SIZE, fp) != NULL) {
-        if (send(s, data, sizeof(data), 0) == -1) {
-            perror("[-] Error in sending file.");
+    // Open the file
+    FILE* fp = fopen(filename, "rb");
+    if (fp == NULL) {
+        perror("[-]Error in reading file.");
+        exit(1);
+    }
+
+    // Read the file
+    // note: even though we are sending the file in one block as big as the file itself, I still prefer to
+    // iterate through the file, because it is easier to debug
+    while(fread(data, 1, filesize, fp) > 0) {
+        // Send the data
+        if (send(s, (void* )data, filesize, 0) == -1) {
+            perror("[-]Error in sending file.");
             exit(1);
         }
+        printf("%s", data);
         bzero(data, BUF_SIZE);
     }
+
+    // Close the file
     fclose(fp);
+    return;
 }
 
+// Function to receive a binary file sent through a socket
 void receiveFile(int s, char* filename) {
     int n;
     FILE *fp;

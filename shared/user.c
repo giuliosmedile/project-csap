@@ -6,7 +6,7 @@
 
 #define BUF_SIZE 256
 #define MAX_ADDRESSBOOK_SIZE 50
-#ifdef TEST_USERS
+#ifdef TEST
 char* REPO = "test.txt";
 #else
 char* REPO = "../datarepo/data/users.txt";
