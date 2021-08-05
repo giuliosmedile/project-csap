@@ -98,31 +98,33 @@ char* record(char* result, t_user** u_p, char* file) {
     int pid, status;
     int res;
 
+    puts("\t1\n");
+
     // to exit rec, a SIGINT must be sent, so we intercept it and do nothing, or else the program will exit
     signal(SIGINT, interceptSigInt);
 
     printf("%s", COLOR);
-
+puts("\t1\n");
     // Check if i am logged in
     if (*u_p == NULL) {
         printf("[!] Before recording a message, perhaps you should try logging in first.\n");
         sprintf(result, "null");
         return "null";
     }
-
+puts("\t1\n");
     // Check if i can run rec
     if (!can_run_command("rec")) {
         printf("[!] Be sure to have installed rec and play through\n\tsudo apt install sox\n");
         sprintf(result, "null");
         return "null";
     }
-
+puts("\t1\n");
     // Create the temp directory, it if is not there
     struct stat st = {0};
     if (stat(TMP_DIR, &st) == -1) {
         mkdir(TMP_DIR, 0755);
     }
-
+puts("\t1\n");
 
     // Take input
     printf("Username of the user you want to send a message to: ");
@@ -130,13 +132,13 @@ char* record(char* result, t_user** u_p, char* file) {
         return "null";
     }
     other[strlen(other)-1] ='\0';
-
-    time_t rawtime = (time_t)malloc(sizeof(time_t));
+puts("\t5\n");
+    time_t rawtime;
     struct tm * timeinfo;
 
     time ( &rawtime );
     timeinfo = localtime ( &rawtime );
-
+puts("\t6\n");
     // The file name is set as follows:
     // sender_receiver-YYYY-MM-DD-HH:MM:SS.wav
     sprintf(file, "%s_%s_%d_%d_%d_%d_%d_%d.wav", (*u_p)->username, other, timeinfo->tm_year + 1900, timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);

@@ -7,7 +7,7 @@
 #include <netdb.h>
 #include <string.h>
 
-#define REPO "data/credentials"
+#define CREDENTIALS_REPO "data/credentials"
 #define BUF_LEN 256
 #define DELIMIT ";\n"
 
@@ -24,7 +24,7 @@ int signup (char* username, char* password) {
 	char* l_username = malloc(sizeof(char*));
 
 	// First check if a user with that name already exists
-	if ((fp = fopen(REPO, "r")) == NULL) return 0;
+	if ((fp = fopen(CREDENTIALS_REPO, "r")) == NULL) return 0;
 	while (getline(&line, &len, fp) != -1) {
 		l_username = strtok(line, DELIMIT);
 		printf("Comparing: %s - %s\n", username, l_username);
@@ -35,7 +35,7 @@ int signup (char* username, char* password) {
 	}
 
 	// Hooray! There is no user with that name already, so i can sign it up
-	if ((fp = fopen(REPO, "a")) == NULL) return 0;
+	if ((fp = fopen(CREDENTIALS_REPO, "a")) == NULL) return 0;
 	hash(&password);
 	printf("%s, %s\n", username, password);
 	fprintf(fp, "%s;%s\n", username, password);
@@ -53,7 +53,7 @@ int login(char* username, char* password) {
 	char* l_username = malloc(sizeof(char*));
 	char* l_password = malloc(sizeof(char*));
 	hash(&password);
-	if ((fp = fopen(REPO, "r")) == NULL) {
+	if ((fp = fopen(CREDENTIALS_REPO, "r")) == NULL) {
 		printf("[] can't read repo\n");
 		return -1;
 	}

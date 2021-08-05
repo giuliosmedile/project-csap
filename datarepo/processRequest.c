@@ -13,7 +13,7 @@ char* processRequest(int socket, char* request) {
 		char* filename = searchMessage(args[1], atoi(args[2]));
 
 		// Once I find the message, I just send it
-		sendFile(socket, filename);
+		sendFile(socket, filename, get_file_size(filename));
 
 	} else if (!strcmp(args[0], "receive")) {
 

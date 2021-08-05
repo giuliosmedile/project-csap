@@ -25,6 +25,8 @@ void main (int argc, char** argv) {
 
     // Override SIGINT's handler to properly close the socket
     signal(SIGINT, haltProgram);
+    signal(SIGSTOP, haltProgram);
+    signal(SIGSEGV, haltProgram);
 
 	char* request = (char*)malloc(BUF_SIZE *  sizeof(char));
 	char* reply = (char*)malloc(BUF_SIZE * sizeof(char));

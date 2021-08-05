@@ -2,22 +2,25 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <time.h>
 #include <string.h>
+//#include "list.c"
 
-#define BUF_SIZE 256
+// #define BUF_SIZE 4096
 #define MAX_ADDRESSBOOK_SIZE 50
 #ifdef TEST
-char* REPO = "test.txt";
+	char* repo = "test.txt";
 #else
-char* REPO = "../datarepo/data/users.txt";
+	char* repo = "../datarepo/data/users.txt";
 #endif
-struct s_user {
-	char* username;			// the user's username
-	int messagesno;			// the number of messages the user has sent
-	int addressbook_size;	// how many users this user has in their addressbook
-	char* addressbook[];	// the user's addressbook
-};
-typedef struct s_user t_user;
+// struct s_user {
+// 	char* username;			// the user's username
+// 	int addressbook_size;	// how many users this user has in their addressbook
+// 	int messagesno;			// the number of messages the user has sent
+// 	NODE* messages;			// the user's messages
+// 	char* addressbook[];	// the user's addressbook
+// };
+// typedef struct s_user t_user;
 
 void removeDuplicates(char* username, char* filename);
 t_user* searchUser(char* username, char* filename);
@@ -36,9 +39,11 @@ t_user* createUser(char* username) {
 	// Fill the struct
 	u->username = (char*)malloc(BUF_SIZE * sizeof(char));
 	strcpy(u->username, username);
-	u->messagesno = 0;
 	u->addressbook_size = 0;
 	*(u->addressbook) = malloc(MAX_ADDRESSBOOK_SIZE * sizeof(char*));
+	u->messagesno = 0;
+	u->messages = (NODE*)malloc(sizeof(NODE));
+	init_list(&(u->messages));
 	return u;
 }
 
@@ -67,6 +72,14 @@ char* printUser(t_user* u, char* string) {
 		strcat(buf, u->addressbook[i]);
 		strcat(buf, ";");
 	}
+
+	// Write the messages
+	NODE* temp = u->messages;
+	while (temp != NULL) {
+		sprintf(tmp, "%s;", temp->message->filename);
+		strcat(buf, tmp);
+	}
+
 	printf("- End print: buf: \"%s\"\n", buf);
 
 	return buf;
@@ -100,6 +113,31 @@ char* formatPrintUser(t_user* u, char* string) {
 		for (int i = 1; i<=u->addressbook_size; i++) {
 			sprintf(tmp, "%d\t%s\n", i, u->addressbook[i]);
 			strcat(string, tmp);
+		}
+	}
+
+	if (u->messagesno == 0) {
+		sprintf(tmp, "You have not sent any messages.\n");
+	} else {
+		sprintf(tmp, "-- Messages --\n");
+		strcat(string, tmp);
+
+		NODE* temp = u->messages;
+		int i = 1;
+		while (temp != NULL) {
+			sprintf(tmp, "\tMessage number %d\n", i);
+			strcat(string, tmp);
+
+			sprintf(tmp, "\t\tFrom: %s\n", temp->message->sender->username);
+			strcat(string, tmp);
+
+			sprintf(tmp, "\t\tTo: %s\n", temp->message->receiver->username);
+			strcat(string, tmp);
+
+			sprintf(tmp, "\t\tDate: %s\n", ctime(&(temp->message->timestamp)));
+			strcat(string, tmp);
+
+			i++;
 		}
 	}
 
@@ -184,7 +222,7 @@ t_user* readUser(char* line) {
 t_user* addUserToAddressBook(t_user* u, char* username) {
 	// First check if the user I'm adding exists
 	printf("\ta\n");
-	t_user* tmp = searchUser(username, REPO);
+	t_user* tmp = searchUser(username, repo);
 	printf("\t%s\n", tmp->username);
 	if(tmp==NULL) return NULL;
 

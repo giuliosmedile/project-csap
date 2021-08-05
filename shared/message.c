@@ -5,28 +5,28 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <string.h>
-#include "user.c"
+//#include "user.c"
 
-#define BUF_SIZE 256
+//#define BUF_SIZE 4096
 #define REPO "../datarepo/data/messages/"
 #define USERS_REPO "../datarepo/data/users.txt"
 
 // Type definition
-struct s_message {
-    t_user* sender;     // The user that sent the message
-    t_user* receiver;   // The user that received the message
-    char* filename;     // The file that contains the message
-    time_t timestamp;   // The time the message was sent
-    int is_read;        // The message has been read by the receiver
-};
-typedef struct s_message t_message;
+// struct s_message {
+//     t_user* sender;     // The user that sent the message
+//     t_user* receiver;   // The user that received the message
+//     char* filename;     // The file that contains the message
+//     time_t timestamp;   // The time the message was sent
+//     int is_read;        // The message has been read by the receiver
+// };
+// typedef struct s_message t_message;
 
 
 t_message* saveMessage(char* filename) {
     // Create a new message
     t_message* message = (t_message*)malloc(sizeof(t_message*));
 
-    // The message is composed of the following arguments:
+    // The message string is composed of the following arguments:
     // 1. The sender's username
     // 2. The receiver's username
     // 3. The year the message was sent
@@ -37,7 +37,7 @@ t_message* saveMessage(char* filename) {
     // 8. The second the message was sent
 
     // Initialize the arguments and tokenize them
-    char* arguments[8];
+    char** arguments = (char**)malloc(8 * sizeof(char*));
     tokenize(filename, &arguments);
 
 ///
@@ -60,8 +60,8 @@ t_message* saveMessage(char* filename) {
     strcpy(message->filename, filename);
 
     // Find the users
-    message->sender = findUser(arguments[0], USERS_REPO);
-    message->receiver = findUser(arguments[1], USERS_REPO);
+    message->sender = searchUser(arguments[0], USERS_REPO);
+    message->receiver = searchUser(arguments[1], USERS_REPO);
 
     // Get the timestamp
     struct tm tmdate = {0};
@@ -75,3 +75,12 @@ t_message* saveMessage(char* filename) {
 
     return message;    
 } 
+
+/**
+ * Function that flags that a message has been read.
+ * This must be the only way that the is_read variable can be changed.
+*/
+void flagMessageRead(t_message* m) {
+    m->is_read = 1;
+}
+    

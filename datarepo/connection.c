@@ -128,7 +128,7 @@ void sendFile(int s, char* filename, int filesize) {
             perror("[-]Error in sending file.");
             exit(1);
         }
-        printf("%s", data);
+        
         bzero(data, BUF_SIZE);
     }
 

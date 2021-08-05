@@ -1,10 +1,11 @@
 #define BUF_SIZE 256
 
-#define USERS_REPO "./data/users.txt"
+#define USERS_REPOSITORY "./data/users.txt"
 #define MESSAGES_REPO "./data/messages.txt"
 
 
 void dowork(int socket) {
+	puts("[] Inside dowork\n");
 	char* rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
 
     // Wait for requests
@@ -26,14 +27,13 @@ void dowork(int socket) {
 	printf("ops: \"%s\"\n", ops[0]);
 	sprintf(command, "%s", ops[0]);
 
-
 	// TODO: Tell messages.c to set the messages repo as REPO
 	//setMessagesRepository(MESSAGES_REPO);
 
 	// HANDLE LOGIN
 	if (!strcmp(command, "login")) {
 		printf("login\n");
-		result = getUser(ops[1], USERS_REPO);
+		result = getUser(ops[1], USERS_REPOSITORY);
 		if (result == NULL) {
 			result = "USERNOTFOUND";
 		} else {
@@ -45,38 +45,38 @@ void dowork(int socket) {
 	} else if (!strcmp(command, "signup")) {
 		printf("signup\n");
 		user = createUser(ops[1]);
-		saveUser(user, USERS_REPO);
-		result = getUser(user->username, USERS_REPO);
+		saveUser(user, USERS_REPOSITORY);
+		result = getUser(user->username, USERS_REPOSITORY);
 
 		printf("result: \"%s\"\n", result);
 		printf("end signups\n");
+		free(user);
 	
 	// HANDLE ADD
 	} else if (!strcmp(command, "add")) {
 		printf("add\n");
-		user = searchUser(ops[1], USERS_REPO);
+		user = searchUser(ops[1], USERS_REPOSITORY);
 		printf("\t1\n");
 		user = addUserToAddressBook(user, ops[2]);
 		printf("\t%s\n", formatPrintUser(user, ""));
-		saveUser(user, USERS_REPO);
+		saveUser(user, USERS_REPOSITORY);
 		printf("\t3\n");
-		result = getUser(user->username, USERS_REPO);
+		result = getUser(user->username, USERS_REPOSITORY);
 
 		printf("result: \"%s\"\n", result);
 		printf("end add\n");
+		free(user);
 
 	// HANDLE DEFAULT
 	} else {
 		printf("operation not supported");
 		result = "noop";
 	}
-	
 	sendToSocket(socket, result);
 
 	free(ops);
 	free(rcvString);
 	free(command);
 	free(result);
-	free(user);
 
 } 	

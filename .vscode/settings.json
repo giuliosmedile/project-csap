@@ -1,6 +1,7 @@
 {
     "files.associations": {
-        "connection.c": "cpp"
+        "connection.c": "cpp",
+        "string.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

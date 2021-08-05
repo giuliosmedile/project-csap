@@ -94,11 +94,11 @@ void sendFile(int s, char* filename, int filesize) {
     // iterate through the file, because it is easier to debug
     while(fread(data, 1, filesize, fp) > 0) {
         // Send the data
-        if (send(s, (void* )data, filesize, 0) == -1) {
+        if (send(s, (void*)data, filesize, 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }
-        printf("%s", data);
+        //printf("%s", data);
         bzero(data, BUF_SIZE);
     }
 

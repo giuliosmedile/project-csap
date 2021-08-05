@@ -1,18 +1,19 @@
-// IMPLEMENTATION OF A LIST OF USERS
+// IMPLEMENTATION OF A LIST OF MESSAGES
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "user.c"
+//#include "message.c"
 
-typedef struct node {
-	t_user user;
-	struct node* next;
-} NODE;
+// typedef struct node {
+// 	t_message* message;
+// 	struct node* next;
+// } NODE;
 
-void new(NODE** head) {
+void init_list(NODE** head) {
 	*head = NULL;
 }
 
+/*
 void print_list(NODE* head) {
 	NODE* current = head;
 	int i = 0;
@@ -21,14 +22,21 @@ void print_list(NODE* head) {
 		current = current->next;
 	}
 }
+*/
 
-NODE* add_node(NODE* head, t_user u) {
+/**
+ * Function that adds a new message at the beginning of a list
+*/
+NODE* add_node(NODE* head, t_message* m) {
 	NODE* new = (NODE*)malloc(sizeof(NODE));
-	temp->user = u;
-	temp->next = head;
-	return head;
+	new->message = m;
+	new->next = head;
+	return new;
 }
 
+/**
+ * Function that removes a node from a list
+*/
 void remove_node(NODE* head) {
 	NODE* temp = (NODE*) malloc(sizeof (NODE));
     temp = head->next;
@@ -36,20 +44,58 @@ void remove_node(NODE* head) {
     free(temp);
 }
 
-t_user search_list(NODE* head, char* username) {
-	NODE* tmp = head;
-	while (tmp != NULL) {
-		if (!strcmp(tmp->user.username, username)) return tmp->user;
-		tmp = tmp->next;
-	}
-	return NULL;
-}
+/** Function that finds in the input list all the messages that
+ * were sent by the same person
+ * @param list the list of messages
+ * @param user the user that sent the messages
+ * @return the list of messages that were sent by the same person
+*/ 
+NODE* getBySender(NODE* list, char* username) {
+	NODE* result = (NODE*) malloc(sizeof(NODE));
+	NODE* current = list;
 
-int contains(t_user user, LIST* list) {
-	int result = 0;
-	NODE* current = list->head;
 	while (current != NULL) {
-		if(compareUsers(current, user)) return 0;
+		if (strcmp(current->message->sender->username, username) == 0) {
+			result = add_node(result, current->message);
+		}
 		current = current->next;
 	}
+	return result;
+}
+
+/**
+ * Function that finds in the input list all the messages that
+ * were received by the same person
+ * @param list the list of messages
+ * @param user the user that received the messages
+ * @return the list of messages that were received by the same person
+*/
+NODE* getByReceiver(NODE* list, char* username) {
+	NODE* result = (NODE*) malloc(sizeof(NODE));
+	NODE* current = list;
+
+	while (current != NULL) {
+		if (strcmp(current->message->receiver->username, username) == 0) {
+			result = add_node(result, current->message);
+		}
+		current = current->next;
+	}
+	return result;
+}
+
+/**
+ * Function that counts how many unread messages are there in a list
+ * @param list the list of messages
+ * @return the number of unread messages in the list
+*/ 
+int countUnreadMessages(NODE* list) {
+	int result = 0;
+	NODE* current = list;
+
+	while (current != NULL) {
+		if (current->message->is_read == 1) {
+			result++;
+		}
+	}
+	return result;
 }
