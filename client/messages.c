@@ -1,13 +1,14 @@
 // FUNCTIONS TO HANDLE MESSAGES AND ADDRESSBOOK
 
-#include <stdlib.h>
-#include <time.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <sys/stat.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <stdio.h>
+// #include <unistd.h>
+// #include <string.h>
+// #include <sys/types.h>
+// #include <sys/wait.h>
+// #include <sys/stat.h>
+// #include <malloc.h>
 
 #define TMP_DIR "/var/tmp/project-csap"     //the temporary directory in which the files will be saved
 #define REC "/usr/bin/rec"                  //where rec is located
@@ -82,7 +83,7 @@ char* add(char* result, t_user** u_p) {
 
     // Get user input
     printf("Username of the user you want to add: ");
-	if (fgets(other,sizeof(other),stdin) == NULL) {
+	if (fgets(other,BUF_SIZE,stdin) == NULL) {
         return "null";
     }
     other[strlen(other)-1] = '\0';
@@ -92,56 +93,50 @@ char* add(char* result, t_user** u_p) {
 }
 
 char* record(char* result, t_user** u_p, char* file) {
+
     char* path = (char*)malloc(BUF_SIZE * sizeof(char));        // The file path in which the temp recording will be
     char* other = (char*)malloc(BUF_SIZE * sizeof(char));       // user who will receive the file
     char *args[3];                                              // Arguments for rec command
     int pid, status;
     int res;
 
-    puts("\t1\n");
-
     // to exit rec, a SIGINT must be sent, so we intercept it and do nothing, or else the program will exit
     signal(SIGINT, interceptSigInt);
 
     printf("%s", COLOR);
-puts("\t1\n");
     // Check if i am logged in
     if (*u_p == NULL) {
         printf("[!] Before recording a message, perhaps you should try logging in first.\n");
         sprintf(result, "null");
         return "null";
     }
-puts("\t1\n");
     // Check if i can run rec
     if (!can_run_command("rec")) {
         printf("[!] Be sure to have installed rec and play through\n\tsudo apt install sox\n");
         sprintf(result, "null");
         return "null";
     }
-puts("\t1\n");
     // Create the temp directory, it if is not there
     struct stat st = {0};
     if (stat(TMP_DIR, &st) == -1) {
         mkdir(TMP_DIR, 0755);
     }
-puts("\t1\n");
 
     // Take input
     printf("Username of the user you want to send a message to: ");
-	if (fgets(other,sizeof(other),stdin) == NULL) {
+	if (fgets(other,BUF_SIZE,stdin) == NULL) {
         return "null";
     }
     other[strlen(other)-1] ='\0';
-puts("\t5\n");
-    time_t rawtime;
-    struct tm * timeinfo;
 
-    time ( &rawtime );
-    timeinfo = localtime ( &rawtime );
-puts("\t6\n");
+    time_t rawtime;
+    time (&rawtime);
+    struct tm* timeinfo = (struct tm*)malloc(sizeof(struct tm));
+    timeinfo = localtime (&rawtime);
+    
     // The file name is set as follows:
     // sender_receiver-YYYY-MM-DD-HH:MM:SS.wav
-    sprintf(file, "%s_%s_%d_%d_%d_%d_%d_%d.wav", (*u_p)->username, other, timeinfo->tm_year + 1900, timeinfo->tm_mon, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+    sprintf(file, "%s-%s-%d:%d:%d:%d:%d:%d.wav", (*u_p)->username, other, timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
     sprintf(path, "%s/%s", TMP_DIR, file);
     // Fork child to record audio message
     switch(pid=fork()) {

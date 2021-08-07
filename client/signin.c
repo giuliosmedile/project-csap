@@ -8,15 +8,9 @@
 #include <string.h>
 #include <unistd.h>
 
-// The next two are for handling the color output in the console
-#define COLOR "\033[0;33m"
-#define STD_COL "\033[0m"
-
-#define BUF_SIZE 256
-
 /** Signup routine.
- *  @result the line that the client typed in stdin
- *  @u_p address of a user struct. Needed to check if already logged in
+ *  @param result the line that the client typed in stdin
+ *  @param u_p address of a user struct. Needed to check if already logged in
  *  @returns the string to send to the server
 */
 char* signup(char* result, t_user** u_p) {
@@ -33,7 +27,7 @@ char* signup(char* result, t_user** u_p) {
     }
 
 	printf("Username: ");
-	if (fgets(username,sizeof(username),stdin) == NULL) {
+	if (fgets(username,BUF_SIZE,stdin) == NULL) {
         //printf("\n");
         exit(0);
     }
@@ -75,7 +69,7 @@ char* login(char* result, t_user** u_p) {
 
 	printf("%s", COLOR);	//Red text
 	printf("Username: ");
-	if (fgets(username,sizeof(username),stdin) == NULL) {
+	if (fgets(username,BUF_SIZE,stdin) == NULL) {
         printf("\n");
         exit(0);
     }
@@ -84,7 +78,7 @@ char* login(char* result, t_user** u_p) {
 
     printf("%s", COLOR);	//Red text
     printf("Password for %s: ", username);
-    if (fgets(password,sizeof(password),stdin) == NULL) {
+    if (fgets(password,BUF_SIZE,stdin) == NULL) {
         printf("\n");
         exit(0);
     }

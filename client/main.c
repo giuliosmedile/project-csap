@@ -2,7 +2,6 @@
 #include "client.h"
 
 #define MAXARGS 64
-#define BUF_SIZE 256
 
 // The next two are for handling the color output in the console
 #define COLOR "\033[0;33m"
@@ -46,7 +45,7 @@ char* takeUserInput(char* input) {
     } else {
         printf("[%s]: ", u->username);
     }
-    if (fgets(input,sizeof(input),stdin) == NULL) {
+    if (fgets(input,BUF_SIZE,stdin) == NULL) {
         printf("\n");
         exit(0);
     }
@@ -73,6 +72,7 @@ char* interpretInput(char* command, char* output) {
         char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
         record(output, &u, filename);
         sendToSocket(s, output);
+        sleep(1);
         char* path = (char*)malloc(BUF_SIZE * sizeof(char));
         sprintf(path, "%s/%s", TMP_DIR, filename);
         printf("[-] Sending file to %d\n", s);
