@@ -3,8 +3,6 @@
 // This function represent the main client-server-dataserver interaction
 // of the system.
 
-#define BUF_SIZE 256
-
 int counter = 0;
 char* rcvString;
 char** ops;

@@ -7,7 +7,7 @@
 #include <unistd.h>
 #include <sys/stat.h>
 
-#define TMP_DIR "/var/tmp/project-csap/server"     //the temporary directory in which the files will be saved"
+#define TMP_DIR "/var/tmp/project-csap/server"     	//the temporary directory in which the files will be saved
 
 /**
  *  Function to add a user to another's addressbook.
@@ -21,7 +21,9 @@ int add(char* user, char* other) {
     int found = 0;      // tells me if i found the username in REPO
 
     if ((fp = fopen(REPO, "r")) == NULL) return 0;
+	puts("1");
 	while (getline(&line, &len, fp) != -1) {
+		puts("2");
 		l_username = strtok(line, DELIMIT);
 		printf("Comparing: %s - %s\n", other, l_username);
 		if (strcmp(other, l_username)==0) {

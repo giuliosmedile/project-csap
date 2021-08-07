@@ -7,6 +7,9 @@
 #include <sys/wait.h>       /* for waitpid() */
 #include <signal.h>         /* for sigaction() */
 
+#define BUF_SIZE 4096
+#define CREDENTIALS_REPO "./data/credentials"
+
 /// SHARED
 
 #include "../shared/structs.h"

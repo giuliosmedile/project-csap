@@ -2,7 +2,8 @@
     "files.associations": {
         "connection.c": "cpp",
         "string.h": "c",
-        "time.h": "c"
+        "time.h": "c",
+        "cmath": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

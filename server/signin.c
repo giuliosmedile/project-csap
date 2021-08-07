@@ -7,7 +7,6 @@
 #include <netdb.h>
 #include <string.h>
 
-#define CREDENTIALS_REPO "data/credentials"
 #define BUF_LEN 256
 #define DELIMIT ";\n"
 
