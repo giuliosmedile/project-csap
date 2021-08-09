@@ -12,6 +12,8 @@
 #include <string.h>
 #include <stdbool.h>
 
+#define BUF_SIZE 4096
+
 /// SHARED
 #include "../shared/structs.h"
 #include "../shared/utils.c"
@@ -27,9 +29,6 @@
 #include "processRequest.c"
 #include "handleSocketReplies.c"
 #include "dowork.c"
-
-
-#define BUF_SIZE 256
 
 ///      FUNCTION DECLARATIONS
 

@@ -3,7 +3,6 @@
 #define CONFIG "datarepo.conf"		//name of the configuration file
 #define COMMENT '#'					//character that defines a comment line
 #define MAX_ARGS 2					//every line is structured as lhs=rhs, so the tokenize array only needs 2 fields
-#define BUF_SIZE 256				//max buffer size
 
 void readConfig (short unsigned int* serv_port) {
 	int tmp = *serv_port;

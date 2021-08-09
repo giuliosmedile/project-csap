@@ -1,4 +1,3 @@
-#define BUF_SIZE 256
 #define MESSAGES_EXTENSION ".wav"
 char* messagesRepo;
 char* userRepo;

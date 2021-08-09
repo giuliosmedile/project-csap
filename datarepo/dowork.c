@@ -1,5 +1,3 @@
-#define BUF_SIZE 256
-
 #define USERS_REPOSITORY "./data/users.txt"
 #define MESSAGES_REPO "./data/messages.txt"
 

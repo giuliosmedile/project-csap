@@ -68,7 +68,7 @@ t_user* handleServerReplies(char* command, char* response, t_user* user) {
 	} else if (!strcmp(command, "signup")) {
 		handleSignup(response);
 	} else if (!strcmp(command, "add")) {
-		handleAdd(response, user);
+		user = handleAdd(response, user);
 	} else if (!strcmp(command, "")){
 		printf("There must have been an error in the response from the server.\n");
 	} else {

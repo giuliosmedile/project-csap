@@ -52,6 +52,10 @@ void sendToSocket(int s, char* buf) {
     // Make sure the string is null terminated
     buf[strlen(buf)] = '\0';
     printf("[-] About to send to %d: \"%s\"\n", s, buf);
+
+    // Make sure the string is null terminated, as some junk characters may be leftover from previous sends
+    buf[strlen(buf)] = '\0';
+
     // Write (or send) to socket
     if (write(s, buf, strlen(buf))<0) {
         perror("write");

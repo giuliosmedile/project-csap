@@ -20,7 +20,7 @@ int add(char* user, char* other) {
 	char* l_username = malloc(sizeof(char*));
     int found = 0;      // tells me if i found the username in REPO
 
-    if ((fp = fopen(REPO, "r")) == NULL) return 0;
+    if ((fp = fopen(CREDENTIALS_REPO, "r")) == NULL) return 0;
 	puts("1");
 	while (getline(&line, &len, fp) != -1) {
 		puts("2");

@@ -1,6 +1,5 @@
 // FUNCTIONS FOR CONNECTING CLIENTS AND SERVER
 #define MAXPENDING 10
-#define BUF_SIZE 256
 
 void DieWithError(char* str) {
     perror(str);

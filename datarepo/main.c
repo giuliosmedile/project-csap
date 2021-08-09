@@ -2,7 +2,6 @@
 #include "datarepo.h"
 
 #define MAXARGS 64
-#define BUF_SIZE 256
 
 int dataRepoSock;      // "My" end of the socket
 int servSock;

@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #define SEPARATOR " \t\r\n\v\f;="
 
@@ -53,4 +54,15 @@ int get_file_size(char *source)
     fseek(fp,0,SEEK_SET);
     fclose(fp);
     return size;
+}
+
+// Function that tells if a string is a number
+int isNumber(char s[])
+{
+    for (int i = 0; s[i]!= '\0'; i++)
+    {
+        if (isdigit(s[i]) == 0)
+              return 0;
+    }
+    return 1;
 }

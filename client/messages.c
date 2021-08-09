@@ -81,12 +81,11 @@ char* add(char* result, t_user** u_p) {
         return "null";
     }
 
-    // Get user input
     printf("Username of the user you want to add: ");
 	if (fgets(other,BUF_SIZE,stdin) == NULL) {
         return "null";
     }
-    other[strlen(other)-1] = '\0';
+    other[strlen(other)-1] ='\0';
     sprintf(result, "add %s %s", (*u_p)->username, other);
     return result;
 
@@ -123,11 +122,8 @@ char* record(char* result, t_user** u_p, char* file) {
     }
 
     // Take input
-    printf("Username of the user you want to send a message to: ");
-	if (fgets(other,BUF_SIZE,stdin) == NULL) {
-        return "null";
-    }
-    other[strlen(other)-1] ='\0';
+    selectUser(*u_p, other);
+    
 
     time_t rawtime;
     time (&rawtime);

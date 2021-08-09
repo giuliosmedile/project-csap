@@ -238,6 +238,12 @@ t_user* addUserToAddressBook(t_user* u, char* username) {
 }
 
 
+/** 
+ * Function that search a user in the repository
+ * @param username the username of the user to search
+ * @param repo the repository to search in
+ * @returns the user struct if it exists, NULL otherwise
+*/
 t_user* searchUser(char* username, char* filename) {
 	FILE* fp;
 	char* buf = malloc(BUF_SIZE * sizeof(char));
@@ -250,6 +256,21 @@ t_user* searchUser(char* username, char* filename) {
 	}
 	fclose(fp);
 }
+
+/**
+ * Function that tells if a user exists in another's addressbook
+ * @param username the username of the user to search
+ * @param u the user struct to search in
+ * @returns 1 if the user exists, 0 otherwise
+*/
+int isInAddressBook(char* username, t_user* u) {
+	for (int i = 1; i<=u->addressbook_size; i++) {
+		if (!strcmp(u->addressbook[i], username)) return 1;
+	}
+	return 0;
+}
+
+
 
 /**
  * removes duplicates of username from repo file
@@ -305,6 +326,52 @@ char* getUser(char* username, char* filename) {
 	}
 
 
+	return NULL;
+}
+
+/**
+ *  Function that allows a user to select a user from another's addressbook. 
+ *  User input can either be the positional number of the user in the addressbook or the username
+ * 
+ *  @param u the user struct to search in
+ *  @param result the result string
+ *  @returns the username of the user selected
+*/
+char* selectUser(t_user* u, char* result) {
+	// Print the addressbook
+	for (int i = 1; i<=u->addressbook_size; i++) {
+		printf("%d\t%s\n", i, u->addressbook[i]);
+	}
+	printf("\n");
+
+	// Loop until the user selects a valid username
+	char* username = (char*)malloc(BUF_SIZE * sizeof(char));
+	username = NULL;
+	while (username == NULL) {
+
+		// Ask the user to select a user
+		printf("Select a user: ");
+		char* username = (char*)malloc(BUF_SIZE * sizeof(char));
+		fgets(username, BUF_SIZE, stdin);
+		username[strlen(username)-1] = '\0';
+
+		// Check if it is a number and if it is within range of the addressbook
+		if (isNumber(username) && atoi(username)>0 && atoi(username)<=u->addressbook_size) {
+			// Select the i-th user 
+			sprintf(result, "%s", u->addressbook[atoi(username)]);
+			return result;
+		} else {
+			// The input is not a number, so i check if the user is in the addressbook
+			if (isInAddressBook(username, u)) {
+				sprintf(result, "%s", username);
+				return result;
+			}
+		}
+
+		// The user provided an invalid input, so I ask him again
+	}
+	
+	// Not reached
 	return NULL;
 }
 
