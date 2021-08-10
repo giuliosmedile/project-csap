@@ -49,7 +49,7 @@ void dowork(int clientSock, int dataRepoSock) {
         printf("- Adding to addressbook - \n");
         result = add(ops[1], ops[2]);
     } else if (!strcmp(command, "record")) {
-        result = record(ops[1], clientSock);
+        result = record(ops[1], atoi(ops[2]), clientSock);
     }
 
      /* --------------- COMMUNICATIONS WITH DATA REPO ----------------- */
@@ -97,8 +97,27 @@ void dowork(int clientSock, int dataRepoSock) {
         }
     } else if (!strcmp(command, "record")) {
         if (result) {
+            // Recreate the complete path for the file
+            char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+            sprintf(path, "%s/%s", TMP_DIR, ops[1]);
 
+            // Tell the mdr to wait for the file
+            char* tmp = malloc(BUF_SIZE * sizeof(char));
+            sprintf(tmp, "record;%s;%s", ops[1], ops[2]);
+            sendToSocket(dataRepoSock, tmp);
+            sleep(1);
+
+            // Send the file to mdr
+            sendFile(dataRepoSock, path, get_file_size(path));
+
+            // Wait for response from the data repo
+            output = readFromSocket(dataRepoSock, output);
+
+            // Finally free local variables
+            free(tmp);
+            free(path);
         } else {
+            // There has been an error while receiving the file from the client
             output = "NORECORD";
         }
      }

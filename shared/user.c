@@ -22,8 +22,10 @@
 // };
 // typedef struct s_user t_user;
 
+// Function prototypes
 void removeDuplicates(char* username, char* filename);
 t_user* searchUser(char* username, char* filename);
+t_message* saveMessage(char* filename);					// this is in message.c
 
 /**
  * Initializes a user. 
@@ -57,7 +59,7 @@ char* printUser(t_user* u, char* string) {
 	strcat(buf, ";");
 
 	// Write the number of messages sent
-	char tmp[10];
+	char tmp[BUF_SIZE];
 	sprintf(tmp, "%d", u->messagesno);
 	strcat(buf, tmp);
 	strcat(buf, ";");
@@ -150,7 +152,6 @@ char* formatPrintUser(t_user* u, char* string) {
  * Saves the user "u" in file "filename", formatting it in this way:
  *		username;messagesno;addressbook_size;[addressbook]\n
 */
-
 void saveUser(t_user* u, char* filename) {
 	// First of all, remove duplicates, if exist
 	removeDuplicates(u->username, filename);
@@ -162,36 +163,14 @@ void saveUser(t_user* u, char* filename) {
 		printf("err: could not open file %s", filename);
 		return;
 	}
-	char* buf = (char*)malloc(10000 * sizeof(char));
+	
+	// Call the printUser function to print the user
+	char* string = (char*)malloc(BUF_SIZE * sizeof(char)); 
+	string = printUser(u, string);
 
-	// Write the username
-	strcat(buf, u->username);
-	strcat(buf, ";");
-
-	// Write the number of messages sent
-	char tmp[10];
-	sprintf(tmp, "%d", u->messagesno);
-	strcat(buf, tmp);
-	strcat(buf, ";");
-
-	// Write the addressbook size
-	sprintf(tmp, "%d", u->addressbook_size);
-	strcat(buf, tmp);
-	strcat(buf, ";");
-
-	// Write the addressbook
-	for (int i = 1; i<u->addressbook_size+1; i++) {
-		strcat(buf, u->addressbook[i]);
-		strcat(buf, ";");
-	}
-
-	// Finish by newline
-	strcat(buf, "\n");
-
-	// Print this on the file
-	fprintf(fp, "%s", buf);
+	fprintf(fp, "%s", string);
 	fclose(fp);
-	free(buf);
+	free(string);
 	return;
 }
 
@@ -221,19 +200,13 @@ t_user* readUser(char* line) {
 
 t_user* addUserToAddressBook(t_user* u, char* username) {
 	// First check if the user I'm adding exists
-	printf("\ta\n");
 	t_user* tmp = searchUser(username, repo);
-	printf("\t%s\n", tmp->username);
 	if(tmp==NULL) return NULL;
 
 	// After I checked, I can add the user
-	printf("\ta\n");
 	int i = ++(u->addressbook_size);
-	printf("\tb\n");
 	u->addressbook[i] = malloc(BUF_SIZE * sizeof(char));
-	printf("\tc\n");
 	strcpy(u->addressbook[i], username);
-	printf("\td\n");
 	return u;
 }
 
@@ -248,13 +221,33 @@ t_user* searchUser(char* username, char* filename) {
 	FILE* fp;
 	char* buf = malloc(BUF_SIZE * sizeof(char));
 	size_t len;
-	if ((fp = fopen(filename, "r")) == NULL) return NULL;
+	if ((fp = fopen(filename, "r")) == NULL) {
+		puts("err: could not open file");
+		return NULL;
+	}
 
 	while (getline(&buf, &len, fp) != -1) {
-		t_user* u = readUser(buf);
-		if (!strcmp(u->username, username))	return u;
+		
+		// If the string is newline terminated, remove '\n'
+		if (buf[strlen(buf)-1] == '\n') {
+			buf[strlen(buf)-1] = '\0';
+		}
+		printf("searchuser BUF: \"%s\"", buf);
+		
+		// Read user from buffer line
+		t_user* u = (t_user*)malloc(sizeof(t_user));
+		u = readUser(buf);
+
+		//printf("%s\n\n", formatPrintUser(u, ""));
+		printf("Compare: u->: %s, username: %s\n", u->username, username);
+		if (!strcmp(u->username, username))	{
+			fclose(fp);
+			return u;
+		}
+		printf("loop\n");
 	}
 	fclose(fp);
+	return NULL;
 }
 
 /**
@@ -373,5 +366,23 @@ char* selectUser(t_user* u, char* result) {
 	
 	// Not reached
 	return NULL;
+}
+
+/**
+ * Function that adds a message to a user struct
+ * @param u the user struct to add the message to
+ * @param filename the filename of the message i want to add
+ * @returns the user struct with the message added
+*/
+t_user* addMessageToUser(t_user* u, char* filename) {
+
+	t_message* message = (t_message*)malloc(sizeof(t_message));
+	message = saveMessage(filename);
+
+	// add the message to the user's message list
+	add_node(u->messages, message);
+	u->messagesno++;
+
+	return u;
 }
 

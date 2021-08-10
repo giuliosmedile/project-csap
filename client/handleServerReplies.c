@@ -51,9 +51,26 @@ t_user* handleAdd(char* response, t_user* user)  {
 
 	if (!strcmp(response, "NOADD")) {
 		printf("[!] Could not find the other user you tried adding. Does this user exist?\n");
-		return NULL;
+		return user;
 	}
 
+	user = decodeUser(response, user);
+	return user;
+
+}
+
+t_user* handleRecord(char* response, t_user* user)  {
+
+	// Check for various errors
+	if (!strcmp(response, "NORECORD")) {
+		printf("[!] There has been an error sending the message to the server. Please send the message again.\n");
+		return user;
+	} else if (!strcmp(response, "FILESIZEERROR")) {
+		printf("[!] There has been an error saving the file on the data repo. Please check your internet connection and try again.\n");
+		return user;
+	}
+
+	// If there are no errors, decode the response
 	user = decodeUser(response, user);
 	return user;
 
@@ -69,6 +86,8 @@ t_user* handleServerReplies(char* command, char* response, t_user* user) {
 		handleSignup(response);
 	} else if (!strcmp(command, "add")) {
 		user = handleAdd(response, user);
+	} else if (!strcmp(command, "record")) {
+		user = handleRecord(response, user);
 	} else if (!strcmp(command, "")){
 		printf("There must have been an error in the response from the server.\n");
 	} else {

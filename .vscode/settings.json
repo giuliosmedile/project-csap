@@ -4,7 +4,8 @@
         "string.h": "c",
         "time.h": "c",
         "cmath": "c",
-        "ctype.h": "c"
+        "ctype.h": "c",
+        "message.c": "cpp"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

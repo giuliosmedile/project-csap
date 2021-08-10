@@ -98,11 +98,11 @@ void sendFile(int s, char* filename, int filesize) {
     // iterate through the file, because it is easier to debug
     while(fread(data, 1, filesize, fp) > 0) {
         // Send the data
-        if (send(s, (void*)data, filesize, 0) == -1) {
+        if (send(s, (void* )data, filesize, 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }
-        //printf("%s", data);
+
         bzero(data, BUF_SIZE);
     }
 
@@ -129,7 +129,7 @@ void receiveFile(int s, char* filename) {
         // If data was received less than BUF_SIZE, the file is over
         if (n < BUF_SIZE) {
             // Write the remaining data and save the file
-            fwrite(buffer, 1, BUF_SIZE, fp);
+            fwrite(buffer, 1, n, fp);
             fclose(fp);
             return;
         }

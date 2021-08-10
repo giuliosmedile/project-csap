@@ -11,8 +11,11 @@
 #include <netdb.h>
 #include <string.h>
 #include <stdbool.h>
+#include <sys/stat.h>
 
-#define BUF_SIZE 4096
+#define BUF_SIZE 4096                               // Size of the buffer
+#define TMP_DIR "/var/tmp/project-csap/datarepo"    // Temp directory for messages
+#define FINAL_DIR "./data/messages"                 // Final directory for messages
 
 /// SHARED
 #include "../shared/structs.h"

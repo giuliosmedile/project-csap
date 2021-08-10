@@ -23,6 +23,7 @@
 
 
 t_message* saveMessage(char* filename) {
+    //printf("Filename: %s\n", filename);
     // Create a new message
     t_message* message = (t_message*)malloc(sizeof(t_message*));
 
@@ -38,14 +39,22 @@ t_message* saveMessage(char* filename) {
 
     // Initialize the arguments and tokenize them
     char** arguments = (char**)malloc(8 * sizeof(char*));
-    tokenize(filename, &arguments);
+    char* tmp = (char*)malloc(BUF_SIZE * sizeof(char));
+    strcpy(tmp, filename);
+    tokenizeWithSeparators(tmp, &arguments, "-:");
+    
+    // The last argument still has a trailing ".wav" that we don't need
+    arguments[7][strlen(arguments[7]) - 4] = '\0';
 
 ///
     // Debug tokenization
+    printf("String is: %s\n", filename);
     for (int i = 0; i < 8; i++) {
-        printf("%d\t%s\n", i, arguments[i]);
+        printf("%d\t\"%s\"\n", i, arguments[i]);
     }
 ///
+
+puts("1");
 
 
     // Initialize the fields
@@ -55,14 +64,15 @@ t_message* saveMessage(char* filename) {
     message->timestamp = (time_t)malloc(sizeof(time_t));
     message->is_read = 0;
     
+    puts("1");
 
     // Copy the filename, it's the same as the function parameter
     strcpy(message->filename, filename);
-
+puts("1");
     // Find the users
     message->sender = searchUser(arguments[0], USERS_REPO);
     message->receiver = searchUser(arguments[1], USERS_REPO);
-
+puts("1");
     // Get the timestamp
     struct tm tmdate = {0};
     tmdate.tm_year = atoi(arguments[2]) - 1900;
@@ -72,6 +82,8 @@ t_message* saveMessage(char* filename) {
     tmdate.tm_min = atoi(arguments[6]);
     tmdate.tm_sec = atoi(arguments[7]);
     message->timestamp = mktime(&tmdate);
+puts("1");
+    puts("finished message");
 
     return message;    
 } 

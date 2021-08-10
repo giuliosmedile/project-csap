@@ -119,8 +119,7 @@ void sendToSocket(int s, char* buf) {
  * Function that reads the response from the socket, and stores it in rcv
 */
 char* readFromSocket(int s, char* rcv) {
-    free(rcv);
-    rcv = (char*)malloc(BUF_SIZE * sizeof(char));
+    //rcv = (char*)malloc(BUF_SIZE * sizeof(char));
 	// Read (or recv) from socket
     if (read(s, rcv, BUF_SIZE)<0) {
         perror("read");
@@ -153,7 +152,6 @@ void sendFile(int s, char* filename, int filesize) {
             perror("[-]Error in sending file.");
             exit(1);
         }
-        printf("%s", data);
         bzero(data, BUF_SIZE);
     }
 

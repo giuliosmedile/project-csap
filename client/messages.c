@@ -10,9 +10,9 @@
 // #include <sys/stat.h>
 // #include <malloc.h>
 
-#define TMP_DIR "/var/tmp/project-csap"     //the temporary directory in which the files will be saved
-#define REC "/usr/bin/rec"                  //where rec is located
-#define PLAY "/usr/bin/play"                //where play is located
+#define TMP_DIR "/var/tmp/project-csap/client"     //the temporary directory in which the files will be saved
+#define REC "/usr/bin/rec"                         //where rec is located
+#define PLAY "/usr/bin/play"                       //where play is located
 
 #define true 1
 #define false 0
@@ -91,6 +91,12 @@ char* add(char* result, t_user** u_p) {
 
 }
 
+/** 
+ * Client function for message recording
+ * @param result the string that will be sent to the server
+ * @param u_p pointer to the current user
+ * @param file the filename of the file that will be recorded
+*/
 char* record(char* result, t_user** u_p, char* file) {
 
     char* path = (char*)malloc(BUF_SIZE * sizeof(char));        // The file path in which the temp recording will be
@@ -164,7 +170,7 @@ char* record(char* result, t_user** u_p, char* file) {
 
             // Data is then formatted to be sent to the server as
             // record [filename]
-            sprintf(result, "record %s", file);
+            sprintf(result, "record %s %d", file, get_file_size(path));
             return result;
     }
 

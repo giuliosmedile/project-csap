@@ -17,6 +17,7 @@
 #include "../shared/list.c"
 #include "../shared/user.c"
 #include "../shared/message.c"
+//#include "../shared/connection.c"
 
 /// OWN IMPORTS
 
@@ -26,21 +27,21 @@
 #include "messages.c"
 #include "dowork.c"
 
-// From main.c
-void DieWithError(char* str);
-void tokenize(char* input, char*** output);
+// // From main.c
+// void DieWithError(char* str);
+// void tokenize(char* input, char*** output);
 
-// From signin.c
-int signup(char* username, char* password);
-int login(char* username, char* password);
+// // From signin.c
+// int signup(char* username, char* password);
+// int login(char* username, char* password);
 
-// From messages.c
-int add(char* user, char* other);
-int record(char* filename, int socket);
+// // From messages.c
+// int add(char* user, char* other);
+// int record(char* filename, int socket);
 
-// From readConfig.c
-void readConfig (int* port, int* clients, int* mds, char*** mds_addr);
+// // From readConfig.c
+// void readConfig (int* port, int* clients, int* mds, char*** mds_addr);
 
-// From dowork.c
-void dowork(int servSock, int dataRepoSock);
+// // From dowork.c
+// void dowork(int servSock, int dataRepoSock);
 

@@ -1,9 +1,8 @@
-1;0;0;
 andrea;0;0;
 robertina;0;0;
 roberto;0;0;
 robertok;0;0;
-lollobrigida;0;0;
 lollo1;0;0;
 lollo;0;1;test;
-test;0;4;lollo;roberto;andrea;1;
+test;0;4;lollo;roberto;andrea;robertina;
+lollobrigida;0;1;lollo;

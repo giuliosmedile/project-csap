@@ -12,7 +12,7 @@ void dowork(int socket) {
 		exit(1);
 	}
 
-	char** ops = (char**)malloc(3*BUF_SIZE);
+	char** ops = (char**)malloc(10*BUF_SIZE);
 	char* command = (char*)malloc(BUF_SIZE * sizeof(char));
  	char* result;
 	t_user* user;
@@ -64,6 +64,55 @@ void dowork(int socket) {
 		printf("result: \"%s\"\n", result);
 		printf("end add\n");
 		free(user);
+
+	} else if (!strcmp(command, "record")) {
+		printf("record\n");
+
+		// Create the temp directory, it if is not there
+		struct stat st = {0};
+		if (stat(TMP_DIR, &st) == -1) {
+			mkdir(TMP_DIR, 0755);
+		}
+
+		// Define the path I'll save into
+		char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+		sprintf(path, "%s/%s", TMP_DIR, ops[1]);
+
+		// Wait for the file from the socket
+		receiveFile(socket, path);
+
+		// If the file size is not the same, it means the file was not sent correctly
+		if (get_file_size(path) != atoi(ops[2])) {
+			result = "FILESIZEERROR";
+		} else {            
+			// To get the username of the sender, I need to tokenize ops[1]
+			char* tmp = (char*)malloc(BUF_SIZE * sizeof(char));
+			char** tmp_ops = (char**)malloc(10*BUF_SIZE);
+			strcpy(tmp, ops[1]);
+			tokenizeWithSeparators(tmp, &tmp_ops, "-:");
+			char* user = (char*)malloc(BUF_SIZE * sizeof(char));
+			sprintf(user, "%s", tmp_ops[0]);
+			
+			// Update the sender's messages
+			t_user* u = (t_user*)malloc(sizeof(t_user));
+			u = searchUser(user, USERS_REPOSITORY);
+			u = addMessageToUser(u, ops[1]);
+			puts("3\n");
+			// Update the user on the repo
+			saveUser(u, USERS_REPOSITORY);
+
+			// Move the file on the final directory
+			// TODO? Nah.
+			
+			// Send the result back to server
+			result = getUser(user, USERS_REPOSITORY);
+			printf("result: \"%s\"\n", result);
+			printf("end record\n");
+			free(tmp);
+			free(tmp_ops);
+			free(user);
+		}
+		free(path);
 
 	// HANDLE DEFAULT
 	} else {

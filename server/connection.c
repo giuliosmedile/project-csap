@@ -154,7 +154,7 @@ void receiveFile(int s, char* filename) {
         // If data was received less than BUF_SIZE, the file is over
         if (n < BUF_SIZE) {
             // Write the remaining data and save the file
-            fwrite(buffer, 1, BUF_SIZE, fp);
+            fwrite(buffer, 1, n, fp);
             fclose(fp);
             return;
         }

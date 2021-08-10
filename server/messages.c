@@ -39,7 +39,7 @@ int add(char* user, char* other) {
 }
 
 // TODO: add hash check to see if file was sent correctly
-int record(char* filename, int socket) {
+int record(char* filename, int filesize, int socket) {
 
 	// Create the temp directory, it if is not there
     struct stat st = {0};
@@ -54,5 +54,9 @@ int record(char* filename, int socket) {
 	// Wait for the file from the socket
 	receiveFile(socket, path);
 
-	return 0;
+	// If the file size is not the same, it means the file was not sent correctly
+	printf("\t\tfrom client: %d - mine: %d\n", filesize, get_file_size(path));
+	if (filesize != get_file_size(path)) {
+		return 0;
+	} else return 1;
 }

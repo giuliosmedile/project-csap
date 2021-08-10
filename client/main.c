@@ -69,19 +69,30 @@ char* interpretInput(char* command, char* output) {
     } else if (!strcmp(command, "add")) {
         add(output, &u);
     } else if (!strcmp(command, "record")) {
+        // Set a filename for the recording
         char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
         record(output, &u, filename);
+
+        // Send to the socket the instruction to wait for the file
         sendToSocket(s, output);
         sleep(1);
+
+        // To send the file, I need to know the whole path
         char* path = (char*)malloc(BUF_SIZE * sizeof(char));
         sprintf(path, "%s/%s", TMP_DIR, filename);
+
+        // Finally send to the socket the file
         printf("[-] Sending file to %d\n", s);
         sendFile(s, path, get_file_size(path));
 
+        // Finally free "local" variables
         free(filename);
         free(path);
+
+        // No more actions are needed, so i tell the client to skip to next user interaction
         strcpy(output, "null");
     } else if (!strcmp(command, "exit")) {
+        // TODO: clear connection with the server
         exit(0);
     } else if (!strcmp(command, "help")) {
         help();
@@ -144,6 +155,8 @@ void main (int argc, char** argv) {
         sendToSocket(s, output);
 
         //wait for reply
+        free(response);
+        response = (char*)malloc(BUF_SIZE * sizeof(char));
         response = readFromSocket(s, buf);
 
         // Then handle the server response

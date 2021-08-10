@@ -127,7 +127,7 @@ void sendFile(int s, char* filename, int filesize) {
             perror("[-]Error in sending file.");
             exit(1);
         }
-        
+
         bzero(data, BUF_SIZE);
     }
 
@@ -138,22 +138,34 @@ void sendFile(int s, char* filename, int filesize) {
 
 // Function to receive a binary file sent through a socket
 void receiveFile(int s, char* filename) {
-    int n;
-    FILE *fp;
-    char buffer[BUF_SIZE];
+    int n = 1;                                        // Number of bytes read
+    int i = 0;                                        // Debug counter
+    FILE *fp;                                         // File pointer
+    char buffer[BUF_SIZE];                            // Buffer to store data
 
-    fp = fopen(filename, "w");
-    // Loops until the file has been all received
-    while (1) {
-        // If the file is over, I stop the loop
-        if (recv(s, buffer, BUF_SIZE, 0) <= 0) {
-            break;
+    // Open file
+    fp = fopen(filename, "wb");
+
+    // While there is data to be read
+    while (n > 0) {
+        // Read from socket
+        n = recv(s, (void*)buffer, BUF_SIZE, 0);
+
+        // If data was received less than BUF_SIZE, the file is over
+        if (n < BUF_SIZE) {
+            // Write the remaining data and save the file
+            fwrite(buffer, 1, n, fp);
+            fclose(fp);
             return;
         }
-        // Else write to a file
-        fprintf(fp, "%s", buffer);
+
+        // Write to file
+        fwrite(buffer, 1, BUF_SIZE, fp);
+        
+        // Reset for next loop
         bzero(buffer, BUF_SIZE);
     }
-    fclose(fp);
+
+    // This won't be reached, but still...
     return;
 }
