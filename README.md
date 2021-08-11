@@ -1,5 +1,6 @@
 # project-csap
 Project for A.Y. 2020/2021 for the course of Computer Systems and Programming @ Sapienza held by Prof. Giorgio Richelli.
+All code is my own.
 
 
 # Installation
@@ -26,3 +27,10 @@ Currently implemented commands are:
 Commands that will be eventually implemented are:
 - listen [listens to an audio message]
 - delete [deletes a received message]
+
+# Misc
+Tools used while creating this project:
+- **Visual Studio Code** as the IDE
+- **Nemiver**, a visual interface for gdb. Saved me a lot while debugging.
+- **GitHub** (duh) that helped me recover my work in case of some disastrous modifications
+- **StackOverflow** for teaching how to fix my stupid mistakes
