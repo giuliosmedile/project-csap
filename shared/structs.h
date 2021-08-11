@@ -11,8 +11,8 @@ struct s_user {
 };
 
 struct s_message {
-    t_user* sender;     // The user that sent the message
-    t_user* receiver;   // The user that received the message
+    char* sender;     // The user that sent the message
+    char* receiver;   // The user that received the message
     char* filename;     // The file that contains the message
     time_t timestamp;   // The time the message was sent
     int is_read;        // The message has been read by the receiver

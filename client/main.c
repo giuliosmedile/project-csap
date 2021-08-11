@@ -89,8 +89,8 @@ char* interpretInput(char* command, char* output) {
         free(filename);
         free(path);
 
-        // No more actions are needed, so i tell the client to skip to next user interaction
-        strcpy(output, "null");
+        // I tell the client to skip the next server send, as it's already been done in this function
+        strcpy(output, "skipsend");
     } else if (!strcmp(command, "exit")) {
         // TODO: clear connection with the server
         exit(0);
@@ -151,8 +151,11 @@ void main (int argc, char** argv) {
         	continue;
         }
 
-        // send the command and arguments to socket
-        sendToSocket(s, output);
+        // send the response to the server only if the output is NOT skipsend
+        if (strcmp(output, "skipsend")) {
+            // send the command and arguments to socket
+            sendToSocket(s, output);
+        }
 
         //wait for reply
         free(response);

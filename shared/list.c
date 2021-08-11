@@ -24,24 +24,63 @@ void print_list(NODE* head) {
 }
 */
 
-/**
- * Function that adds a new message at the beginning of a list
-*/
-NODE* add_node(NODE* head, t_message* m) {
-	NODE* new = (NODE*)malloc(sizeof(NODE));
-	new->message = m;
-	new->next = head;
-	return new;
+// Function that adds a message in tail to the list
+NODE* add_node(NODE* head, t_message* message) {
+	NODE* new = (NODE*) malloc(sizeof(NODE));
+	new->message = message;
+	new->next = NULL;
+	if (head == NULL) {
+		head = new;
+	} else {
+		NODE* current = head;
+		while (current->next != NULL) {
+			current = current->next;
+		}
+		current->next = new;
+	}
+	return head;
 }
 
-/**
- * Function that removes a node from a list
-*/
-void remove_node(NODE* head) {
-	NODE* temp = (NODE*) malloc(sizeof (NODE));
-    temp = head->next;
-    head->next = head->next->next;
-    free(temp);
+// Function that removes a message from the list
+NODE* remove_node(NODE* head, t_message* message) {
+	NODE* current = head;
+	NODE* previous = NULL;
+	while (current != NULL) {
+		if (current->message == message) {
+			if (previous == NULL) {
+				head = current->next;
+			} else {
+				previous->next = current->next;
+			}
+			free(current);
+			return head;
+		}
+		previous = current;
+		current = current->next;
+	}
+	return head;
+}
+
+// Function that removes the i-th node from the list
+NODE* remove_i_th_node(NODE* head, int i) {
+	NODE* current = head;
+	NODE* previous = NULL;
+	int j = 0;
+	while (current != NULL) {
+		if (j == i) {
+			if (previous == NULL) {
+				head = current->next;
+			} else {
+				previous->next = current->next;
+			}
+			free(current);
+			return head;
+		}
+		previous = current;
+		current = current->next;
+		j++;
+	}
+	return head;
 }
 
 /** Function that finds in the input list all the messages that
@@ -55,7 +94,7 @@ NODE* getBySender(NODE* list, char* username) {
 	NODE* current = list;
 
 	while (current != NULL) {
-		if (strcmp(current->message->sender->username, username) == 0) {
+		if (strcmp(current->message->sender, username) == 0) {
 			result = add_node(result, current->message);
 		}
 		current = current->next;
@@ -75,7 +114,7 @@ NODE* getByReceiver(NODE* list, char* username) {
 	NODE* current = list;
 
 	while (current != NULL) {
-		if (strcmp(current->message->receiver->username, username) == 0) {
+		if (strcmp(current->message->receiver, username) == 0) {
 			result = add_node(result, current->message);
 		}
 		current = current->next;
@@ -93,7 +132,7 @@ int countUnreadMessages(NODE* list) {
 	NODE* current = list;
 
 	while (current != NULL) {
-		if (current->message->is_read == 1) {
+		if (current->message->is_read) {
 			result++;
 		}
 	}

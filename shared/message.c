@@ -13,8 +13,8 @@
 
 // Type definition
 // struct s_message {
-//     t_user* sender;     // The user that sent the message
-//     t_user* receiver;   // The user that received the message
+//     char* sender;     // The user that sent the message
+//     char* receiver;   // The user that received the message
 //     char* filename;     // The file that contains the message
 //     time_t timestamp;   // The time the message was sent
 //     int is_read;        // The message has been read by the receiver
@@ -57,22 +57,19 @@ t_message* saveMessage(char* filename) {
 puts("1");
 
 
-    // Initialize the fields
-    message->sender = (t_user*)malloc(sizeof(t_user));
-    message->receiver = (t_user*)malloc(sizeof(t_user));
+    // Initialize the fields and fill in the obvious ones
+    message->sender = (char*)malloc(sizeof(t_user));
+    strcpy(message->sender, arguments[0]);
+
+    message->receiver = (char*)malloc(sizeof(t_user));
+    strcpy(message->receiver, arguments[1]);
+
     message->filename = (char*)malloc(BUF_SIZE * sizeof(char));
+    strcpy(message->filename, filename);
+
     message->timestamp = (time_t)malloc(sizeof(time_t));
     message->is_read = 0;
     
-    puts("1");
-
-    // Copy the filename, it's the same as the function parameter
-    strcpy(message->filename, filename);
-puts("1");
-    // Find the users
-    message->sender = searchUser(arguments[0], USERS_REPO);
-    message->receiver = searchUser(arguments[1], USERS_REPO);
-puts("1");
     // Get the timestamp
     struct tm tmdate = {0};
     tmdate.tm_year = atoi(arguments[2]) - 1900;
@@ -82,7 +79,7 @@ puts("1");
     tmdate.tm_min = atoi(arguments[6]);
     tmdate.tm_sec = atoi(arguments[7]);
     message->timestamp = mktime(&tmdate);
-puts("1");
+
     puts("finished message");
 
     return message;    
@@ -96,3 +93,19 @@ void flagMessageRead(t_message* m) {
     m->is_read = 1;
 }
     
+/**
+ * Function that prints a message to a string
+ * @param m The message to print
+ * @param string the string to print to
+ * @return the string
+*/
+char* formatPrintMessage(t_message* m, char* string) {
+    string = (char*)malloc(BUF_SIZE * sizeof(char));
+    sprintf(string, "Sender: %s\n", m->sender);
+    sprintf(string, "Receiver: %s\n", m->receiver);
+    sprintf(string, "Filename: %s\n", m->filename);
+    sprintf(string, "Timestamp: %s\n", ctime(&(m->timestamp)));
+    sprintf(string, "Is read: %d\n", m->is_read);
+
+    return string;
+}

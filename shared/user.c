@@ -26,6 +26,7 @@
 void removeDuplicates(char* username, char* filename);
 t_user* searchUser(char* username, char* filename);
 t_message* saveMessage(char* filename);					// this is in message.c
+char* formatPrintMessage(t_message* m, char* string); 	// this is in message.c
 
 /**
  * Initializes a user. 
@@ -78,6 +79,7 @@ char* printUser(t_user* u, char* string) {
 	// Write the messages
 	NODE* temp = u->messages;
 	while (temp != NULL) {
+		printf("Message: %s\n", temp->message->filename);
 		sprintf(tmp, "%s;", temp->message->filename);
 		strcat(buf, tmp);
 	}
@@ -130,16 +132,11 @@ char* formatPrintUser(t_user* u, char* string) {
 			sprintf(tmp, "\tMessage number %d\n", i);
 			strcat(string, tmp);
 
-			sprintf(tmp, "\t\tFrom: %s\n", temp->message->sender->username);
-			strcat(string, tmp);
-
-			sprintf(tmp, "\t\tTo: %s\n", temp->message->receiver->username);
-			strcat(string, tmp);
-
-			sprintf(tmp, "\t\tDate: %s\n", ctime(&(temp->message->timestamp)));
+			formatPrintMessage(temp->message, string);
 			strcat(string, tmp);
 
 			i++;
+			temp = temp->next;
 		}
 	}
 
@@ -168,7 +165,7 @@ void saveUser(t_user* u, char* filename) {
 	char* string = (char*)malloc(BUF_SIZE * sizeof(char)); 
 	string = printUser(u, string);
 
-	fprintf(fp, "%s", string);
+	fprintf(fp, "\n%s\n", string);
 	fclose(fp);
 	free(string);
 	return;

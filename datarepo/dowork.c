@@ -65,6 +65,7 @@ void dowork(int socket) {
 		printf("end add\n");
 		free(user);
 
+	// HANDLE RECORD
 	} else if (!strcmp(command, "record")) {
 		printf("record\n");
 
