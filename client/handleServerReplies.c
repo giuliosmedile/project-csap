@@ -16,9 +16,9 @@ t_user* decodeUser(char* response, t_user* u) {
 		return NULL;
 	}
 	printf("Information for user %s: \n", u->username);
-	char* str = formatPrintUser(u, str);
+	//char* str = formatPrintUser(u, str);
 	printf("\033[1;31m");
-	printf("%s", str);
+	printf("%s", formatPrintUser(u, ""));
 	printf("\033[0m\n");
 
 	return u;

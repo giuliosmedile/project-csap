@@ -16,6 +16,8 @@
 #define BUF_SIZE 4096                               // Size of the buffer
 #define TMP_DIR "/var/tmp/project-csap/datarepo"    // Temp directory for messages
 #define FINAL_DIR "./data/messages"                 // Final directory for messages
+#define USERS_REPOSITORY "./data/users.txt"         // Users repository
+#define MESSAGES_REPO "./data/messages.txt"         // Messages repository
 
 /// SHARED
 #include "../shared/structs.h"

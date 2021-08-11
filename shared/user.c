@@ -27,6 +27,7 @@ void removeDuplicates(char* username, char* filename);
 t_user* searchUser(char* username, char* filename);
 t_message* saveMessage(char* filename);					// this is in message.c
 char* formatPrintMessage(t_message* m, char* string); 	// this is in message.c
+void saveInRepository(t_message* m, char* filename); 	// this is in message.c
 
 /**
  * Initializes a user. 
@@ -119,27 +120,23 @@ char* formatPrintUser(t_user* u, char* string) {
 			strcat(string, tmp);
 		}
 	}
-
-	if (u->messagesno == 0) {
-		sprintf(tmp, "You have not sent any messages.\n");
-	} else {
+	if (u->messagesno != 0) {
 		sprintf(tmp, "-- Messages --\n");
 		strcat(string, tmp);
-
 		NODE* temp = u->messages;
 		int i = 1;
-		while (temp != NULL) {
-			sprintf(tmp, "\tMessage number %d\n", i);
-			strcat(string, tmp);
+		if (temp != NULL) {
+			while (temp != NULL) {
+				sprintf(tmp, "\tMessage number %d\n", i);
+				strcat(string, tmp);
 
-			formatPrintMessage(temp->message, string);
-			strcat(string, tmp);
-
-			i++;
-			temp = temp->next;
+				formatPrintMessage(temp->message, tmp);
+				strcat(string, tmp);
+				i++;
+				temp = temp->next;
+			}
 		}
 	}
-
 	return string;
 
 }
@@ -165,7 +162,7 @@ void saveUser(t_user* u, char* filename) {
 	char* string = (char*)malloc(BUF_SIZE * sizeof(char)); 
 	string = printUser(u, string);
 
-	fprintf(fp, "\n%s\n", string);
+	fprintf(fp, "%s\n", string);
 	fclose(fp);
 	free(string);
 	return;
@@ -375,10 +372,17 @@ t_user* addMessageToUser(t_user* u, char* filename) {
 
 	t_message* message = (t_message*)malloc(sizeof(t_message));
 	message = saveMessage(filename);
+	saveInRepository(message, MESSAGES_REPO);
+
+	puts("Let's test this bad bitch");
+	printf("----\n%s\n----", formatPrintMessage(message, ""));
 
 	// add the message to the user's message list
-	add_node(u->messages, message);
+	u->messages = add_node(u->messages, message);
 	u->messagesno++;
+
+	// DEBUG
+	printf("Testing path: %s\n", print_list(u->messages, ""));
 
 	return u;
 }

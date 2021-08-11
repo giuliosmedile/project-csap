@@ -1,6 +1,3 @@
-#define USERS_REPOSITORY "./data/users.txt"
-#define MESSAGES_REPO "./data/messages.txt"
-
 
 void dowork(int socket) {
 	puts("[] Inside dowork\n");
@@ -98,7 +95,7 @@ void dowork(int socket) {
 			t_user* u = (t_user*)malloc(sizeof(t_user));
 			u = searchUser(user, USERS_REPOSITORY);
 			u = addMessageToUser(u, ops[1]);
-			puts("3\n");
+
 			// Update the user on the repo
 			saveUser(u, USERS_REPOSITORY);
 

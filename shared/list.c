@@ -4,6 +4,8 @@
 #include <string.h>
 //#include "message.c"
 
+char* formatPrintMessage(t_message* m, char* string);
+
 // typedef struct node {
 // 	t_message* message;
 // 	struct node* next;
@@ -38,6 +40,10 @@ NODE* add_node(NODE* head, t_message* message) {
 		}
 		current->next = new;
 	}
+
+	puts("add: test message");
+	printf("----\n%s\n----", formatPrintMessage(message, ""));
+
 	return head;
 }
 
@@ -138,3 +144,22 @@ int countUnreadMessages(NODE* list) {
 	}
 	return result;
 }
+
+// Function that prints the list of messages
+char* print_list(NODE* head, char* result) {
+	result = (char*)malloc(BUF_SIZE * sizeof(char));
+	char* temp = (char*)malloc(BUF_SIZE * sizeof(char));
+	NODE* current = head;
+	int i = 0;
+	while (current != NULL) {
+		sprintf(temp, "Message number %d", i+1);
+		strcat(result, temp);
+
+		sprintf(temp, "----\n%s\n----\n", formatPrintMessage(current->message, ""));
+		strcat(result, temp);
+	}
+	free(temp);
+	return result;
+}
+		
+

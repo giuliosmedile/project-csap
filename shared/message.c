@@ -53,10 +53,6 @@ t_message* saveMessage(char* filename) {
         printf("%d\t\"%s\"\n", i, arguments[i]);
     }
 ///
-
-puts("1");
-
-
     // Initialize the fields and fill in the obvious ones
     message->sender = (char*)malloc(sizeof(t_user));
     strcpy(message->sender, arguments[0]);
@@ -89,8 +85,79 @@ puts("1");
  * Function that flags that a message has been read.
  * This must be the only way that the is_read variable can be changed.
 */
-void flagMessageRead(t_message* m) {
+t_message* flagMessageRead(t_message* m) {
     m->is_read = 1;
+    return m;
+}
+
+/**
+ * Function that prints a message to a string. 
+ * This function is intended to use to then save this string to a repository, or to be sent to the client. 
+ * @param m The message to print
+ * @param string The string to print to
+*/
+char* printMessage(t_message* m, char* string) {
+    char* temp = (char*)malloc(BUF_SIZE * sizeof(char));
+    string = (char*)malloc(BUF_SIZE * sizeof(char));
+
+    // I print all the parameters to temp, then to string, followed by a ";"
+    sprintf(temp, "%s;", m->sender);
+    strcat(string, temp);
+
+    sprintf(temp, "%s;", m->receiver);
+    strcat(string, temp);
+
+    sprintf(temp, "%d;", (int)m->timestamp);
+    strcat(string, temp);
+
+    sprintf(temp, "%d;", m->is_read);
+    strcat(string, temp);
+
+    sprintf(temp, "%s;", m->filename);
+    strcat(string, temp);
+
+    free(temp);
+    return string;
+}
+
+/**
+ * Function that reads a message from a string. 
+ * String must be formatted as the one printed from printMessage.
+ * @param string The string to read from
+ * @return A pointer to the message read
+*/
+t_message* readMessage(char* string) {
+    char* temp = (char*)malloc(BUF_SIZE * sizeof(char));
+    char** arguments = (char**)malloc(10 * sizeof(char*));
+    t_message* message = (t_message*)malloc(sizeof(t_message*));
+
+    // I split the string into arguments
+    tokenize(string, &arguments);
+
+///
+    // Debug tokenization
+    printf("String is: %s\n", string);
+    for (int i = 0; i < 10; i++) {
+        printf("%d\t\"%s\"\n", i, arguments[i]);
+    }
+///
+
+    // The easiest thing to do here is to just make a string that is readable by saveMessage, then pass it to saveMessage, and read its output
+    struct tm* timeinfo = (struct tm*)malloc(sizeof(struct tm));
+    time_t timer = atoi(arguments[2]);
+    timeinfo = localtime(&timer);
+
+    sprintf(temp, "%s-%s-%d:%d:%d:%d:%d:%d.wav", arguments[0], arguments[1], timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+    message = saveMessage(temp);
+
+    // Then see if the message was marked as read
+    if (atoi(arguments[3]) == 1) {
+        message = flagMessageRead(message);
+    }
+
+    free(temp);
+    free(arguments);
+    return message;
 }
     
 /**
@@ -100,12 +167,35 @@ void flagMessageRead(t_message* m) {
  * @return the string
 */
 char* formatPrintMessage(t_message* m, char* string) {
+
+    if (m == NULL) return "";
+
     string = (char*)malloc(BUF_SIZE * sizeof(char));
-    sprintf(string, "Sender: %s\n", m->sender);
-    sprintf(string, "Receiver: %s\n", m->receiver);
-    sprintf(string, "Filename: %s\n", m->filename);
-    sprintf(string, "Timestamp: %s\n", ctime(&(m->timestamp)));
-    sprintf(string, "Is read: %d\n", m->is_read);
+    char* temp = (char*)malloc(BUF_SIZE * sizeof(char));
+    sprintf(temp, "Sender: \t%s\n", m->sender);
+    strcat(string, temp);
+    sprintf(temp, "Receiver: \t%s\n", m->receiver);
+    strcat(string, temp);
+    sprintf(temp, "Filename: \t%s\n", m->filename);
+    strcat(string, temp);
+    sprintf(temp, "Timestamp: \t%s", ctime(&(m->timestamp)));
+    strcat(string, temp);
+    sprintf(temp, "Is read: \t%d\n", m->is_read);
+    strcat(string, temp);
 
     return string;
 }
+
+// Function that saves a message to a file
+void saveInRepository(t_message* m, char* filename) {
+    FILE* file = fopen(filename, "a");
+
+    if (file == NULL) return;
+
+    char* string = printMessage(m, NULL);
+    fprintf(file, "%s\n", string);
+
+    free(string);
+    fclose(file);
+}
+

@@ -3,6 +3,6 @@ robertina;0;0;
 roberto;0;0;
 robertok;0;0;
 lollo1;0;0;
-lollo;0;1;test;
 lollobrigida;0;1;lollo;
-test;1;4;lollo;roberto;andrea;robertina;
+test;0;4;lollo;roberto;andrea;robertina;
+lollo;1;1;test;
