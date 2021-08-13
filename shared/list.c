@@ -12,7 +12,7 @@ char* formatPrintMessage(t_message* m, char* string);
 // } NODE;
 
 void init_list(NODE** head) {
-	*head = NULL;
+	*head = (NODE*)malloc(sizeof(NODE));
 }
 
 /*
@@ -27,10 +27,11 @@ void print_list(NODE* head) {
 */
 
 // Function that adds a message in tail to the list
-NODE* add_node(NODE* head, t_message* message) {
+NODE* add_node(NODE** p_head, t_message* message) {
 	NODE* new = (NODE*) malloc(sizeof(NODE));
 	new->message = message;
 	new->next = NULL;
+	NODE* head = *p_head;
 	if (head == NULL) {
 		head = new;
 	} else {
@@ -42,7 +43,8 @@ NODE* add_node(NODE* head, t_message* message) {
 	}
 
 	puts("add: test message");
-	printf("----\n%s\n----", formatPrintMessage(message, ""));
+	char* tmp;
+	printf("----\n%s\n----", formatPrintMessage(message, tmp));
 
 	return head;
 }
@@ -101,7 +103,7 @@ NODE* getBySender(NODE* list, char* username) {
 
 	while (current != NULL) {
 		if (strcmp(current->message->sender, username) == 0) {
-			result = add_node(result, current->message);
+			result = add_node(&result, current->message);
 		}
 		current = current->next;
 	}
@@ -121,7 +123,7 @@ NODE* getByReceiver(NODE* list, char* username) {
 
 	while (current != NULL) {
 		if (strcmp(current->message->receiver, username) == 0) {
-			result = add_node(result, current->message);
+			result = add_node(&result, current->message);
 		}
 		current = current->next;
 	}
@@ -145,6 +147,19 @@ int countUnreadMessages(NODE* list) {
 	return result;
 }
 
+// Function that counts the total number of messages in a list
+int count_messages(NODE* list) {
+	int result = 0;
+	NODE* current = list;
+	while (current != NULL) {
+		char* tmp;
+		printf("%s\n", formatPrintMessage(current->message, NULL));
+		result++;
+		current = current->next;
+	}
+	return result;
+}
+
 // Function that prints the list of messages
 char* print_list(NODE* head, char* result) {
 	result = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -157,6 +172,8 @@ char* print_list(NODE* head, char* result) {
 
 		sprintf(temp, "----\n%s\n----\n", formatPrintMessage(current->message, ""));
 		strcat(result, temp);
+		printf("%d %s\n", i, temp);
+		current = current->next;
 	}
 	free(temp);
 	return result;

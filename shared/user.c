@@ -8,6 +8,7 @@
 
 // #define BUF_SIZE 4096
 #define MAX_ADDRESSBOOK_SIZE 50
+#define MAX_MESSAGES 50
 #ifdef TEST
 	char* repo = "test.txt";
 #else
@@ -80,9 +81,9 @@ char* printUser(t_user* u, char* string) {
 	// Write the messages
 	NODE* temp = u->messages;
 	while (temp != NULL) {
-		printf("Message: %s\n", temp->message->filename);
 		sprintf(tmp, "%s;", temp->message->filename);
 		strcat(buf, tmp);
+		temp = temp->next;
 	}
 
 	printf("- End print: buf: \"%s\"\n", buf);
@@ -124,18 +125,16 @@ char* formatPrintUser(t_user* u, char* string) {
 		sprintf(tmp, "-- Messages --\n");
 		strcat(string, tmp);
 		NODE* temp = u->messages;
-		int i = 1;
-		if (temp != NULL) {
-			while (temp != NULL) {
-				sprintf(tmp, "\tMessage number %d\n", i);
-				strcat(string, tmp);
+		for (int i = 1; i<=u->messagesno; i++) {
+			printf("messages %d\n", i);
+			sprintf(tmp, "\tMessage number %d\n", i);
+			strcat(string, tmp);
 
-				formatPrintMessage(temp->message, tmp);
-				strcat(string, tmp);
-				i++;
-				temp = temp->next;
-			}
+			tmp = formatPrintMessage(temp->message, tmp);
+			strcat(string, tmp);
+			temp = temp->next;
 		}
+
 	}
 	return string;
 
@@ -172,12 +171,13 @@ void saveUser(t_user* u, char* filename) {
 // The line _MUST_ be formatted as shown in the function above this
 t_user* readUser(char* line) {
 	// Tokenize the line
-	char** args = malloc((MAX_ADDRESSBOOK_SIZE+3) * sizeof(char*));
+	char** args = malloc((3+MAX_ADDRESSBOOK_SIZE+MAX_MESSAGES) * sizeof(char*));
 	tokenize(line, &args);
 
 	// Allocate the space for the new user
 	// I can use args[2] because I know that is the number of people in the addressbook
-	t_user* u = malloc(sizeof(t_user*)+atoi(args[2])*sizeof(char));
+	// and args[1] as the numbers of messages sent
+	t_user* u = malloc(sizeof(t_user*)+atoi(args[2])*sizeof(char)+atoi(args[1])*sizeof(t_message*));
 
 	// Now I can start filling the struct
 	u->username = args[0];
@@ -189,6 +189,21 @@ t_user* readUser(char* line) {
 		u->addressbook[i] = (char*)malloc(BUF_SIZE * sizeof(char));
 		strcpy(u->addressbook[i], args[2+i]);
 	}
+
+	// Fill the messages
+	init_list(&(u->messages));
+	NODE* temp = u->messages;
+	int i = 1;
+	while (i <= u->messagesno) {
+		printf("how many? %d\n", i);
+		temp->message = saveMessage(args[i+u->addressbook_size+2]);
+		temp->next = (NODE*)malloc(sizeof(NODE));
+		temp = temp->next;
+		i++;
+	}
+	puts("heheh");
+	temp = NULL;
+
 	return u;
 }
 
@@ -375,14 +390,17 @@ t_user* addMessageToUser(t_user* u, char* filename) {
 	saveInRepository(message, MESSAGES_REPO);
 
 	puts("Let's test this bad bitch");
-	printf("----\n%s\n----", formatPrintMessage(message, ""));
+	printf("----\n%s\n----\n", formatPrintMessage(message, ""));
 
 	// add the message to the user's message list
-	u->messages = add_node(u->messages, message);
+	u->messages = add_node(&(u->messages), message);
 	u->messagesno++;
 
 	// DEBUG
+	puts("a");
+	printf("Testing: Counting messages: %d\n", count_messages(u->messages));
 	printf("Testing path: %s\n", print_list(u->messages, ""));
+	puts("b");
 
 	return u;
 }

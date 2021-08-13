@@ -25,7 +25,7 @@
 t_message* saveMessage(char* filename) {
     //printf("Filename: %s\n", filename);
     // Create a new message
-    t_message* message = (t_message*)malloc(sizeof(t_message*));
+    t_message* message = (t_message*)malloc(sizeof(t_message));
 
     // The message string is composed of the following arguments:
     // 1. The sender's username

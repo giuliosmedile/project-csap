@@ -80,6 +80,12 @@ t_user* handleServerReplies(char* command, char* response, t_user* user) {
 #ifdef TEST
 	printf("[-] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response);
 #endif
+
+	if (response == NULL) {
+		printf("[-] There has been an error with the server. Please try again.\n");
+		return user;
+	}
+
 	if (!strcmp(command, "login")) {
 		user = handleLogin(response, user);
 	} else if (!strcmp(command, "signup")) {
