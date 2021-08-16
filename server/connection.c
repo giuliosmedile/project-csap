@@ -66,6 +66,10 @@ int connectToSocket(char* serv_add, unsigned short port) {
     }
     puts("socket done");
 
+    // Set the options for the socket
+    int t = 1;
+    setsockopt(s,SOL_SOCKET,SO_REUSEADDR,&t,sizeof(int));
+
     saddr.sin_addr.s_addr = inet_addr(serv_add);
     saddr.sin_family=AF_INET;
     saddr.sin_port=htons(port);

@@ -114,8 +114,6 @@ void main (int argc, char** argv) {
 
     signal(SIGSEGV, restartOnError);
 
-    //TODO: AUTOMATIC CONNECTION TO SERVER
-
     // Read the configuration file
     char* serv_add = (char*)malloc(sizeof(BUF_SIZE * sizeof(char)));
     unsigned short serv_port;
@@ -129,6 +127,10 @@ void main (int argc, char** argv) {
     printf("\t ---------------------------\n");
     // Main loop
     for (;;) {
+        // As some function (such as RECORD) may change the signal behavior, I make sure to reset them at each iteration
+        signal(SIGQUIT, SIG_DFL);
+        signal(SIGKILL, SIG_DFL); 
+
         // init variables
         buf = (char*)malloc(BUF_SIZE * sizeof(char));
         command = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -178,5 +180,6 @@ void main (int argc, char** argv) {
 /* Function that restarts the client from main when SISEGV gets caught */
 void restartOnError(int signum) {
 	printf("\033[0;33mAn error %d has occurred. Restarting software.\033[0m\n", signum);
-	main(0, 0);
+    close(s);
+	main(0, NULL);
 }

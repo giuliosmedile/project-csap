@@ -12,7 +12,6 @@ int childProcCount;
 void haltProgram(int signum) {
 
     printf("Halting program with signal %d.\n", signum);
-
     // Close all sockets
     close(dataRepoSock);
     close(servSock);

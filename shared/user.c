@@ -47,8 +47,7 @@ t_user* createUser(char* username) {
 	u->addressbook_size = 0;
 	*(u->addressbook) = malloc(MAX_ADDRESSBOOK_SIZE * sizeof(char*));
 	u->messagesno = 0;
-	u->messages = (NODE*)malloc(sizeof(NODE));
-	init_list(&(u->messages));
+	u->messages = init_list(u->messages);
 	return u;
 }
 
@@ -79,8 +78,9 @@ char* printUser(t_user* u, char* string) {
 	}
 
 	// Write the messages
+	puts("before list in printuser");
 	NODE* temp = u->messages;
-	while (temp != NULL) {
+	for (int i = 0; i<u->messagesno; i++) {
 		sprintf(tmp, "%s;", temp->message->filename);
 		strcat(buf, tmp);
 		temp = temp->next;
@@ -149,6 +149,10 @@ void saveUser(t_user* u, char* filename) {
 	// First of all, remove duplicates, if exist
 	removeDuplicates(u->username, filename);
 
+	// Let's see if the user was passed corretly DEBUG
+	puts("seeing messages in saveuser");
+	printf("%s\n", print_list(u->messages, ""));
+
 	FILE* fp;
 
 	// Open the file to append this user
@@ -158,6 +162,7 @@ void saveUser(t_user* u, char* filename) {
 	}
 	
 	// Call the printUser function to print the user
+	puts("before printuser in saveuser");
 	char* string = (char*)malloc(BUF_SIZE * sizeof(char)); 
 	string = printUser(u, string);
 
@@ -170,6 +175,9 @@ void saveUser(t_user* u, char* filename) {
 // Function that returns a user struct after reading a line
 // The line _MUST_ be formatted as shown in the function above this
 t_user* readUser(char* line) {
+
+puts("inside readuser");
+
 	// Tokenize the line
 	char** args = malloc((3+MAX_ADDRESSBOOK_SIZE+MAX_MESSAGES) * sizeof(char*));
 	tokenize(line, &args);
@@ -191,19 +199,22 @@ t_user* readUser(char* line) {
 	}
 
 	// Fill the messages
-	init_list(&(u->messages));
-	NODE* temp = u->messages;
-	int i = 1;
-	while (i <= u->messagesno) {
-		printf("how many? %d\n", i);
-		temp->message = saveMessage(args[i+u->addressbook_size+2]);
-		temp->next = (NODE*)malloc(sizeof(NODE));
-		temp = temp->next;
-		i++;
+	puts("before initlist in readueser");
+	if (u->messagesno != 0) {
+		u->messages = init_list(u->messages);
+		puts("hello there initlist");
+		NODE* temp = u->messages;
+		puts("before list in readuser");
+		for (int i = 1; i<=u->messagesno; i++) {
+			printf("how many? %d\nwhich? %s\n", i, args[2+u->addressbook_size+i]);
+			temp->message = saveMessage(args[i+u->addressbook_size+2]);
+			temp->next = (NODE*)malloc(sizeof(NODE));
+			temp = temp->next;
+		}
+		free(temp);
 	}
-	puts("heheh");
-	temp = NULL;
-
+	puts("after list in readuser");
+	free(args);
 	return u;
 }
 
@@ -340,6 +351,7 @@ char* getUser(char* username, char* filename) {
  *  @returns the username of the user selected
 */
 char* selectUser(t_user* u, char* result) {
+	puts("\t--- Your addressbook ---\n");
 	// Print the addressbook
 	for (int i = 1; i<=u->addressbook_size; i++) {
 		printf("%d\t%s\n", i, u->addressbook[i]);
@@ -395,12 +407,6 @@ t_user* addMessageToUser(t_user* u, char* filename) {
 	// add the message to the user's message list
 	u->messages = add_node(&(u->messages), message);
 	u->messagesno++;
-
-	// DEBUG
-	puts("a");
-	printf("Testing: Counting messages: %d\n", count_messages(u->messages));
-	printf("Testing path: %s\n", print_list(u->messages, ""));
-	puts("b");
 
 	return u;
 }

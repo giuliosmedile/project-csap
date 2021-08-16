@@ -104,6 +104,7 @@ void dowork(int socket) {
 			
 			// Send the result back to server
 			result = getUser(user, USERS_REPOSITORY);
+			result[strlen(result)-1] = '\0'; 			// Make sure the string is null terminated, not \n terminated
 			printf("result: \"%s\"\n", result);
 			printf("end record\n");
 			free(tmp);

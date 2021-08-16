@@ -11,8 +11,10 @@ char* formatPrintMessage(t_message* m, char* string);
 // 	struct node* next;
 // } NODE;
 
-void init_list(NODE** head) {
-	*head = (NODE*)malloc(sizeof(NODE));
+NODE* init_list(NODE* head) {
+	head = (NODE*)malloc(sizeof(NODE));
+	head = NULL;
+	return head;
 }
 
 /*
@@ -26,28 +28,35 @@ void print_list(NODE* head) {
 }
 */
 
-// Function that adds a message in tail to the list
-NODE* add_node(NODE** p_head, t_message* message) {
-	NODE* new = (NODE*) malloc(sizeof(NODE));
-	new->message = message;
-	new->next = NULL;
-	NODE* head = *p_head;
-	if (head == NULL) {
-		head = new;
-	} else {
-		NODE* current = head;
-		while (current->next != NULL) {
-			current = current->next;
-		}
-		current->next = new;
-	}
-
-	puts("add: test message");
-	char* tmp;
-	printf("----\n%s\n----", formatPrintMessage(message, tmp));
-
-	return head;
+// Function that adds a node to the beginning of the list
+NODE* add_node(NODE** p_head, t_message* m) {
+	NODE* new_node = (NODE*)malloc(sizeof(NODE));
+	new_node->message = m;
+	new_node->next = *p_head;
+	return new_node;
 }
+// // Function that adds a message in tail to the list
+// NODE* add_node(NODE** p_head, t_message* message) {
+// 	NODE* new = (NODE*) malloc(sizeof(NODE));
+// 	new->message = message;
+// 	new->next = NULL;
+// 	NODE* head = *p_head;
+// 	if (head == NULL) {
+// 		head = new;
+// 	} else {
+// 		NODE* current = head;
+// 		while (current->next != NULL) {
+// 			current = current->next;
+// 		}
+// 		current->next = new;
+// 	}
+
+// 	puts("add: test message");
+// 	char* tmp;
+// 	printf("----\n%s\n----", formatPrintMessage(message, tmp));
+
+// 	return head;
+// }
 
 // Function that removes a message from the list
 NODE* remove_node(NODE* head, t_message* message) {
@@ -152,8 +161,6 @@ int count_messages(NODE* list) {
 	int result = 0;
 	NODE* current = list;
 	while (current != NULL) {
-		char* tmp;
-		printf("%s\n", formatPrintMessage(current->message, NULL));
 		result++;
 		current = current->next;
 	}
@@ -165,17 +172,20 @@ char* print_list(NODE* head, char* result) {
 	result = (char*)malloc(BUF_SIZE * sizeof(char));
 	char* temp = (char*)malloc(BUF_SIZE * sizeof(char));
 	NODE* current = head;
-	int i = 0;
-	while (current != NULL) {
+	printf("counting messages in printlist: %d\n", count_messages(head));
+
+	for(int i = 1; i < count_messages(head) && current != NULL; i++) {
+		puts("iterating in printlist");
 		sprintf(temp, "Message number %d", i+1);
 		strcat(result, temp);
 
 		sprintf(temp, "----\n%s\n----\n", formatPrintMessage(current->message, ""));
 		strcat(result, temp);
-		printf("%d %s\n", i, temp);
 		current = current->next;
+		puts("iterating in printlist");
 	}
 	free(temp);
+	puts("end printlist");
 	return result;
 }
 		
