@@ -201,7 +201,8 @@ puts("inside readuser");
 	// Fill the messages
 	puts("before initlist in readueser");
 	if (u->messagesno != 0) {
-		u->messages = init_list(u->messages);
+		// u->messages = (NODE*)malloc(sizeof(NODE));
+		// u->messages = init_list(u->messages);
 		puts("hello there initlist");
 		NODE* temp = u->messages;
 		puts("before list in readuser");
@@ -209,8 +210,10 @@ puts("inside readuser");
 			printf("how many? %d\nwhich? %s\n", i, args[2+u->addressbook_size+i]);
 			temp->message = saveMessage(args[i+u->addressbook_size+2]);
 			temp->next = (NODE*)malloc(sizeof(NODE));
+			puts("end iteration in readuser");
 			temp = temp->next;
 		}
+		temp->next = NULL;
 		free(temp);
 	}
 	puts("after list in readuser");
