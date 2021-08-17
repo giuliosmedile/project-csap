@@ -22,9 +22,6 @@ void dowork(int socket) {
 	printf("ops: \"%s\"\n", ops[0]);
 	sprintf(command, "%s", ops[0]);
 
-	// TODO: Tell messages.c to set the messages repo as REPO
-	//setMessagesRepository(MESSAGES_REPO);
-
 	// HANDLE LOGIN
 	if (!strcmp(command, "login")) {
 		printf("login\n");

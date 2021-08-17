@@ -185,7 +185,7 @@ puts("inside readuser");
 	// Allocate the space for the new user
 	// I can use args[2] because I know that is the number of people in the addressbook
 	// and args[1] as the numbers of messages sent
-	t_user* u = malloc(sizeof(t_user*)+atoi(args[2])*sizeof(char)+atoi(args[1])*sizeof(t_message*));
+	t_user* u = malloc(sizeof(t_user*)+atoi(args[2])*sizeof(char)+atoi(args[1])*sizeof(NODE));
 
 	// Now I can start filling the struct
 	u->username = args[0];
@@ -201,14 +201,14 @@ puts("inside readuser");
 	// Fill the messages
 	puts("before initlist in readueser");
 	if (u->messagesno != 0) {
-		// u->messages = (NODE*)malloc(sizeof(NODE));
-		// u->messages = init_list(u->messages);
+		u->messages = malloc(u->messagesno * sizeof(NODE));
 		puts("hello there initlist");
 		NODE* temp = u->messages;
 		puts("before list in readuser");
 		for (int i = 1; i<=u->messagesno; i++) {
 			printf("how many? %d\nwhich? %s\n", i, args[2+u->addressbook_size+i]);
 			temp->message = saveMessage(args[i+u->addressbook_size+2]);
+			puts("almost last iteration in readuser");
 			temp->next = (NODE*)malloc(sizeof(NODE));
 			puts("end iteration in readuser");
 			temp = temp->next;
@@ -255,7 +255,22 @@ t_user* searchUser(char* username, char* filename) {
 		if (buf[strlen(buf)-1] == '\n') {
 			buf[strlen(buf)-1] = '\0';
 		}
-		printf("searchuser BUF: \"%s\"", buf);
+		printf("searchuser BUF: \"%s\"\n", buf);
+
+		// To make it more efficient, I first tokenize the file line, and compare just if the username (first arg) is the same
+		char** args = malloc((2+MAX_ADDRESSBOOK_SIZE+MAX_MESSAGES) * sizeof(char*));
+		// I must use a temp variable or else the original buf will be modified
+		char* tmp = malloc(BUF_SIZE * sizeof(char));
+		strcpy(tmp, buf);
+		tokenize(tmp, &args);
+		printf("Compare: args: %s, username: %s\n", args[0], username);
+		if (strcmp(args[0], username) == 0) {
+			// Read user from buffer line
+			t_user* u = (t_user*)malloc(sizeof(t_user));
+			u = readUser(buf);
+			return u;
+		}
+		continue; //TODO Remove
 		
 		// Read user from buffer line
 		t_user* u = (t_user*)malloc(sizeof(t_user));
