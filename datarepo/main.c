@@ -9,15 +9,7 @@ int clntSock;
 int processID;
 int childProcCount;
 
-void haltProgram(int signum) {
-
-    printf("Halting program with signal %d.\n", signum);
-    // Close all sockets
-    close(dataRepoSock);
-    close(servSock);
-    close(clntSock);
-    exit(1);
-}
+void haltProgram(int signum);
 
 void main (int argc, char** argv) {
 
@@ -68,4 +60,14 @@ void main (int argc, char** argv) {
                 childProcCount--;  /* Cleaned up after a child */
         }
     }
+}
+
+void haltProgram(int signum) {
+
+    printf("Halting program with signal %d.\n", signum);
+    // Close all sockets
+    close(dataRepoSock);
+    close(servSock);
+    close(clntSock);
+    exit(1);
 }

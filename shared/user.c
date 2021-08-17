@@ -14,14 +14,7 @@
 #else
 	char* repo = "../datarepo/data/users.txt";
 #endif
-// struct s_user {
-// 	char* username;			// the user's username
-// 	int addressbook_size;	// how many users this user has in their addressbook
-// 	int messagesno;			// the number of messages the user has sent
-// 	NODE* messages;			// the user's messages
-// 	char* addressbook[];	// the user's addressbook
-// };
-// typedef struct s_user t_user;
+
 
 // Function prototypes
 void removeDuplicates(char* username, char* filename);
@@ -126,7 +119,6 @@ char* formatPrintUser(t_user* u, char* string) {
 		strcat(string, tmp);
 		NODE* temp = u->messages;
 		for (int i = 1; i<=u->messagesno; i++) {
-			printf("messages %d\n", i);
 			sprintf(tmp, "\tMessage number %d\n", i);
 			strcat(string, tmp);
 

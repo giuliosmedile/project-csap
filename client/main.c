@@ -91,8 +91,46 @@ char* interpretInput(char* command, char* output) {
 
         // I tell the client to skip the next server send, as it's already been done in this function
         strcpy(output, "skipsend");
+
+    } else if (!strcmp(command, "listen")) {
+        // Ask server to send the listenable files
+        char* request = (char*) malloc(sizeof(char) * BUF_SIZE);
+        sprintf(request, "listen;%s;", u->username);
+        sendToSocket(s, request);
+
+        // Wait for the server to send the messages
+        char* response = (char*) malloc(sizeof(char) * BUF_SIZE);
+        readFromSocket(s, response);
+
+        // Parse the response, creating a list of messages
+        NODE* messages = get_list_from_string(response);
+        
+        // Ask the user to choose a message
+        askForMessage: printf("[-] Choose a message to listen to: ");
+        printf("------------------------------------\n%s\n------------------------------------\n", print_list(messages, ""));
+        char* choice = takeUserInput(choice);
+        int choice_int = atoi(choice);
+        if (choice_int < 1 || choice_int > count_messages(messages)) {
+            printf("[-] Invalid choice.\n");
+            goto askForMessage;
+        }
+
+        puts("to be continued...");
+        
+
+        // Send the request to the server
+
+        // Wait for the server to send the message
+
+        // Play the message
+
+        // Free the memory
+
+        // Return null to the main function
+        strcpy(output, "null");
+
     } else if (!strcmp(command, "exit")) {
-        // TODO: clear connection with the server
+        close(s);
         exit(0);
     } else if (!strcmp(command, "help")) {
         help();

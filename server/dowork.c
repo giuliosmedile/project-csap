@@ -11,7 +11,7 @@ char* output;
 int result;
 
 void dowork(int clientSock, int dataRepoSock) {
-    printf("-- Dowork-- \n");
+    startLoop: printf("-- Dowork-- \n");
 
 	rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
  	result = 0;
@@ -22,7 +22,11 @@ void dowork(int clientSock, int dataRepoSock) {
     // Wait for requests
     readFromSocket(clientSock, rcvString);
 
-    ops = (char**)malloc(3*BUF_SIZE);
+    ops = (char**)malloc(MAX_ARGS*BUF_SIZE);
+    for (int i = 0; i < MAX_ARGS; i++) {
+        ops[i] = NULL;
+    }
+
     command = (char*)malloc(BUF_SIZE * sizeof(char));
     output = (char*)malloc(BUF_SIZE * sizeof(char));
 
@@ -120,7 +124,24 @@ void dowork(int clientSock, int dataRepoSock) {
             // There has been an error while receiving the file from the client
             output = "NORECORD";
         }
-     }
+    } else if (!strcmp(command, "listen")) {
+        puts("listen");
+            // Discern the type of request:
+            // - listen;<user> ->  I have to request the datarepo the list of messages for the client to choose
+            // - listen;<user>;<message> -> I have to request the datarepo the message and send it back to the client
+            
+
+            puts("first client request");
+            char* tmp = malloc(BUF_SIZE * sizeof(char));
+            sprintf(tmp, "get_messages_for;%s", ops[1]);
+            sendToSocket(dataRepoSock, tmp);
+
+            // Get the list of messages from the data repo to send it back to the client
+            output = readFromSocket(dataRepoSock, output);
+
+            
+
+        }
 
     printf("[+] about to send to client: \"%s\"\n", output);
 

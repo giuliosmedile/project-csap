@@ -51,7 +51,7 @@ t_message* saveMessage(char* filename) {
     
     // The last argument still has a trailing ".wav" that we don't need
     arguments[7][strlen(arguments[7]) - 4] = '\0';
-
+puts("a");
 ///
     // Debug tokenization
     printf("String is: %s\n", filename);
@@ -60,18 +60,18 @@ t_message* saveMessage(char* filename) {
     }
 ///
     // Initialize the fields and fill in the obvious ones
-    message->sender = (char*)malloc(sizeof(t_user));
+    message->sender = (char*)malloc(BUF_SIZE * sizeof(char));
     strcpy(message->sender, arguments[0]);
-
-    message->receiver = (char*)malloc(sizeof(t_user));
+puts("a");
+    message->receiver = (char*)malloc(BUF_SIZE * sizeof(char));
     strcpy(message->receiver, arguments[1]);
-
+puts("a");
     message->filename = (char*)malloc(BUF_SIZE * sizeof(char));
     strcpy(message->filename, filename);
-
+puts("a");
     message->timestamp = (time_t)malloc(sizeof(time_t));
     message->is_read = 0;
-    
+puts("a");    
     // Get the timestamp
     struct tm tmdate = {0};
     tmdate.tm_year = atoi(arguments[2]) - 1900;

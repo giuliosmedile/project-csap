@@ -7,6 +7,8 @@
 #define MAX_MESSAGES 50
 
 char* formatPrintMessage(t_message* m, char* string);
+char* printMessage(t_message* m, char* string);
+t_message* readMessage(char* string);
 t_message* saveMessage(char* filename);
 
 // typedef struct node {
@@ -38,28 +40,6 @@ NODE* add_node(NODE** p_head, t_message* m) {
 	new_node->next = *p_head;
 	return new_node;
 }
-// // Function that adds a message in tail to the list
-// NODE* add_node(NODE** p_head, t_message* message) {
-// 	NODE* new = (NODE*) malloc(sizeof(NODE));
-// 	new->message = message;
-// 	new->next = NULL;
-// 	NODE* head = *p_head;
-// 	if (head == NULL) {
-// 		head = new;
-// 	} else {
-// 		NODE* current = head;
-// 		while (current->next != NULL) {
-// 			current = current->next;
-// 		}
-// 		current->next = new;
-// 	}
-
-// 	puts("add: test message");
-// 	char* tmp;
-// 	printf("----\n%s\n----", formatPrintMessage(message, tmp));
-
-// 	return head;
-// }
 
 // Function that removes a message from the list
 NODE* remove_node(NODE* head, t_message* message) {
@@ -227,7 +207,8 @@ NODE* getByReceiverFromFile(char* filename, char* username) {
 		if (strcmp(args[1], username) == 0) {
 			// If the receiver is the same, add the message to the list
 			t_message* m = (t_message*) malloc(sizeof(t_message));
-			m = saveMessage(buf);
+			buf[strlen(buf)-1] = '\0';
+			m = readMessage(buf);
 			result = add_node(&result, m);
 		}
 		free(args);
@@ -238,6 +219,71 @@ NODE* getByReceiverFromFile(char* filename, char* username) {
 	fclose(fp);
 	return result;
 }
+
+/**
+ * Function that prints a list to a string, to be either saved or sent to the client. 
+ * The string is structured in ths way: 
+ * 			<total_messages>;<message_string>;<message_string>;...
+ * @param list the list of messages
+ * @return the string with the list of messages
+*/
+char* print_list_to_string(NODE* list) {
+	NODE* tmp = list;
+	char* result = (char*)malloc(BUF_SIZE * sizeof(char));
+	int i = 0;
+
+	while (tmp != NULL) {
+		char* temp = (char*)malloc(BUF_SIZE * sizeof(char));
+
+		// Just in this case, the messages are separated by |
+		sprintf(temp, "%s|", printMessage(tmp->message, ""));
+		strcat(result, temp);
+		tmp = tmp->next;
+		i++;
+	}
+
+	// Before returning, i must add the number of messages at the beginning
+	char* beg = (char*)malloc(BUF_SIZE * sizeof(char));
+	sprintf(beg, "%d|", i);
+	strcat(beg, result);
+	strcpy(result, beg);
+	return result;
+}
+
+/**
+ * Function that retrieves a list from a string, as ouput by the function print_list_to_string.
+ * @param string the string with the list of messages
+ * @return the list of messages
+**/
+NODE* get_list_from_string(char* string) {
+	// Tokenize the input
+	char** args = (char**)malloc(MAX_MESSAGES * sizeof(char*));
+	char* tmp = (char*)malloc(BUF_SIZE * sizeof(char));
+	strcpy(tmp, string);
+	tokenizeWithSeparators(tmp, &args, "|");
+
+	// The first token is the number of messages
+	int num_messages = atoi(args[0]);
+	NODE* result = (NODE*)malloc(num_messages * sizeof(NODE));
+
+	// Add all the messages to result
+	NODE* current = result;
+	for (int i = 1; i < num_messages; i++) {
+		t_message* m = (t_message*) malloc(sizeof(t_message));
+		m = readMessage(args[i]);
+		current = add_node(&current, m);
+		current = current->next;
+		free(m);
+	}
+	current->next = NULL;
+	free(args);
+	free(tmp);
+	return result;
+}
+
+
+
+
 
 		
 
