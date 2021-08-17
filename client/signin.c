@@ -97,9 +97,13 @@ char* login(char* result, t_user** u_p) {
  *  @returns the string to send to the server
 */
 char* logout(char* output, t_user** u_p) {
-    free(*u_p);
-    *u_p = NULL;
-    printf("[-] Succesfully logged out. \n");
+    if (*u_p == NULL) {
+        printf("[!] You are not logged in.\n");
+    } else {
+        free(*u_p);
+        *u_p = NULL;
+        printf("[-] Succesfully logged out. \n");
+    }
     sprintf(output, "null");
     return "null";
 }

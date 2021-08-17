@@ -200,8 +200,8 @@ puts("inside readuser");
 
 	// Fill the messages
 	puts("before initlist in readueser");
-	if (u->messagesno != 0) {
-		u->messages = malloc(u->messagesno * sizeof(NODE));
+	if (atoi(args[1]) != 0) {
+		u->messages = malloc(atoi(args[1]) * sizeof(NODE));
 		puts("hello there initlist");
 		NODE* temp = u->messages;
 		puts("before list in readuser");

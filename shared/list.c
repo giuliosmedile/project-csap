@@ -7,6 +7,7 @@
 #define MAX_MESSAGES 50
 
 char* formatPrintMessage(t_message* m, char* string);
+t_message* saveMessage(char* filename);
 
 // typedef struct node {
 // 	t_message* message;
