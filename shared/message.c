@@ -21,7 +21,13 @@
 // };
 // typedef struct s_message t_message;
 
-
+/**
+ * Function that creates a message from a filename
+ * The filename must be structured as follows:  
+ *         <sender>_<receiver>_<timestamp>.wav
+ * @param filename The filename of the message
+ * @return A message created from the filename
+**/
 t_message* saveMessage(char* filename) {
     //printf("Filename: %s\n", filename);
     // Create a new message

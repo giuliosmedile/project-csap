@@ -4,6 +4,8 @@
 #include <string.h>
 //#include "message.c"
 
+#define MAX_MESSAGES 50
+
 char* formatPrintMessage(t_message* m, char* string);
 
 // typedef struct node {
@@ -188,5 +190,53 @@ char* print_list(NODE* head, char* result) {
 	puts("end printlist");
 	return result;
 }
+
+/**
+ * Function that reads messages from a file, and returns a list of all the messages with the same receiver
+ * @param filename the name of the file
+ * @param username the username of the user who received the messages
+ * @return the list of messages
+*/
+NODE* getByReceiverFromFile(char* filename, char* username) {
+	NODE* result = (NODE*)malloc(MAX_MESSAGES * sizeof(NODE));
+	FILE* fp;
+	char* buf = malloc(BUF_SIZE * sizeof(char));
+	size_t len;
+
+	if ((fp = fopen(filename, "r")) == NULL) {
+		puts("err: could not open file");
+		return NULL;
+	}
+
+	// Read the file line by line
+	while (getline(&buf, &len, fp) != -1) {		
+		// If the string is newline terminated, remove '\n'
+		if (buf[strlen(buf)-1] == '\n') {
+			buf[strlen(buf)-1] = '\0';
+		}
+
+		// To make it more efficient, I first tokenize the file line, and compare just if the receiver (second arg) is the same
+		char** args = malloc(MAX_MESSAGES * sizeof(char*));
+		// I must use a temp variable or else the original buf will be modified
+		char* tmp = malloc(BUF_SIZE * sizeof(char));
+		strcpy(tmp, buf);
+		tokenize(tmp, &args);
+		printf("Compare: args: %s, username: %s\n", args[1], username);
+
+		if (strcmp(args[1], username) == 0) {
+			// If the receiver is the same, add the message to the list
+			t_message* m = (t_message*) malloc(sizeof(t_message));
+			m = saveMessage(buf);
+			result = add_node(&result, m);
+		}
+		free(args);
+		free(tmp);
+	}
+	result->next = NULL;
+	free(buf);
+	fclose(fp);
+	return result;
+}
+
 		
 
