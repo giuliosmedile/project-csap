@@ -62,16 +62,16 @@ puts("a");
     // Initialize the fields and fill in the obvious ones
     message->sender = (char*)malloc(BUF_SIZE * sizeof(char));
     strcpy(message->sender, arguments[0]);
-puts("a");
+
     message->receiver = (char*)malloc(BUF_SIZE * sizeof(char));
     strcpy(message->receiver, arguments[1]);
-puts("a");
+
     message->filename = (char*)malloc(BUF_SIZE * sizeof(char));
     strcpy(message->filename, filename);
-puts("a");
+
     message->timestamp = (time_t)malloc(sizeof(time_t));
     message->is_read = 0;
-puts("a");    
+    
     // Get the timestamp
     struct tm tmdate = {0};
     tmdate.tm_year = atoi(arguments[2]) - 1900;

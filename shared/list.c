@@ -10,6 +10,7 @@ char* formatPrintMessage(t_message* m, char* string);
 char* printMessage(t_message* m, char* string);
 t_message* readMessage(char* string);
 t_message* saveMessage(char* filename);
+char* print_list(NODE* head, char* result);
 
 // typedef struct node {
 // 	t_message* message;
@@ -22,24 +23,25 @@ NODE* init_list(NODE* head) {
 	return head;
 }
 
-/*
-void print_list(NODE* head) {
-	NODE* current = head;
-	int i = 0;
-	while (current != NULL) {
-		printf("- User %d: %s\n", i, current->user.username);
-		current = current->next;
-	}
-}
+/** Function that adds a message at the beginning of the list
+ * @param head pointer to the list head
+ * @param message the message to be added
+ * @return the new list head
 */
+NODE* add_node(NODE** p_head, t_message* message) {
+	NODE* head = *p_head;
+	NODE* node = (NODE*)malloc(sizeof(NODE));
+	node->message = message;
+	node->next = head;
+	head = node;
 
-// Function that adds a node to the beginning of the list
-NODE* add_node(NODE** p_head, t_message* m) {
-	NODE* new_node = (NODE*)malloc(sizeof(NODE));
-	new_node->message = m;
-	new_node->next = *p_head;
-	return new_node;
+	puts("testing add_node by printing the list");
+	printf("%s\n", print_list(head, ""));
+
+	return head;
 }
+
+
 
 // Function that removes a message from the list
 NODE* remove_node(NODE* head, t_message* message) {
@@ -143,9 +145,9 @@ int countUnreadMessages(NODE* list) {
 int count_messages(NODE* list) {
 	int result = 0;
 	NODE* current = list;
-	while (current != NULL) {
-		result++;
+	while (current->next != NULL) {
 		current = current->next;
+		result++;
 	}
 	return result;
 }
@@ -165,7 +167,6 @@ char* print_list(NODE* head, char* result) {
 		sprintf(temp, "----\n%s\n----\n", formatPrintMessage(current->message, ""));
 		strcat(result, temp);
 		current = current->next;
-		puts("iterating in printlist");
 	}
 	free(temp);
 	puts("end printlist");

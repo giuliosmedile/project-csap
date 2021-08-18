@@ -32,7 +32,7 @@ void saveInRepository(t_message* m, char* filename); 	// this is in message.c
 */
 t_user* createUser(char* username) {
 	// Allocate the space for that user
-	t_user* u = malloc(sizeof(t_user*)+MAX_ADDRESSBOOK_SIZE*sizeof(char));
+	t_user* u = malloc(sizeof(t_user)+MAX_ADDRESSBOOK_SIZE*sizeof(char)+MAX_MESSAGES*sizeof(t_message));
 
 	// Fill the struct
 	u->username = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -73,7 +73,10 @@ char* printUser(t_user* u, char* string) {
 	// Write the messages
 	puts("before list in printuser");
 	NODE* temp = u->messages;
-	for (int i = 0; i<u->messagesno; i++) {
+	printf("there are %d messages\n", count_messages(temp));
+	for (int i = 1; i<=u->messagesno; i++) {
+		puts("i2");
+		printf("testing filename in printuser: %s\n", temp->message->filename);
 		sprintf(tmp, "%s;", temp->message->filename);
 		strcat(buf, tmp);
 		temp = temp->next;
@@ -143,7 +146,7 @@ void saveUser(t_user* u, char* filename) {
 
 	// Let's see if the user was passed corretly DEBUG
 	puts("seeing messages in saveuser");
-	printf("%s\n", print_list(u->messages, ""));
+	// printf("%s\n", print_list(u->messages, ""));
 
 	FILE* fp;
 
@@ -177,10 +180,10 @@ puts("inside readuser");
 	// Allocate the space for the new user
 	// I can use args[2] because I know that is the number of people in the addressbook
 	// and args[1] as the numbers of messages sent
-	t_user* u = malloc(sizeof(t_user*)+atoi(args[2])*sizeof(char)+atoi(args[1])*sizeof(NODE));
+	// t_user* u = malloc(sizeof(t_user) + atoi(args[1]+1*sizeof(NODE)));  //+atoi(args[2])*sizeof(char)+atoi(args[1])+1*sizeof(NODE));
 
 	// Now I can start filling the struct
-	u->username = args[0];
+	t_user* u = createUser(args[0]);
 	u->messagesno = atoi(args[1]);
 	u->addressbook_size = atoi(args[2]);
 	*(u->addressbook) = malloc(MAX_ADDRESSBOOK_SIZE * sizeof(char*));
@@ -193,11 +196,12 @@ puts("inside readuser");
 	// Fill the messages
 	puts("before initlist in readueser");
 	if (atoi(args[1]) != 0) {
-		u->messages = malloc(atoi(args[1]) * sizeof(NODE));
+		puts("at least one argument in readuser");
+		u->messages = malloc(sizeof(NODE)); //(NODE*)malloc(atoi(args[1])+1 * sizeof(NODE));
 		puts("hello there initlist");
 		NODE* temp = u->messages;
 		puts("before list in readuser");
-		for (int i = 1; i<=u->messagesno; i++) {
+		for (int i = 1; i<=atoi(args[1]); i++) {
 			printf("how many? %d\nwhich? %s\n", i, args[2+u->addressbook_size+i]);
 			temp->message = saveMessage(args[i+u->addressbook_size+2]);
 			puts("almost last iteration in readuser");
@@ -205,8 +209,9 @@ puts("inside readuser");
 			puts("end iteration in readuser");
 			temp = temp->next;
 		}
-		temp->next = NULL;
 		free(temp);
+	} else {
+		u->messages = NULL;
 	}
 	puts("after list in readuser");
 	free(args);
@@ -411,12 +416,14 @@ t_user* addMessageToUser(t_user* u, char* filename) {
 	message = saveMessage(filename);
 	saveInRepository(message, MESSAGES_REPO);
 
-	puts("Let's test this bad bitch");
-	printf("----\n%s\n----\n", formatPrintMessage(message, ""));
+
 
 	// add the message to the user's message list
 	u->messages = add_node(&(u->messages), message);
 	u->messagesno++;
+
+	puts("Let's test this bad bitch");
+	printf("----\n%s\n----\n", print_list(u->messages, ""));
 
 	return u;
 }
