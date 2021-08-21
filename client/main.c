@@ -54,6 +54,7 @@ char* takeUserInput(char* input) {
     return input;
 }
 
+// Function that handles and interprets the user's input, to then pass the request to the server
 char* interpretInput(char* command, char* output) {
     command[strlen(command)-1] = '\0';
 
@@ -93,6 +94,13 @@ char* interpretInput(char* command, char* output) {
         strcpy(output, "skipsend");
 
     } else if (!strcmp(command, "listen")) {
+        if (u == NULL) {
+            printf("[-] You're not logged in.\n");
+            strcpy(output, "null");
+            goto endOfTakeUserInput;
+        }
+
+
         // Ask server to send the listenable files
         char* request = (char*) malloc(sizeof(char) * BUF_SIZE);
         sprintf(request, "listen;%s;", u->username);
@@ -104,15 +112,27 @@ char* interpretInput(char* command, char* output) {
 
         // Parse the response, creating a list of messages
         NODE* messages = get_list_from_string(response);
+
+        // Check if there actually are messages to be read
+        if (count_messages(messages) == 0) {
+            printf("[-] No messages to read.\n");
+            strcpy(output, "null");
+            goto endOfTakeUserInput;
+        }
         
         // Ask the user to choose a message
-        askForMessage: printf("[-] Choose a message to listen to: ");
+askForMessage:
         printf("------------------------------------\n%s\n------------------------------------\n", print_list(messages, ""));
         char* choice = takeUserInput(choice);
+        printf("[-] Choose a message to listen to: ");
         int choice_int = atoi(choice);
         if (choice_int < 1 || choice_int > count_messages(messages)) {
             printf("[-] Invalid choice.\n");
             goto askForMessage;
+        } else if (strcmp("exit\n", choice) == 0) {
+            printf("[-] Exiting.\n");
+            strcpy(output, "null");
+            goto endOfTakeUserInput;
         }
 
         puts("to be continued...");
@@ -139,6 +159,8 @@ char* interpretInput(char* command, char* output) {
     	// Command not found
     	strcpy(output, "null");
 	}
+    
+endOfTakeUserInput:
     return output;
 }
 

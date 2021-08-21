@@ -1,7 +1,8 @@
-andrea;0;0;
 robertina;0;0;
 roberto;0;0;
 robertok;0;0;
 lollo1;0;0;
 lollobrigida;0;1;lollo;
-test;3;3;lollo;andrea;roberto;test-andrea-2021:8:18:19:12:45.wav;test-andrea-2021:8:18:19:12:40.wav;test-andrea-2021:8:18:19:12:35.wav;
+test;0;3;lollo;andrea;roberto;
+andrea;1;2;lollo;test;andrea-test-2021:8:21:11:23:35.wav;
+lollo;1;2;test;andrea;lollo-test-2021:8:21:11:27:34.wav;

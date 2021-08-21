@@ -114,11 +114,10 @@ void dowork(int socket) {
 		printf("get_messages_for\n");
 
 		// Get all the messages that the user has received
-		char* listOfMessagesString = (char*)malloc(BUF_SIZE * sizeof(char));
 		puts("before getting messages");
 		NODE* listOfMessages = getByReceiverFromFile(MESSAGES_REPO, ops[1]);
 		puts("after getting messages");
-		listOfMessagesString = print_list_to_string(listOfMessages);
+		char* listOfMessagesString = print_list_to_string(listOfMessages);
 		printf("list of messages: %s\n", listOfMessagesString);
 
 		// Send the result back to the server

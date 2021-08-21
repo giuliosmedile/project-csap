@@ -35,9 +35,6 @@ NODE* add_node(NODE** p_head, t_message* message) {
 	node->next = head;
 	head = node;
 
-	puts("testing add_node by printing the list");
-	printf("%s\n", print_list(head, ""));
-
 	return head;
 }
 
@@ -180,6 +177,7 @@ char* print_list(NODE* head, char* result) {
  * @return the list of messages
 */
 NODE* getByReceiverFromFile(char* filename, char* username) {
+	puts("\tstart of getbyreceiverfromfile");
 	NODE* result = (NODE*)malloc(MAX_MESSAGES * sizeof(NODE));
 	FILE* fp;
 	char* buf = malloc(BUF_SIZE * sizeof(char));
@@ -206,6 +204,7 @@ NODE* getByReceiverFromFile(char* filename, char* username) {
 		printf("Compare: args: %s, username: %s\n", args[1], username);
 
 		if (strcmp(args[1], username) == 0) {
+			printf("adding message from %s to list\n", args[0]);
 			// If the receiver is the same, add the message to the list
 			t_message* m = (t_message*) malloc(sizeof(t_message));
 			buf[strlen(buf)-1] = '\0';
@@ -216,6 +215,9 @@ NODE* getByReceiverFromFile(char* filename, char* username) {
 		free(tmp);
 	}
 	result->next = NULL;
+
+	printf("testing if messages added correctly in getByReceiverFromFile: %s\n", print_list(result, ""));
+
 	free(buf);
 	fclose(fp);
 	return result;
@@ -233,21 +235,21 @@ char* print_list_to_string(NODE* list) {
 	char* result = (char*)malloc(BUF_SIZE * sizeof(char));
 	int i = 0;
 
+	// Count the number of messages
+	sprintf(result, "%d", count_messages(list));
+
 	while (tmp != NULL) {
 		char* temp = (char*)malloc(BUF_SIZE * sizeof(char));
 
 		// Just in this case, the messages are separated by |
-		sprintf(temp, "%s|", printMessage(tmp->message, ""));
+		sprintf(temp, "|%s", printMessage(tmp->message, ""));
 		strcat(result, temp);
 		tmp = tmp->next;
 		i++;
 	}
 
 	// Before returning, i must add the number of messages at the beginning
-	char* beg = (char*)malloc(BUF_SIZE * sizeof(char));
-	sprintf(beg, "%d|", i);
-	strcat(beg, result);
-	strcpy(result, beg);
+	//sprintf(result, "%d|%s", i, result);
 	return result;
 }
 
@@ -277,6 +279,7 @@ NODE* get_list_from_string(char* string) {
 		free(m);
 	}
 	current->next = NULL;
+
 	free(args);
 	free(tmp);
 	return result;
