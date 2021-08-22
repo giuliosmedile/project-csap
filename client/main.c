@@ -145,10 +145,15 @@ askForMessage:
         }
         printf("%s", STD_COL);
 
-        puts("to be continued...");
+        // Get the message
+        t_message* m = getMessage(messages, choice_int-1);
+        char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
+        starcpy(filename, m->filename);
         
 
         // Send the request to the server
+        char* request = (char*) malloc(sizeof(char) * BUF_SIZE);
+        sprintf(request, "get_message;%s;", u->username, filename);
 
         // Wait for the server to send the message
 

@@ -75,7 +75,7 @@ t_message* getMessage(NODE* head, int i) {
 }
 
 // Function that removes the i-th node from the list
-NODE* removeNode(NODE* head, int i) {
+NODE* remove_ith_node(NODE* head, int i) {
 	NODE* current = head;
 	NODE* previous = NULL;
 	int j = 0;
@@ -163,7 +163,13 @@ int count_messages(NODE* list) {
 	return result;
 }
 
-// Function that prints the list of messages
+/**
+ * Function that prints a list of messages.
+ * Intended to be used for user visualization or interaction.
+ * @param list the list of messages
+ * @param result the string that will contain the lists
+ * @return the list of messages in a string
+**/
 char* print_list(NODE* head, char* result) {
 	result = (char*)malloc(BUF_SIZE * sizeof(char));
 	char* temp = (char*)malloc(BUF_SIZE * sizeof(char));

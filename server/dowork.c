@@ -126,31 +126,73 @@ void dowork(int clientSock, int dataRepoSock) {
         }
     } else if (!strcmp(command, "listen")) {
         puts("listen");
-            // Discern the type of request:
-            // - listen;<user> ->  I have to request the datarepo the list of messages for the client to choose
-            // - listen;<user>;<message> -> I have to request the datarepo the message and send it back to the client
-            
 
-            puts("first client request");
-            char* tmp = malloc(BUF_SIZE * sizeof(char));
-            sprintf(tmp, "get_messages_for;%s", ops[1]);
-            sendToSocket(dataRepoSock, tmp);
+        char* tmp = malloc(BUF_SIZE * sizeof(char));
+        sprintf(tmp, "get_messages_for;%s", ops[1]);
+        sendToSocket(dataRepoSock, tmp);
 
-            // Get the list of messages from the data repo to send it back to the client
-            output = readFromSocket(dataRepoSock, output);
+        // Get the list of messages from the data repo to send it back to the client
+        output = readFromSocket(dataRepoSock, output);
 
-            
+    } else if (!strcmp(command, "get_message")) {
+        puts("get_message");
 
+        // Ask the mdr for the message
+        char* tmp = malloc(BUF_SIZE * sizeof(char));
+        sprintf(tmp, "get_message;%s", ops[1]);
+        sendToSocket(dataRepoSock, tmp);
+
+        // Wait for the mdr to send the message
+        char* filename = (char*)malloc(BUF_SIZE * sizeof(char));
+        char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+        char** args = (char**)malloc(3 * sizeof(char*));
+
+        // The request will be in the format:
+        // get_message;<filename>;<filesize>
+        tmp = readFromSocket(dataRepoSock, tmp);
+
+        // Check if the message is valid
+        if (!strcmp(tmp, "NOMESSAGE")) {
+            output = "NOMESSAGE";
+            goto sendToSocket;
         }
+
+        tokenize(tmp, &args);
+        strcpy(filename, args[1]);
+        sprintf(path, "%s/%s", TMP_DIR, filename);
+        int filesize = atoi(args[2]);
+        
+        // Listen for the data stream by using record
+        if (record(filename, filesize, dataRepoSock) == 0) {
+            // Tell the client something went wrong
+            output = "ERROR";
+            goto sendToSocket;    
+        }
+
+        // Send the message to the client
+        free(tmp);
+        tmp = (char*)malloc(BUF_SIZE * sizeof(char));
+        sprintf(tmp, "listen;%s;%d", filename, filesize);
+        sleep(1);
+        sendFile(clientSock, path, filesize);
+
+        // Skip to next iteration
+        free(tmp);
+        goto endOfDoWork;
+
+    }
 
     printf("[+] about to send to client: \"%s\"\n", output);
 
      /* --------------- SEND BACK TO CLIENT ----------------- */
+sendToSocket:
     sendToSocket(clientSock, output);
 
     counter++;
 
+endOfDoWork:
 	free(ops);
+    free(output);
     free(rcvString);
     free(command);
     return;
