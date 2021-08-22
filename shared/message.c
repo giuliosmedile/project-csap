@@ -143,7 +143,7 @@ t_message* readMessage(char* string) {
 ///
     // Debug tokenization
     printf("String is: %s\n", string);
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 5; i++) {
         printf("%d\t\"%s\"\n", i, arguments[i]);
     }
 ///

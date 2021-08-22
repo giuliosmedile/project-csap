@@ -108,8 +108,7 @@ char* interpretInput(char* command, char* output) {
 
         // Wait for the server to send the messages
         char* response = (char*) malloc(sizeof(char) * BUF_SIZE);
-        readFromSocket(s, response);
-
+        response = readFromSocket(s, response);
         // Parse the response, creating a list of messages
         NODE* messages = get_list_from_string(response);
 
@@ -122,18 +121,29 @@ char* interpretInput(char* command, char* output) {
         
         // Ask the user to choose a message
 askForMessage:
-        printf("------------------------------------\n%s\n------------------------------------\n", print_list(messages, ""));
-        char* choice = takeUserInput(choice);
+        printf("%s", COLOR);
+        printf("\n\n%s\n\n", print_list(messages, ""));
+
         printf("[-] Choose a message to listen to: ");
-        int choice_int = atoi(choice);
-        if (choice_int < 1 || choice_int > count_messages(messages)) {
-            printf("[-] Invalid choice.\n");
-            goto askForMessage;
-        } else if (strcmp("exit\n", choice) == 0) {
-            printf("[-] Exiting.\n");
+        char* choice = (char*) malloc(sizeof(char) * BUF_SIZE);
+        if (fgets(choice,BUF_SIZE,stdin) == NULL) {
+            printf("\n");
+            exit(0);
+        }
+        choice[strlen(choice)-1] = '\0';
+
+        if (!strcmp("exit", choice) || !strcmp("quit", choice) || !strcmp("cancel", choice)) {
+            printf("[-] Cancelling operation.\n");
             strcpy(output, "null");
             goto endOfTakeUserInput;
         }
+
+        int choice_int = atoi(choice);
+        if (choice_int < 1 || choice_int > count_messages(messages)) {
+            printf("[-] \"%s\" is an invalid choice.\n", choice);
+            goto askForMessage;
+        }
+        printf("%s", STD_COL);
 
         puts("to be continued...");
         
@@ -149,7 +159,7 @@ askForMessage:
         // Return null to the main function
         strcpy(output, "null");
 
-    } else if (!strcmp(command, "exit")) {
+    } else if (!strcmp(command, "exit") || !strcmp(command, "quit")) {
         close(s);
         exit(0);
     } else if (!strcmp(command, "help")) {

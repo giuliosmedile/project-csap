@@ -60,8 +60,22 @@ NODE* remove_node(NODE* head, t_message* message) {
 	return head;
 }
 
+// Function that returns the ith message in the list
+t_message* getMessage(NODE* head, int i) {
+	NODE* current = head;
+	int j = 0;
+	while (current != NULL) {
+		if (j == i) {
+			return current->message;
+		}
+		j++;
+		current = current->next;
+	}
+	return NULL;
+}
+
 // Function that removes the i-th node from the list
-NODE* remove_i_th_node(NODE* head, int i) {
+NODE* removeNode(NODE* head, int i) {
 	NODE* current = head;
 	NODE* previous = NULL;
 	int j = 0;
@@ -154,37 +168,37 @@ char* print_list(NODE* head, char* result) {
 	result = (char*)malloc(BUF_SIZE * sizeof(char));
 	char* temp = (char*)malloc(BUF_SIZE * sizeof(char));
 	NODE* current = head;
-	printf("counting messages in printlist: %d\n", count_messages(head));
-
-	for(int i = 1; i < count_messages(head) && current != NULL; i++) {
-		puts("iterating in printlist");
-		sprintf(temp, "Message number %d", i+1);
+	for(int i = 1; i <= count_messages(head) && current != NULL; i++) {
+		sprintf(temp, "\tMessage number %d", i);
 		strcat(result, temp);
 
-		sprintf(temp, "----\n%s\n----\n", formatPrintMessage(current->message, ""));
+		sprintf(temp, "\n%s\n", formatPrintMessage(current->message, ""));
 		strcat(result, temp);
 		current = current->next;
 	}
 	free(temp);
-	puts("end printlist");
 	return result;
 }
 
 /**
+ * TEMP: The function should return a list, but will instead temporarily return the string, in a similar fashion to print_list_from_string. 
+ * 
+ * //
  * Function that reads messages from a file, and returns a list of all the messages with the same receiver
  * @param filename the name of the file
  * @param username the username of the user who received the messages
  * @return the list of messages
 */
-NODE* getByReceiverFromFile(char* filename, char* username) {
-	puts("\tstart of getbyreceiverfromfile");
-	NODE* result = (NODE*)malloc(MAX_MESSAGES * sizeof(NODE));
+char* getByReceiverFromFile(char* filename, char* username) {
+	// NODE* result = (NODE*)malloc(MAX_MESSAGES * sizeof(NODE));
 	FILE* fp;
 	char* buf = malloc(BUF_SIZE * sizeof(char));
+	char* result = malloc(BUF_SIZE * sizeof(char));	//TEMP
+	char* temp = malloc(BUF_SIZE * sizeof(char));	//TEMP
 	size_t len;
+	int i = 0;
 
 	if ((fp = fopen(filename, "r")) == NULL) {
-		puts("err: could not open file");
 		return NULL;
 	}
 
@@ -207,20 +221,29 @@ NODE* getByReceiverFromFile(char* filename, char* username) {
 			printf("adding message from %s to list\n", args[0]);
 			// If the receiver is the same, add the message to the list
 			t_message* m = (t_message*) malloc(sizeof(t_message));
-			buf[strlen(buf)-1] = '\0';
-			m = readMessage(buf);
-			result = add_node(&result, m);
+			buf[strlen(buf)-1] = '|';
+
+			strcat(result, buf);
+			i++;
+
+			//// TEMP TEMP TEMP
+			// m = readMessage(buf);
+			// result = add_node(&result, m);
+			//// TEMP TEMP TEMP
 		}
 		free(args);
 		free(tmp);
 	}
-	result->next = NULL;
+	//TEMP result->next = NULL;
+	char* tempS = (char*)malloc(BUF_SIZE * sizeof(char));
+	sprintf(tempS, "%d|%s", i, result);
+	tempS[strlen(tempS)-1] = '\0';
 
-	printf("testing if messages added correctly in getByReceiverFromFile: %s\n", print_list(result, ""));
+	//printf("testing if messages added correctly in getByReceiverFromFile: %s\n", print_list(result, ""));
 
 	free(buf);
 	fclose(fp);
-	return result;
+	return tempS;
 }
 
 /**
@@ -265,20 +288,34 @@ NODE* get_list_from_string(char* string) {
 	strcpy(tmp, string);
 	tokenizeWithSeparators(tmp, &args, "|");
 
+	/// Testing tokenize
+	for (int i = 0; i<5; i++) {
+		printf("%d\t%s\n", i, args[i]);
+	}
+	///
+
 	// The first token is the number of messages
 	int num_messages = atoi(args[0]);
+
+	// Double check if there are messages 
+	// (this also acts as a sanity check, as if there are no numbers in the first token the result will be 0)
+	if (num_messages == 0) return NULL;
+
 	NODE* result = (NODE*)malloc(num_messages * sizeof(NODE));
 
 	// Add all the messages to result
 	NODE* current = result;
-	for (int i = 1; i < num_messages; i++) {
-		t_message* m = (t_message*) malloc(sizeof(t_message));
-		m = readMessage(args[i]);
-		current = add_node(&current, m);
-		current = current->next;
-		free(m);
-	}
+	for (int i = 1; i<=num_messages; i++) {
+			current->message = readMessage(args[i]);
+			current->next = (NODE*)malloc(sizeof(NODE));
+			current = current->next;
+		}
 	current->next = NULL;
+
+	// TEST
+	printf("testing: %s\n", print_list(result, ""));
+
+	//printf("testing if messages added correctly in get_list_f_s: %s\n", print_list(result, ""));
 
 	free(args);
 	free(tmp);

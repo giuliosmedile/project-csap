@@ -113,19 +113,21 @@ void dowork(int socket) {
 	} else if (!strcmp(command, "get_messages_for")) {
 		printf("get_messages_for\n");
 
-		// Get all the messages that the user has received
-		puts("before getting messages");
-		NODE* listOfMessages = getByReceiverFromFile(MESSAGES_REPO, ops[1]);
-		puts("after getting messages");
-		char* listOfMessagesString = print_list_to_string(listOfMessages);
-		printf("list of messages: %s\n", listOfMessagesString);
+		// // Get all the messages that the user has received
+		// puts("before getting messages");
+		// NODE* listOfMessages = getByReceiverFromFile(MESSAGES_REPO, ops[1]);
+		// puts("after getting messages");
+		// char* listOfMessagesString = print_list_to_string(listOfMessages);
+		// printf("list of messages: %s\n", listOfMessagesString);
+
+		char* listOfMessagesString = getByReceiverFromFile(MESSAGES_REPO, ops[1]);
 
 		// Send the result back to the server
 		strcpy(result, listOfMessagesString);
 
 		// Free the memory
 		free(listOfMessagesString);
-		free(listOfMessages);
+		//free(listOfMessages);
 
 	// HANDLE DEFAULT
 	} else {
