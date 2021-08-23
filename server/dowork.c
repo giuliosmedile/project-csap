@@ -147,7 +147,7 @@ void dowork(int clientSock, int dataRepoSock) {
         char* path = (char*)malloc(BUF_SIZE * sizeof(char));
         char** args = (char**)malloc(3 * sizeof(char*));
 
-        // The request will be in the format:
+        // The datarepo response will be in the format:
         // get_message;<filename>;<filesize>
         tmp = readFromSocket(dataRepoSock, tmp);
 

@@ -148,12 +148,14 @@ askForMessage:
         // Get the message
         t_message* m = getMessage(messages, choice_int-1);
         char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
-        starcpy(filename, m->filename);
+        strcpy(filename, m->filename);
         
 
         // Send the request to the server
-        char* request = (char*) malloc(sizeof(char) * BUF_SIZE);
-        sprintf(request, "get_message;%s;", u->username, filename);
+        free(request);
+        request = (char*) malloc(sizeof(char) * BUF_SIZE);
+        sprintf(request, "get_message;%s;", filename);
+        sendToSocket(s, request);
 
         // Wait for the server to send the message
 

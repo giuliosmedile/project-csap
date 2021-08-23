@@ -129,10 +129,36 @@ void dowork(int socket) {
 		free(listOfMessagesString);
 		//free(listOfMessages);
 
+	} else if (!strcmp(command, "get_message")) {
+		printf("get_message\n");
+
+		// Check if the message actually exists
+		puts("before checkifmessage");
+		if (!checkIfMessageExists(ops[1], MESSAGES_REPO)) {
+			result = "MESSAGEERROR";
+		} else {
+			puts("after checkifmesssage");
+			char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+			char* filename = (char*)malloc(BUF_SIZE * sizeof(char));
+			strcpy(filename, ops[1]);
+			sprintf(path, "%s/%s", TMP_DIR, filename);
+
+			// Tell the server that I'm about to send the file
+			char* buf = (char*)malloc(BUF_SIZE * sizeof(char));
+			sprintf(buf, "get_message;%s;%d", ops[1], get_file_size(path));
+
+			sleep(1);
+
+			// Send the file to the server
+			sendFile(socket, path, get_file_size(path));
+
+		}
+
+
 	// HANDLE DEFAULT
 	} else {
 		printf("operation not supported");
-		result = "noop";
+		strcpy(result, "noop");
 	}
 
 	// Send the result back to the server

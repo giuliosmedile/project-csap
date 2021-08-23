@@ -98,7 +98,9 @@ t_message* flagMessageRead(t_message* m) {
 
 /**
  * Function that prints a message to a string. 
- * This function is intended to use to then save this string to a repository, or to be sent to the client. 
+ * This function is intended to use to then save this string to a repository, or to be sent to the client.
+ * The string is formatted as follows: 
+ *      <sender>;<receiver>;<timestamp>;<is_read>;<filename>
  * @param m The message to print
  * @param string The string to print to
 */
@@ -153,7 +155,7 @@ t_message* readMessage(char* string) {
     time_t timer = atoi(arguments[2]);
     timeinfo = localtime(&timer);
 
-    sprintf(temp, "%s-%s-%d:%d:%d:%d:%d:%d.wav", arguments[0], arguments[1], timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday, timeinfo->tm_hour, timeinfo->tm_min, timeinfo->tm_sec);
+    sprintf(temp, "%s-%s-%d:%d:%d:%d:%d:%d.wav", arguments[0], arguments[1], timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday, timeinfo->tm_hour - 1, timeinfo->tm_min, timeinfo->tm_sec);
     message = saveMessage(temp);
 
     // Then see if the message was marked as read
@@ -167,7 +169,8 @@ t_message* readMessage(char* string) {
 }
     
 /**
- * Function that prints a message to a string
+ * Function that prints a message to a string. 
+ * Intended to be used for debugging purpose or user interaction.
  * @param m The message to print
  * @param string the string to print to
  * @return the string
@@ -203,5 +206,66 @@ void saveInRepository(t_message* m, char* filename) {
 
     free(string);
     fclose(file);
+}
+
+/**
+ * Function that retrieves a message from a file.
+ * @param filename The name of the file to read from
+ * @param name the filename of the message to retrieve
+ * @return A pointer to the message read
+*/
+t_message* getFromRepository(char* filename, char* name) {
+    FILE* fp = fopen(filename, "r");
+    char* buf = (char*)malloc(BUF_SIZE * sizeof(char));
+    size_t len;
+
+    if (fp == NULL) return NULL;
+    while (getline(&buf, &len, fp) != -1) {
+		
+		// If the string is newline terminated, remove '\n'
+		if (buf[strlen(buf)-1] == '\n') {
+			buf[strlen(buf)-1] = '\0';
+		}
+
+        // If the string is the one we want, read the message
+        if (strstr(buf, name) != NULL) {
+            t_message* message = readMessage(buf);
+            free(buf);
+            fclose(fp);
+            return message;
+        }
+    }
+    free(buf);
+    fclose(fp);
+    return NULL;
+}
+
+
+/**
+ * Checks if a message exists in a given repository
+ * @param filename the name of the file to check
+ * @param repository the repository to check in
+ * @return 1 if the message exists in repository, 0 if it does not
+*/
+int checkIfMessageExists(char* filename, char* repository) {
+    FILE* file = fopen(repository, "r");
+    char* line = (char*)malloc(BUF_SIZE * sizeof(char));
+
+    printf("filename: \"%s\", repository: %s\n", filename, repository);
+
+    if (file == NULL) return 0;
+    while ((line = fgets(line, BUF_SIZE, file)) != NULL) {
+
+        line[strlen(line)-1] = '\0';
+
+        printf("line: \"%s\"; strstr: %s\n", line, strstr(line, filename));
+        // If the line contains the filename, return 1
+        if (strstr(line, filename) != NULL) {
+            fclose(file);
+            return 1;
+        }
+    }
+    fclose(file);
+    return 0;
 }
 
