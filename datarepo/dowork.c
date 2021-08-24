@@ -133,11 +133,9 @@ void dowork(int socket) {
 		printf("get_message\n");
 
 		// Check if the message actually exists
-		puts("before checkifmessage");
 		if (!checkIfMessageExists(ops[1], MESSAGES_REPO)) {
 			result = "MESSAGEERROR";
 		} else {
-			puts("after checkifmesssage");
 			char* path = (char*)malloc(BUF_SIZE * sizeof(char));
 			char* filename = (char*)malloc(BUF_SIZE * sizeof(char));
 			strcpy(filename, ops[1]);
@@ -153,6 +151,12 @@ void dowork(int socket) {
 			// Send the file to the server
 			puts("about to send file to server");
 			sendFile(socket, path, get_file_size(path));
+
+			// Update the repository, flagging the message as read
+			t_message* m = (t_message*)malloc(sizeof(t_message));
+			m = getFromRepository(MESSAGES_REPO, filename);
+			flagMessageRead(m);
+			saveInRepository(m, MESSAGES_REPO);
 
 		}
 

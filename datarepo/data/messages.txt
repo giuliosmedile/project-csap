@@ -1,4 +1,4 @@
 andrea;test;1629541415;0;andrea-test-2021:8:21:11:23:35.wav;
 lollo;test;1629541654;0;lollo-test-2021:8:21:11:27:34.wav;
 lollo;test;1629799842;0;lollo-test-2021:8:24:11:10:42.wav;
-lollo;test;1629800022;0;lollo-test-2021:8:24:11:13:42.wav;
+lollo;test;1629800022;1;lollo-test-2021:8:24:11:13:42.wav;

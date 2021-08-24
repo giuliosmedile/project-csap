@@ -32,6 +32,7 @@ void help() {
     printf("\tadd\t\tadds a user to your addressbook\n");
     printf("\trecord\t\trecords a new voice message\n");
     printf("\tlisten\t\tlistens to incoming voice messages\n");
+    printf("\tclear\t\tclears the console screen\n");
     printf("\texit\t\tterminates the program\n");
     printf("%s", STD_COL);
 
@@ -94,12 +95,12 @@ char* interpretInput(char* command, char* output) {
         strcpy(output, "skipsend");
 
     } else if (!strcmp(command, "listen")) {
+        // Check if logged in
         if (u == NULL) {
             printf("[-] You're not logged in.\n");
             strcpy(output, "null");
             goto endOfTakeUserInput;
         }
-
 
         // Ask server to send the listenable files
         char* request = (char*) malloc(sizeof(char) * BUF_SIZE);
@@ -109,6 +110,7 @@ char* interpretInput(char* command, char* output) {
         // Wait for the server to send the messages
         char* response = (char*) malloc(sizeof(char) * BUF_SIZE);
         response = readFromSocket(s, response);
+
         // Parse the response, creating a list of messages
         NODE* messages = get_list_from_string(response);
 
@@ -132,14 +134,17 @@ askForMessage:
         }
         choice[strlen(choice)-1] = '\0';
 
+        // Check if the user wants to exit
         if (!strcmp("exit", choice) || !strcmp("quit", choice) || !strcmp("cancel", choice)) {
             printf("[-] Cancelling operation.\n");
             strcpy(output, "null");
             goto endOfTakeUserInput;
         }
 
+        // Evaluate the user's choice
         int choice_int = atoi(choice);
         if (choice_int < 1 || choice_int > count_messages(messages)) {
+            // If the user's choice is not valid, ask again
             printf("[-] \"%s\" is an invalid choice.\n", choice);
             goto askForMessage;
         }
@@ -149,30 +154,27 @@ askForMessage:
         t_message* m = getMessage(messages, choice_int-1);
         char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
         strcpy(filename, m->filename);
-        
 
-        // Send the request to the server
+        // At this point, ask the server to actually send the message
         free(request);
         request = (char*) malloc(sizeof(char) * BUF_SIZE);
         sprintf(request, "get_message;%s;", filename);
         sendToSocket(s, request);
 
-        // Wait for the server to send the message
+        // Decode metadata from the server, sent before actual message
         char* listen = (char*) malloc(sizeof(char) * BUF_SIZE);
         listen = readFromSocket(s, listen);
-        printf("output: %s\n", listen);
         char** args = (char**) malloc(3 * sizeof(char*));
         tokenize(listen, &args);
-        puts("testing tokenize");
-        for (int i = 0; i<3; i++) {
-            printf("%s\n", args[i]);
-        }
+
         // Check if the message was successfully received
         if (!strcmp(args[0], "ERROR") || strcmp(args[0], "listen")) {
             printf("[-] Error while getting the message.\n");
             strcpy(output, "null");
             goto endOfTakeUserInput;
         }
+
+        // Prepare for the message
         free(filename);
         filename = (char*) malloc(sizeof(char) * BUF_SIZE);
         strcpy(filename, args[1]);
@@ -181,7 +183,6 @@ askForMessage:
         sprintf(path, "%s/%s", TMP_DIR, filename);
 
         // Receive the message
-        printf("[-] Receiving file from %d\n", s);
         receiveFile(s, path);
 
         // Play the message
@@ -202,6 +203,9 @@ askForMessage:
         exit(0);
     } else if (!strcmp(command, "help")) {
         help();
+        strcpy(output, "null");
+    } else if (!strcmp(command, "clear")) {
+        system("@cls||clear");
         strcpy(output, "null");
     } else {
     	// Command not found
@@ -230,9 +234,11 @@ void main (int argc, char** argv) {
 
     s = connectToSocket(serv_add, serv_port);
 
-    printf("\t ---------------------------\n");
-    printf("\t ---- Voicemail Service ----\n");
-    printf("\t ---------------------------\n");
+    printf("\t -------------------------------\n");
+    printf("\t -------------------------------\n");
+    printf("\t ------ Voicemail Service ------\n");
+    printf("\t -------------------------------\n");
+    printf("\t -------------------------------\n");
     // Main loop
     for (;;) {
         // As some function (such as RECORD) may change the signal behavior, I make sure to reset them at each iteration

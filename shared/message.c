@@ -195,17 +195,63 @@ char* formatPrintMessage(t_message* m, char* string) {
     return string;
 }
 
+/**
+ * Function that removes duplicates from a repo file.
+ * @param filename The name of the file to remove duplicates from
+ * @param repository The repository to remove duplicates from
+**/
+void removeDuplicateMessages(char* filename, char* repository) {
+    size_t len;
+	FILE *fp, *tmp_fp;
+	char* buf = malloc(BUF_SIZE * sizeof(char));
+    char** args = (char**)malloc(MAX_ADDRESSBOOK_SIZE * sizeof(char*));
+    char temp[] = "temp.txt";
+
+    if ((fp = fopen(repository, "r")) == NULL) return;
+	if ((tmp_fp = fopen(temp, "w")) == NULL) return;
+
+    // copy all contents to the temporary file except the specific line
+    while (getline(&buf, &len, fp) != -1) {
+        // If the username of the line I'm looking at is not the one passed in the function
+        // I can copy it over. If it is, I skip it
+        printf("removeduplicates: %s", buf);
+    	if (strstr(buf, filename) == NULL) {
+            printf("copying over: %s\n", buf);
+    		fprintf(tmp_fp, "%s", buf);
+    	}
+    }
+    fclose(fp);
+    fclose(tmp_fp);
+    remove(repository);  		    // remove the original file 
+    rename(temp, repository); 	// rename the temporary file to original name
+
+}
+
+
 // Function that saves a message to a file
-void saveInRepository(t_message* m, char* filename) {
-    FILE* file = fopen(filename, "a");
+void saveInRepository(t_message* m, char* repository) {
+	// First of all, remove duplicates, if exist
+	removeDuplicateMessages(m->filename, repository);
 
-    if (file == NULL) return;
+	// Let's see if the user was passed corretly DEBUG
+	// printf("%s\n", print_list(u->messages, ""));
 
-    char* string = printMessage(m, NULL);
-    fprintf(file, "%s\n", string);
+	FILE* fp;
 
-    free(string);
-    fclose(file);
+	// Open the file to append this user
+	if ((fp = fopen(repository, "a")) == NULL) {
+		printf("err: could not open file %s", repository);
+		return;
+	}
+	
+	// Call the printUser function to print the user
+	char* string = (char*)malloc(BUF_SIZE * sizeof(char)); 
+	string = printMessage(m, string);
+
+	fprintf(fp, "%s\n", string);
+	fclose(fp);
+	free(string);
+	return;
 }
 
 /**
@@ -268,4 +314,3 @@ int checkIfMessageExists(char* filename, char* repository) {
     fclose(file);
     return 0;
 }
-
