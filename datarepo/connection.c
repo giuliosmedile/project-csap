@@ -126,6 +126,7 @@ void sendFile(int s, char* filename, int filesize) {
     // note: even though we are sending the file in one block as big as the file itself, I still prefer to
     // iterate through the file, because it is easier to debug
     while(fread(data, 1, filesize, fp) > 0) {
+        printf("%d\t%d\n", ++i, filesize);
         // Send the data
         if (send(s, (void* )data, filesize, 0) == -1) {
             perror("[-]Error in sending file.");
@@ -154,17 +155,18 @@ void receiveFile(int s, char* filename) {
     while (n > 0) {
         // Read from socket
         n = recv(s, (void*)buffer, BUF_SIZE, 0);
-
+        printf("%d\t%d\n", ++i, n);
         // If data was received less than BUF_SIZE, the file is over
         if (n < BUF_SIZE) {
             // Write the remaining data and save the file
             fwrite(buffer, 1, n, fp);
+            
             fclose(fp);
             return;
         }
 
         // Write to file
-        fwrite(buffer, 1, BUF_SIZE, fp);
+        fwrite(buffer, 1, n, fp);
         
         // Reset for next loop
         bzero(buffer, BUF_SIZE);

@@ -146,10 +146,12 @@ void dowork(int socket) {
 			// Tell the server that I'm about to send the file
 			char* buf = (char*)malloc(BUF_SIZE * sizeof(char));
 			sprintf(buf, "get_message;%s;%d", ops[1], get_file_size(path));
+			sendToSocket(socket, buf);
 
 			sleep(1);
 
 			// Send the file to the server
+			puts("about to send file to server");
 			sendFile(socket, path, get_file_size(path));
 
 		}

@@ -5,4 +5,4 @@ lollo1;0;0;
 lollobrigida;0;1;lollo;
 test;0;3;lollo;andrea;roberto;
 andrea;1;2;lollo;test;andrea-test-2021:8:21:11:23:35.wav;
-lollo;1;2;test;andrea;lollo-test-2021:8:21:11:27:34.wav;
+lollo;3;2;test;andrea;lollo-test-2021:8:24:11:13:42.wav;lollo-test-2021:8:24:11:10:42.wav;lollo-test-2021:8:21:11:27:34.wav;

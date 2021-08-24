@@ -158,8 +158,34 @@ askForMessage:
         sendToSocket(s, request);
 
         // Wait for the server to send the message
+        char* listen = (char*) malloc(sizeof(char) * BUF_SIZE);
+        listen = readFromSocket(s, listen);
+        printf("output: %s\n", listen);
+        char** args = (char**) malloc(3 * sizeof(char*));
+        tokenize(listen, &args);
+        puts("testing tokenize");
+        for (int i = 0; i<3; i++) {
+            printf("%s\n", args[i]);
+        }
+        // Check if the message was successfully received
+        if (!strcmp(args[0], "ERROR") || strcmp(args[0], "listen")) {
+            printf("[-] Error while getting the message.\n");
+            strcpy(output, "null");
+            goto endOfTakeUserInput;
+        }
+        free(filename);
+        filename = (char*) malloc(sizeof(char) * BUF_SIZE);
+        strcpy(filename, args[1]);
+        int filesize = atoi(args[2]); 
+        char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+        sprintf(path, "%s/%s", TMP_DIR, filename);
+
+        // Receive the message
+        printf("[-] Receiving file from %d\n", s);
+        receiveFile(s, path);
 
         // Play the message
+        play(path);
 
         // Free the memory
 

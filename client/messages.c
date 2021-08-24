@@ -10,10 +10,6 @@
 // #include <sys/stat.h>
 // #include <malloc.h>
 
-#define TMP_DIR "/var/tmp/project-csap/client"     //the temporary directory in which the files will be saved
-#define REC "/usr/bin/rec"                         //where rec is located
-#define PLAY "/usr/bin/play"                       //where play is located
-
 #define true 1
 #define false 0
 
@@ -175,4 +171,50 @@ char* record(char* result, t_user** u_p, char* file) {
     }
 
     // This won't be reached    
+}
+
+/**
+ * Function that plays a message received from the server.
+ * @param filename the file to be played
+**/
+void play(char* filename) {
+
+    char* path = (char*)malloc(BUF_SIZE * sizeof(char));        // The file path in which the temp recording will be
+    char* other = (char*)malloc(BUF_SIZE * sizeof(char));       // user who will receive the file
+    char *args[3];                                              // Arguments for rec command
+    int pid, status;
+    int res;
+
+    printf("filename in play: %s\n", filename);
+
+    switch(pid=fork()) {
+        // Error
+        case -1:
+            perror("fork");
+            exit(1);
+
+        // Child
+        case 0:
+            ;
+            // Exec program
+            args[0] = PLAY;
+            args[1] = filename;
+            args[2] = NULL;     // must be here or else execvp won't work...
+
+            res = execvp(PLAY, args);
+
+            // ?? Exec failed
+            fprintf(stderr,"%s:", PLAY);
+            perror("execvp");
+            exit(1);
+            break;       
+
+        // Parent
+        default:
+
+        	// Let's wait for the child to finish...
+            pid = wait(&status);
+            printf("Result: %d\n", res);
+            break;
+    }
 }

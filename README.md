@@ -23,10 +23,18 @@ Currently implemented commands are:
 - info [shows currently logged in user's information]
 - add [adds another user to one's addressbook]
 - record [record audio message]
+- listen [listens to an audio message]
 
 Commands that will be eventually implemented are:
-- listen [listens to an audio message]
 - delete [deletes a received message]
+
+# TODO
+- Better user experience:
+	- ability to listen to own messages
+	- ability to delete messages
+	- ability to forward message to another user
+- 1-1-n communication, with multiple datarepos listening to the server
+- Error correction and extensive testing
 
 # Misc
 Tools used while creating this project:

@@ -173,7 +173,9 @@ void dowork(int clientSock, int dataRepoSock) {
         free(tmp);
         tmp = (char*)malloc(BUF_SIZE * sizeof(char));
         sprintf(tmp, "listen;%s;%d", filename, filesize);
+        sendToSocket(clientSock, tmp);
         sleep(1);
+        puts("sending file to client");
         sendFile(clientSock, path, filesize);
 
         // Skip to next iteration

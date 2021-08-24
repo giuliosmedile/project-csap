@@ -154,6 +154,7 @@ void receiveFile(int s, char* filename) {
     while (n > 0) {
         // Read from socket
         n = recv(s, (void*)buffer, BUF_SIZE, 0);
+        printf("%d\t%d\n", ++i, n);
 
         // If data was received less than BUF_SIZE, the file is over
         if (n < BUF_SIZE) {
@@ -164,7 +165,7 @@ void receiveFile(int s, char* filename) {
         }
 
         // Write to file
-        fwrite(buffer, 1, BUF_SIZE, fp);
+        fwrite(buffer, 1, n, fp);
         
         // Reset for next loop
         bzero(buffer, BUF_SIZE);

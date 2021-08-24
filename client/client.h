@@ -13,10 +13,11 @@
 
 // Standard Definitions
 #define BUF_SIZE 4096
-
-// The next two are for handling the color output in the console
-#define COLOR "\033[0;33m"
-#define STD_COL "\033[0m"
+#define COLOR "\033[0;33m"                         // fancy yellow color for user interface 
+#define STD_COL "\033[0m"                          // standard color for user interface            
+#define TMP_DIR "/var/tmp/project-csap/client"     //the temporary directory in which the files will be saved
+#define REC "/usr/bin/rec"                         //where rec is located
+#define PLAY "/usr/bin/play"                       //where play is located
 
 // Shared imports
 #include "../shared/structs.h"
