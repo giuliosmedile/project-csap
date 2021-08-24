@@ -87,6 +87,33 @@ puts("a");
     return message;    
 } 
 
+/** 
+ * Function that creates a message from its basic parameters.
+ * @param sender The user that sent the message
+ * @param receiver The user that received the message
+ * @param filename The file that contains the message
+ * @param timestamp The time the message was sent
+ * @param is_read The message has been read by the receiver
+ * @return A message created from the parameters
+**/
+t_message* createMessage(char* sender, char* receiver, char* filename, time_t timestamp, int is_read) {
+    // Create a new message
+    t_message* message = (t_message*)malloc(sizeof(t_message));
+
+    // Initialize the fields and fill them in
+    message->sender = (char*)malloc(BUF_SIZE * sizeof(char));
+    strcpy(message->sender, sender);
+    message->receiver = (char*)malloc(BUF_SIZE * sizeof(char));
+    strcpy(message->receiver, receiver);
+    message->filename = (char*)malloc(BUF_SIZE * sizeof(char));
+    strcpy(message->filename, filename);
+    message->timestamp = timestamp;
+    message->is_read = is_read;
+
+    return message;
+}
+
+
 /**
  * Function that flags that a message has been read.
  * This must be the only way that the is_read variable can be changed.

@@ -157,7 +157,6 @@ void dowork(int socket) {
 			m = getFromRepository(MESSAGES_REPO, filename);
 			flagMessageRead(m);
 			saveInRepository(m, MESSAGES_REPO);
-
 		}
 
 

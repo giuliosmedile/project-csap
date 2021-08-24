@@ -20,6 +20,7 @@
 void removeDuplicates(char* username, char* filename);
 t_user* searchUser(char* username, char* filename);
 t_message* saveMessage(char* filename);					// this is in message.c
+t_message* createMessage(char* sender, char* receiver, char* filename, time_t timestamp, int is_read);
 char* formatPrintMessage(t_message* m, char* string); 	// this is in message.c
 void saveInRepository(t_message* m, char* filename); 	// this is in message.c
 
@@ -74,7 +75,7 @@ char* printUser(t_user* u, char* string) {
 	NODE* temp = u->messages;
 	for (int i = 1; i<=u->messagesno; i++) {
 		printf("testing filename in printuser: %s\n", temp->message->filename);
-		sprintf(tmp, "%s;", temp->message->filename);
+		sprintf(tmp, "%s;", printMessage(temp->message, ""));
 		strcat(buf, tmp);
 		temp = temp->next;
 	}
@@ -167,7 +168,7 @@ t_user* readUser(char* line) {
 
 
 	// Tokenize the line
-	char** args = malloc((3+MAX_ADDRESSBOOK_SIZE+MAX_MESSAGES) * sizeof(char*));
+	char** args = malloc((3+MAX_ADDRESSBOOK_SIZE+MAX_MESSAGES * 5) * sizeof(char*));
 	tokenize(line, &args);
 
 	// Allocate the space for the new user
@@ -190,9 +191,14 @@ t_user* readUser(char* line) {
 	if (atoi(args[1]) != 0) {
 		u->messages = malloc(sizeof(NODE)); //(NODE*)malloc(atoi(args[1])+1 * sizeof(NODE));
 		NODE* temp = u->messages;
-		for (int i = 1; i<=atoi(args[1]); i++) {
-			printf("how many? %d\nwhich? %s\n", i, args[2+u->addressbook_size+i]);
-			temp->message = saveMessage(args[i+u->addressbook_size+2]);
+		// Iterate from the first message to the end of the string
+		// I should iterate from the third item plus the number of people in the addressbook
+		// and up to 5 times the number of messages (as each message has 5 items) plus the number of people in the addressbook
+		for (int i = 3+atoi(args[2]); i<5*atoi(args[1])+3+atoi(args[2]); i+=5) {
+			// Messages are saved in the following format:
+			//		from;to;timestamp;is_read;filename;
+			time_t timestamp = (time_t) atoi(args[i+2]);
+			temp->message = createMessage(args[i], args[i+1], args[i+4], timestamp, atoi(args[i+3]));
 			temp->next = (NODE*)malloc(sizeof(NODE));
 			temp = temp->next;
 		}
