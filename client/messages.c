@@ -185,8 +185,6 @@ void play(char* filename) {
     int pid, status;
     int res;
 
-    printf("filename in play: %s\n", filename);
-
     switch(pid=fork()) {
         // Error
         case -1:
@@ -214,7 +212,6 @@ void play(char* filename) {
 
         	// Let's wait for the child to finish...
             pid = wait(&status);
-            printf("Result: %d\n", res);
             break;
     }
 }

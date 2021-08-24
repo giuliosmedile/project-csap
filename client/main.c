@@ -188,7 +188,12 @@ askForMessage:
         play(path);
 
         // Free the memory
-
+        free(filename);
+        free(path);
+        free(request);
+        free(listen);
+        free(args);
+        
         // Return null to the main function
         strcpy(output, "null");
 

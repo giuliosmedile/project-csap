@@ -1,6 +1,7 @@
 # project-csap
 Project for A.Y. 2020/2021 for the course of Computer Systems and Programming @ Sapienza held by Prof. Giorgio Richelli.
-All code is my own.
+All code is my own, unless stated otherwise.
+Tested on Ubuntu 20.04 LTS, Ubuntu 21.04, Linux Mint Cinnamon 21, macOS 11 (even if not fully functional as it lacks rec and play)
 
 
 # Installation
@@ -35,6 +36,7 @@ Commands that will be eventually implemented are:
 	- ability to forward message to another user
 - 1-1-n communication, with multiple datarepos listening to the server
 - Error correction and extensive testing
+- Test on actual network, not on my local computer
 
 # Misc
 Tools used while creating this project:
