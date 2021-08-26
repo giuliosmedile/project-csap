@@ -318,19 +318,63 @@ NODE* get_list_from_string(char* string) {
 		}
 	current->next = NULL;
 
-	// TEST
-	printf("testing: %s\n", print_list(result, ""));
-
-	//printf("testing if messages added correctly in get_list_f_s: %s\n", print_list(result, ""));
-
 	free(args);
 	free(tmp);
 	return result;
 }
 
+NODE* searchForMessagesInRange(char* username, time_t lower, time_t upper, char* repository) {
+	char* buf = malloc(BUF_SIZE * sizeof(char));
+	size_t len;
+	NODE* result = (NODE*)malloc(sizeof(NODE));
+	NODE* current = result;
 
+	printf("lower: %ld, upper: %ld\n", lower, upper);
 
+	puts("open file in searchformessages");
+	// Open the file
+	FILE* fp;
+	if ((fp = fopen(repository, "r")) == NULL) {
+		puts("error opening file");
+		return NULL;
+	}
 
+	// Read the file line by line
+	int i;
+	while ((i = getline(&buf, &len, fp)) != -1) {
+		printf("%d\n", i);
+		// If the string is newline terminated, remove '\n'
+		if (buf[strlen(buf)-1] == '\n') {
+			buf[strlen(buf)-1] = '\0';
+		}
+		printf("buffer: \"%s\"\n", buf);
 
-		
+		// Tokenize the buffer
+		char** args = malloc(MAX_MESSAGES * sizeof(char*));
+		char* tmp = malloc(BUF_SIZE * sizeof(char));
+		strcpy(tmp, buf);
+		tokenize(tmp, &args);
 
+		// Check if the receiver is the one we are looking for
+		if (strcmp(args[1], username) == 0) {
+			// Check if the message is in the range
+			time_t timestamp = atoi(args[2]);
+			if (timestamp >= lower && timestamp <= upper) {
+				printf("\tadding buf: %s\n", buf);
+				// Add the message to the list
+				current->message = readMessage(buf);
+				current->next = malloc(sizeof(NODE));
+				current = current->next;
+			}
+		}
+		free(args);
+		free(tmp);
+	}
+	puts("after while");
+
+	// Close the file, lear memory and return 
+	fclose(fp);
+	free(buf);
+	puts("returning");
+	return result;
+}

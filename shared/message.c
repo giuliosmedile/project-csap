@@ -169,26 +169,8 @@ t_message* readMessage(char* string) {
     // I split the string into arguments
     tokenize(string, &arguments);
 
-///
-    // Debug tokenization
-    printf("String is: %s\n", string);
-    for (int i = 0; i < 5; i++) {
-        printf("%d\t\"%s\"\n", i, arguments[i]);
-    }
-///
-
-    // The easiest thing to do here is to just make a string that is readable by saveMessage, then pass it to saveMessage, and read its output
-    struct tm* timeinfo = (struct tm*)malloc(sizeof(struct tm));
-    time_t timer = atoi(arguments[2]);
-    timeinfo = localtime(&timer);
-
-    sprintf(temp, "%s-%s-%d:%d:%d:%d:%d:%d.wav", arguments[0], arguments[1], timeinfo->tm_year + 1900, timeinfo->tm_mon + 1, timeinfo->tm_mday, timeinfo->tm_hour - 1, timeinfo->tm_min, timeinfo->tm_sec);
-    message = saveMessage(temp);
-
-    // Then see if the message was marked as read
-    if (atoi(arguments[3]) == 1) {
-        message = flagMessageRead(message);
-    }
+    // Pass the arguments to createMessage
+    message = createMessage(arguments[0], arguments[1], arguments[4], atoi(arguments[2]), atoi(arguments[3]));
 
     free(temp);
     free(arguments);
@@ -249,7 +231,7 @@ void removeDuplicateMessages(char* filename, char* repository) {
     }
     fclose(fp);
     fclose(tmp_fp);
-    remove(repository);  		    // remove the original file 
+    remove(repository);  		// remove the original file 
     rename(temp, repository); 	// rename the temporary file to original name
 
 }
@@ -260,12 +242,8 @@ void saveInRepository(t_message* m, char* repository) {
 	// First of all, remove duplicates, if exist
 	removeDuplicateMessages(m->filename, repository);
 
-	// Let's see if the user was passed corretly DEBUG
-	// printf("%s\n", print_list(u->messages, ""));
-
-	FILE* fp;
-
 	// Open the file to append this user
+    FILE* fp;
 	if ((fp = fopen(repository, "a")) == NULL) {
 		printf("err: could not open file %s", repository);
 		return;

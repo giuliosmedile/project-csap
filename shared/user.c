@@ -258,19 +258,6 @@ t_user* searchUser(char* username, char* filename) {
 			u = readUser(buf);
 			return u;
 		}
-		continue; //TODO Remove
-		
-		// Read user from buffer line
-		t_user* u = (t_user*)malloc(sizeof(t_user));
-		u = readUser(buf);
-
-		//printf("%s\n\n", formatPrintUser(u, ""));
-		printf("Compare: u->: %s, username: %s\n", u->username, username);
-		if (!strcmp(u->username, username))	{
-			fclose(fp);
-			return u;
-		}
-		printf("loop\n");
 	}
 	fclose(fp);
 	return NULL;
