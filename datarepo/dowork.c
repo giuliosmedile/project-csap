@@ -166,11 +166,13 @@ void dowork(int socket) {
 			flagMessageAsReadInList(u->messages, m);
 			saveUser(u, USERS_REPOSITORY);
 
-			strcpy(result, "GETMESSAGEOK");
 			free(path);
 			free(filename);
 			free(m);
 			free(u);
+
+			// Go to next main iteration
+			return;
 		}
 
 
@@ -206,8 +208,8 @@ void dowork(int socket) {
 			u = addMessageToUserNoRepo(u, m);
 			saveUser(u, USERS_REPOSITORY);
 
-			// Send the result back to the server
-			strcpy(result, "MESSAGEFORWARDED");
+			// Send the result back to the server, with the updated user
+			sprintf(result, "%s", printUser(u, ""));
 		}
 
 

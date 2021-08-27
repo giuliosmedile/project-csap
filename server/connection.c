@@ -100,12 +100,18 @@ char* readFromSocket(int s, char* rcv) {
     free(rcv);
     rcv = (char*)malloc(BUF_SIZE * sizeof(char));
     // Read (or recv) from socket
-    if (read(s, rcv, BUF_SIZE)<0) {
+    if (recv(s, rcv, BUF_SIZE,0)<0) {
         perror("read");
         exit(1);
     }
     // rcv[strlen(rcv)-1] = '\0';
     printf("[+] received from %d: \"%s\"\n", s, rcv);
+
+    if (!strcmp(rcv, "")) {
+        printf("[-] received empty string from %d\n", s);
+        return "null";
+    }
+
     return rcv;
 }
 

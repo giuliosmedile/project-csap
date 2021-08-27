@@ -84,6 +84,19 @@ t_user* handleRecord(char* response, t_user* user)  {
 
 }
 
+t_user* handleForward(char* response, t_user* user)  {
+
+	// Check for various errors
+	if (!strcmp(response, "MESSAGEERROR")) {
+		printf("[!] There has been an error while processing the forward operation. Please perform the operation again.\n");
+		return user;
+	}
+
+	// If there are no errors, decode the response
+	user = decodeUser(response, user);
+	return user;
+}
+
 t_user* handleServerReplies(char* command, char* response, t_user* user) {
 #ifdef TEST
 	printf("[-] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response);
@@ -102,6 +115,8 @@ t_user* handleServerReplies(char* command, char* response, t_user* user) {
 		user = handleAdd(response, user);
 	} else if (!strcmp(command, "record")) {
 		user = handleRecord(response, user);
+	} else if (!strcmp(command, "forward")) {
+		user = handleForward(response, user);
 	} else if (!strcmp(command, "")){
 		printf("There must have been an error in the response from the server.\n");
 	} else {

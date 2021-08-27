@@ -100,7 +100,7 @@ char* readFromSocket(int s, char* rcv) {
     free(rcv);
     rcv = (char*)malloc(BUF_SIZE * sizeof(char));
     // Read (or recv) from socket
-    if (read(s, rcv, sizeof(rcv))<0) {
+    if (read(s, rcv, BUF_SIZE)<0) {
         perror("read");
         exit(1);
     }
@@ -126,7 +126,6 @@ void sendFile(int s, char* filename, int filesize) {
     // note: even though we are sending the file in one block as big as the file itself, I still prefer to
     // iterate through the file, because it is easier to debug
     while(fread(data, 1, filesize, fp) > 0) {
-        printf("%d\t%d\n", ++i, filesize);
         // Send the data
         if (send(s, (void* )data, filesize, 0) == -1) {
             perror("[-]Error in sending file.");
