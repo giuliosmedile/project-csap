@@ -314,7 +314,10 @@ int checkIfMessageExists(char* filename, char* repository) {
     if (file == NULL) return 0;
     while ((line = fgets(line, BUF_SIZE, file)) != NULL) {
 
-        line[strlen(line)-1] = '\0';
+        // If the string is newline terminated, remove '\n'
+        if (line[strlen(line)-1] == '\n') {
+            line[strlen(line)-1] = '\0';
+        }
 
         printf("line: \"%s\"; strstr: %s\n", line, strstr(line, filename));
         // If the line contains the filename, return 1

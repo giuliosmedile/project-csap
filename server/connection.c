@@ -100,7 +100,7 @@ char* readFromSocket(int s, char* rcv) {
     free(rcv);
     rcv = (char*)malloc(BUF_SIZE * sizeof(char));
     // Read (or recv) from socket
-    if (recv(s, rcv, BUF_SIZE,0)<0) {
+    if (recv(s, rcv, BUF_SIZE, 0)<0) {
         perror("read");
         exit(1);
     }

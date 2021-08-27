@@ -211,9 +211,49 @@ void dowork(int socket) {
 			// Send the result back to the server, with the updated user
 			sprintf(result, "%s", printUser(u, ""));
 		}
+		free(m);
 
+	// HANDLE DELETE
+	} else if (!strcmp(command, "delete")) {
+		printf("delete\n");
 
+		// Check if the message actually exists
+		if (!checkIfMessageExists(ops[3], MESSAGES_REPO)) {
+			result = "MESSAGEERROR";
+		} else {
+			// Delete the message from the repository
+			removeDuplicateMessages(ops[1], ops[3], MESSAGES_REPO);
 
+			// If there are no more messages in the repository with the same filename, I can safely delete the file
+			if (!checkIfMessageExists(ops[3], MESSAGES_REPO)) {
+				char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+				char* filename = (char*)malloc(BUF_SIZE * sizeof(char));
+				strcpy(filename, ops[3]);
+				sprintf(path, "%s/%s", TMP_DIR, filename);
+
+				// Delete the file
+				remove(path);
+			}
+
+			// Get the message struct
+			t_message* m = (t_message*)malloc(sizeof(t_message));
+			m = getFromRepository(MESSAGES_REPO, ops[3]);
+			
+			// Update the sender and receiver, to be sure that I'm deleting the right message
+			strcpy(m->sender, ops[1]);
+			strcpy(m->receiver, ops[2]);
+
+			// Update the sender
+			t_user* u = (t_user*)malloc(sizeof(t_user));
+			u = searchUser(ops[1], USERS_REPOSITORY);
+			u = removeMessageFromUserNoRepo(u, m);
+			saveUser(u, USERS_REPOSITORY);
+
+			// Send the result back to the server, with the updated user
+			sprintf(result, "%s", printUser(u, ""));
+
+			free(u);
+		}
 
 	// HANDLE DEFAULT
 	} else {

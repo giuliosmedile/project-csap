@@ -194,6 +194,18 @@ void dowork(int clientSock, int dataRepoSock) {
         // Wait for the mdr's response
         output = readFromSocket(dataRepoSock, output);
 
+    } else if (!strcmp(command, "delete")) {
+        puts("delete");
+
+        // Send to mdr the request to delete the message
+        char* tmp = malloc(BUF_SIZE * sizeof(char));
+        sprintf(tmp, "delete;%s;%s;%s", ops[1], ops[2], ops[3]);
+
+        sendToSocket(dataRepoSock, tmp);
+
+        // Wait for the mdr's response
+        output = readFromSocket(dataRepoSock, output);
+
     } else {
         // If the command is not recognized, send an error
         output = "ERROR";

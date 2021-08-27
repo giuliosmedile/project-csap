@@ -203,7 +203,6 @@ t_user* readUser(char* line) {
 			temp = temp->next;
 		}
 		temp->next = NULL;
-		free(temp);
 	} else {
 		u->messages = NULL;
 	}
@@ -414,6 +413,21 @@ t_user* addMessageToUserNoRepo(t_user* u, t_message* message) {
 	// add the message to the user's message list
 	u->messages = add_node(&(u->messages), message);
 	u->messagesno++;
+
+	return u;
+}
+
+/**
+ * Function that removes a message from a user's messages list
+ * @param u the user struct to remove the message from
+ * @param message the message to remove
+ * @returns the user struct with the message removed
+**/
+t_user* removeMessageFromUserNoRepo(t_user* u, t_message* message) {
+
+	// remove the message from the user's message list
+	u->messages = remove_node(&(u->messages), message);
+	u->messagesno--;
 
 	return u;
 }

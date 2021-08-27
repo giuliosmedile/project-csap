@@ -235,15 +235,88 @@ askForMessageInForward:
         strcpy(filename, m->filename);
 
         // Ask user to choose a user in their addressbook to forward the message to
-        char* userToForwardTo = (char*) malloc(sizeof(char) * BUF_SIZE);
-        userToForwardTo = selectUser(u, userToForwardTo);
+        char* userToForwardTo = selectUser(u, userToForwardTo);
 
         // Send request to server
         sprintf(output, "forward;%s;%s;%s;", u->username, userToForwardTo, filename);
 
+    } else if (!strcmp(command, "delete")) {
+
+        // Check if logged in
+        if (u == NULL) {
+            printf("[-] You're not logged in.\n");
+            strcpy(output, "null");
+            goto endOfInterpretInput;
+        }
+
+        // Get the list of messages from the user struct
+        NODE* messages = u->messages;
+
+        // Ask the user to choose a message
+askForMessageInDelete:
+        printf("%s", COLOR);
+        printf("\n\n%s\n\n", print_list(messages, ""));
+        
+        printf("[-] Choose a message to delete: ");
+        char* choice = (char*) malloc(sizeof(char) * BUF_SIZE);
+        if (fgets(choice,BUF_SIZE,stdin) == NULL) {
+            printf("\n");
+            exit(0);
+        }
+        choice[strlen(choice)-1] = '\0';
+
+        // Check if the user wants to exit
+        if (!strcmp("exit", choice) || !strcmp("quit", choice) || !strcmp("cancel", choice)) {
+            printf("[-] Cancelling operation.\n");
+            strcpy(output, "null");
+            goto endOfInterpretInput;
+        }
+
+        // Evaluate the user's choice
+        int choice_int = atoi(choice);
+        if (choice_int < 1 || choice_int > count_messages(messages)) {
+            // If the user's choice is not valid, ask again
+            printf("[-] \"%s\" is an invalid choice.\n", choice);
+            goto askForMessageInDelete;
+        }
+        printf("%s", STD_COL);
+
+        // Get the message
+        t_message* m = getMessage(messages, choice_int-1);
+        char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
+
+        // Ask user to confirm the deletion
+        printf("[-] Are you sure you want to delete \"%s\"? (y/n): ", m->filename);
+        char* confirm = (char*) malloc(sizeof(char) * BUF_SIZE);
+        if (fgets(confirm,BUF_SIZE,stdin) == NULL) {
+            printf("\n");
+            exit(0);
+        }
+        confirm[strlen(confirm)-1] = '\0';
+        if (!strcmp("y", confirm) || !strcmp("yes", confirm)) {
+            // If the user confirms, send the request to the server
+            sprintf(output, "delete;%s;%s;%s;", m->sender, m->receiver, m->filename);
+        } else {
+            // If the user doesn't confirm, return null
+            printf("[-] Aborting operation.\n");
+            strcpy(output, "null");
+        }
+
+
     } else if (!strcmp(command, "exit") || !strcmp(command, "quit")) {
+        printf("Thank you for using the voicemail service. \n\t ~ So long and thanks for all the fish!\n\n");
+
+        // Tell server I'm quitting
+        char* quit = (char*) malloc(sizeof(char) * BUF_SIZE);
+        strcpy(quit, "quit");
+        sendToSocket(s, quit);
+
+        // Free structs and close socket
+        u = NULL;
+        free(u);
         close(s);
         exit(0);
+
     } else if (!strcmp(command, "help")) {
         help();
         strcpy(output, "null");

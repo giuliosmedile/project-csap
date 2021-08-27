@@ -42,11 +42,12 @@ NODE* add_node(NODE** p_head, t_message* message) {
 
 
 // Function that removes a message from the list
-NODE* remove_node(NODE* head, t_message* message) {
+NODE* remove_node(NODE** p_head, t_message* message) {
+	NODE* head = *p_head;
 	NODE* current = head;
 	NODE* previous = NULL;
 	while (current != NULL) {
-		if (current->message == message) {
+		if (equalsMessage(current->message, message)) {
 			if (previous == NULL) {
 				head = current->next;
 			} else {
