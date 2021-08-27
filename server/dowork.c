@@ -182,6 +182,27 @@ void dowork(int clientSock, int dataRepoSock) {
         free(tmp);
         goto endOfDoWork;
 
+    } else if (!strcmp(command, "forward")) {
+        puts("forward");
+
+        // Send to mdr the request to forward the message
+        char* tmp = malloc(BUF_SIZE * sizeof(char));
+        sprintf(tmp, "forward;%s;%s;%s", ops[1], ops[2], ops[3]);
+
+        sendToSocket(dataRepoSock, tmp);
+
+        // Wait for the mdr's response
+        output = readFromSocket(dataRepoSock, output);
+
+    } else {
+        // If the command is not recognized, send an error
+        output = "ERROR";
+        
+        // Send the error to the client
+        sendToSocket(clientSock, output);
+
+        // Skip to next iteration
+        goto endOfDoWork;
     }
 
     printf("[+] about to send to client: \"%s\"\n", output);

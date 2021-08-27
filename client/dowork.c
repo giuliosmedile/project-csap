@@ -21,6 +21,7 @@ void help() {
     printf("\tadd\t\tadds a user to your addressbook\n");
     printf("\trecord\t\trecords a new voice message\n");
     printf("\tlisten\t\tlistens to incoming voice messages\n");
+    printf("\tforward\t\tforwards a voice message to another user\n");
     printf("\tclear\t\tclears the console screen\n");
     printf("\texit\t\tterminates the program\n");
     printf("%s", STD_COL);
@@ -199,7 +200,46 @@ askForMessage:
         // Parse the response, creating a list of messages
         NODE* messages = get_list_from_string(response);
 
+        // Ask the user to choose a message
+askForMessageInForward:
+        printf("%s", COLOR);
+        printf("\n\n%s\n\n", print_list(messages, ""));
 
+        printf("[-] Choose a message to forward: ");
+        char* choice = (char*) malloc(sizeof(char) * BUF_SIZE);
+        if (fgets(choice,BUF_SIZE,stdin) == NULL) {
+            printf("\n");
+            exit(0);
+        }
+        choice[strlen(choice)-1] = '\0';
+
+        // Check if the user wants to exit
+        if (!strcmp("exit", choice) || !strcmp("quit", choice) || !strcmp("cancel", choice)) {
+            printf("[-] Cancelling operation.\n");
+            strcpy(output, "null");
+            goto endOfInterpretInput;
+        }
+
+        // Evaluate the user's choice
+        int choice_int = atoi(choice);
+        if (choice_int < 1 || choice_int > count_messages(messages)) {
+            // If the user's choice is not valid, ask again
+            printf("[-] \"%s\" is an invalid choice.\n", choice);
+            goto askForMessageInForward;
+        }
+        printf("%s", STD_COL);
+
+        // Get the message
+        t_message* m = getMessage(messages, choice_int-1);
+        char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
+        strcpy(filename, m->filename);
+
+        // Ask user to choose a user in their addressbook to forward the message to
+        char* userToForwardTo = (char*) malloc(sizeof(char) * BUF_SIZE);
+        userToForwardTo = selectUser(u, userToForwardTo);
+
+        // Send request to server
+        sprintf(output, "forward;%s;%s;%s;", u->username, userToForwardTo, filename);
 
     } else if (!strcmp(command, "exit") || !strcmp(command, "quit")) {
         close(s);
@@ -208,6 +248,9 @@ askForMessage:
         help();
         strcpy(output, "null");
     } else if (!strcmp(command, "clear")) {
+        // Clear terminal screen
+        // tested on gnome-terminal, should work on other terminals
+        // found the instruction on stackoverflow 
         system("@cls||clear");
         strcpy(output, "null");
     } else {

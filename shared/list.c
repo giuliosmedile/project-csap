@@ -11,6 +11,7 @@ char* printMessage(t_message* m, char* string);
 t_message* readMessage(char* string);
 t_message* saveMessage(char* filename);
 char* print_list(NODE* head, char* result);
+int equalsMessage(t_message* m1, t_message* m2);
 
 // typedef struct node {
 // 	t_message* message;
@@ -377,4 +378,41 @@ NODE* searchForMessagesInRange(char* username, time_t lower, time_t upper, char*
 	free(buf);
 	puts("returning");
 	return result;
+}
+
+/**
+ * Function that searches for a given message in a list, and returns the message pointer if found.
+ * @param list the list of messages
+ * @param message the message to search for
+ * @return the message pointer if found, NULL otherwise
+**/
+t_message* searchForMessageInList(NODE* list, t_message* m) {
+	NODE* tmp = list;
+	while (tmp != NULL) {
+		if (equalsMessage(tmp->message, m)) {
+			return tmp->message;
+		}
+		tmp = tmp->next;
+	}
+	return NULL;
+}
+
+/**
+ * Function that, given a list of messages, flags a certain message as read.
+ * Uses equalsMessage() to check if the messages are the same.
+ * @param list the list of messages
+ * @param message the message to flag as read
+ * @return 1 if the message was found and flagged, 0 otherwise
+**/
+int flagMessageAsReadInList(NODE* list, t_message* m) {
+	NODE* tmp = list;
+
+	while (tmp != NULL) {
+		if (equalsMessage(tmp->message, m)) {
+			tmp->message->is_read = 1;
+			return 1;
+		}
+		tmp = tmp->next;
+	}
+	return 0;
 }

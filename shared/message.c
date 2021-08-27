@@ -209,7 +209,7 @@ char* formatPrintMessage(t_message* m, char* string) {
  * @param filename The name of the file to remove duplicates from
  * @param repository The repository to remove duplicates from
 **/
-void removeDuplicateMessages(char* filename, char* repository) {
+void removeDuplicateMessages(char* sender, char* filename, char* repository) {
     size_t len;
 	FILE *fp, *tmp_fp;
 	char* buf = malloc(BUF_SIZE * sizeof(char));
@@ -221,13 +221,20 @@ void removeDuplicateMessages(char* filename, char* repository) {
 
     // copy all contents to the temporary file except the specific line
     while (getline(&buf, &len, fp) != -1) {
-        // If the username of the line I'm looking at is not the one passed in the function
-        // I can copy it over. If it is, I skip it
-        printf("removeduplicates: %s", buf);
-    	if (strstr(buf, filename) == NULL) {
+        
+        // Tokenize the line
+        char* temp = (char*)malloc(BUF_SIZE * sizeof(char));
+        strcpy(temp, buf);
+        tokenize(temp, &args);
+        
+        printf("sender: %s, args[0]: %s, filename: %s, args[4]: %s\n", sender, args[0], filename, args[4]);
+        printf("compare 1: %d, compare 2: %d\n", strcmp(args[0], sender), strcmp(args[4], filename));
+    	if (strcmp(args[0], sender) || strcmp(args[4], filename)) {
             printf("copying over: %s\n", buf);
     		fprintf(tmp_fp, "%s", buf);
-    	}
+    	} else {
+            puts("not copying over");
+        }
     }
     fclose(fp);
     fclose(tmp_fp);
@@ -240,7 +247,7 @@ void removeDuplicateMessages(char* filename, char* repository) {
 // Function that saves a message to a file
 void saveInRepository(t_message* m, char* repository) {
 	// First of all, remove duplicates, if exist
-	removeDuplicateMessages(m->filename, repository);
+	removeDuplicateMessages(m->sender, m->filename, repository);
 
 	// Open the file to append this user
     FILE* fp;
@@ -318,4 +325,18 @@ int checkIfMessageExists(char* filename, char* repository) {
     }
     fclose(file);
     return 0;
+}
+
+/**
+ * Function that checks if two messages are equal
+ * @param m1 The first message to compare
+ * @param m2 The second message to compare
+ * @return 1 if the messages are equal, 0 if they are not
+**/
+int equalsMessage(t_message* m1, t_message* m2) {
+    if (strcmp(m1->sender, m2->sender) != 0) return 0;
+    if (strcmp(m1->receiver, m2->receiver) != 0) return 0;
+    if (strcmp(m1->filename, m2->filename) != 0) return 0;
+    if (m1->timestamp != m2->timestamp) return 0;
+    return 1;
 }

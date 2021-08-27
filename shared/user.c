@@ -202,10 +202,12 @@ t_user* readUser(char* line) {
 			temp->next = (NODE*)malloc(sizeof(NODE));
 			temp = temp->next;
 		}
+		temp->next = NULL;
 		free(temp);
 	} else {
 		u->messages = NULL;
 	}
+	
 	free(args);
 	return u;
 }
@@ -381,7 +383,7 @@ char* selectUser(t_user* u, char* result) {
 }
 
 /**
- * Function that adds a message to a user struct
+ * Function that adds a message to a user struct and saves it in the repo file
  * @param u the user struct to add the message to
  * @param filename the filename of the message i want to add
  * @returns the user struct with the message added
@@ -392,12 +394,26 @@ t_user* addMessageToUser(t_user* u, char* filename) {
 	message = saveMessage(filename);
 	saveInRepository(message, MESSAGES_REPO);
 
-
-
 	// add the message to the user's message list
 	u->messages = add_node(&(u->messages), message);
 	u->messagesno++;
 
+
+	return u;
+}
+
+/**
+ * Function that adds a message to a user struct. 
+ * Differently from addMessageToUser, it does not save the message in the repo file
+ * @param u the user struct to add the message to
+ * @param message the message to add
+ * @returns the user struct with the message added
+**/
+t_user* addMessageToUserNoRepo(t_user* u, t_message* message) {
+
+	// add the message to the user's message list
+	u->messages = add_node(&(u->messages), message);
+	u->messagesno++;
 
 	return u;
 }

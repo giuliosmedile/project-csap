@@ -110,6 +110,7 @@ void dowork(int socket) {
 		}
 		free(path);
 
+	// HANDLE FIRST PART OF LISTEN AND FORWARD
 	} else if (!strcmp(command, "get_messages_for")) {
 		printf("get_messages_for\n");
 
@@ -129,6 +130,7 @@ void dowork(int socket) {
 		free(listOfMessagesString);
 		//free(listOfMessages);
 
+	// HANDLE GETTING MESSAGES FOR LISTEN
 	} else if (!strcmp(command, "get_message")) {
 		printf("get_message\n");
 
@@ -157,7 +159,58 @@ void dowork(int socket) {
 			m = getFromRepository(MESSAGES_REPO, filename);
 			flagMessageRead(m);
 			saveInRepository(m, MESSAGES_REPO);
+
+			// Update the sender's messages, flagging the message as read
+			t_user* u = (t_user*)malloc(sizeof(t_user));
+			u = searchUser(m->sender, USERS_REPOSITORY);
+			flagMessageAsReadInList(u->messages, m);
+			saveUser(u, USERS_REPOSITORY);
+
+			strcpy(result, "GETMESSAGEOK");
+			free(path);
+			free(filename);
+			free(m);
+			free(u);
 		}
+
+
+	} else if (!strcmp(command, "forward")) {
+		printf("forward\n");
+
+		// To forward the message, just update the messages repo file
+		// by copying over the original line, and changing the sender and receiver
+		// one can always see that the message is forwarded by looking at the filename, that won't change.
+		// Even if the message was already forwarded in the first place (and the sender and receiver are the same)
+
+		// Get the message from the repository
+		t_message* m = (t_message*)malloc(sizeof(t_message));
+		m = getFromRepository(MESSAGES_REPO, ops[3]);
+
+		if (m == NULL) {
+			strcpy(result, "MESSAGEERROR");
+		} else {
+			// Update the sender and receiver, and set the message as unread
+			strcpy(m->sender, ops[1]);
+			strcpy(m->receiver, ops[2]);
+			m->is_read = 0;
+
+			// Testing if message updated correctly
+			printf("%s\n", formatPrintMessage(m, ""));
+
+			// Save the message in the repository
+			saveInRepository(m, MESSAGES_REPO);
+
+			// Update the sender with the information about the message
+			t_user* u = (t_user*)malloc(sizeof(t_user));
+			u = searchUser(ops[1], USERS_REPOSITORY);
+			u = addMessageToUserNoRepo(u, m);
+			saveUser(u, USERS_REPOSITORY);
+
+			// Send the result back to the server
+			strcpy(result, "MESSAGEFORWARDED");
+		}
+
+
 
 
 	// HANDLE DEFAULT
