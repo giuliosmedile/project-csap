@@ -11,6 +11,9 @@ The executables will be found as 	`main` in the directories `client`, `server` a
 
 Alternatively, each program can be made indipendently, by calling its name.
 
+All programs use some sort of debug to show whoever runs them what is going on behind the hood. However, for a _smoother_ user experience, `client` has them disabled by default.
+Calling `make client ARGS="-D=DEBUG"` explicitely shows debug prints.
+
 
 # Usage
 By default, `server` will run on localhost on port 16000, `datarepo` on 16001.
@@ -45,3 +48,4 @@ Tools used while creating this project:
 - **Nemiver**, a visual interface for gdb. Saved me a lot while debugging.
 - **GitHub** (duh) that helped me recover my work in case of some disastrous modifications
 - **StackOverflow** for teaching how to fix my stupid mistakes
+- **Check**, a library for unit testing
