@@ -319,9 +319,12 @@ int checkIfMessageExists(char* filename, char* repository) {
             line[strlen(line)-1] = '\0';
         }
 
-        printf("line: \"%s\"; strstr: %s\n", line, strstr(line, filename));
+        puts("before strstr in check");
         // If the line contains the filename, return 1
-        if (strstr(line, filename) != NULL) {
+        char* test = strstr(line, filename);
+        printf("test: %s\n", test);
+        if (test != NULL) {
+            puts("found");
             fclose(file);
             return 1;
         }

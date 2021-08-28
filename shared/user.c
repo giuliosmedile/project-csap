@@ -418,7 +418,9 @@ t_user* addMessageToUserNoRepo(t_user* u, t_message* message) {
 }
 
 /**
- * Function that removes a message from a user's messages list
+ * Function that removes a message from a user's messages list. 
+ * It does not remove the message from the repo file.
+ * 
  * @param u the user struct to remove the message from
  * @param message the message to remove
  * @returns the user struct with the message removed

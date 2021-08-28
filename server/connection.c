@@ -109,7 +109,7 @@ char* readFromSocket(int s, char* rcv) {
 
     if (!strcmp(rcv, "")) {
         printf("[-] received empty string from %d\n", s);
-        return "null";
+        strcpy(rcv, "null");
     }
 
     return rcv;

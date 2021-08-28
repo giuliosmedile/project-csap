@@ -55,7 +55,7 @@ int connectToSocket(char* serv_add, unsigned short port) {
 void sendToSocket(int s, char* buf) {
     // Make sure the string is null terminated
     buf[strlen(buf)] = '\0';
-    printf("[-] About to send to %d: \"%s\"\n", s, buf);
+    DEBUGPRINT(("[~] About to send to %d: \"%s\"\n", s, buf));
 
     // Make sure the string is null terminated, as some junk characters may be leftover from previous sends
     buf[strlen(buf)] = '\0';
@@ -80,14 +80,14 @@ char* readFromSocket(int s, char* rcv) {
         exit(1);
     }
     // rcv[strlen(rcv)-1] = '\0';
-    printf("[+] received: \"%s\"\n", rcv);
+    DEBUGPRINT(("[~] received: \"%s\"\n", rcv));
     return rcv;
 }
 
 // Function that sends a file through a socket
 void sendFile(int s, char* filename, int filesize) {
     int n;                                  // Number of bytes sent
-    int i = 0;                              // Debug counter
+    int i = 0;                              // debug counter
     void* data = (void*)malloc(filesize);   // Pointer to the data to be sent
 
     // Open the file
@@ -99,7 +99,7 @@ void sendFile(int s, char* filename, int filesize) {
 
     // Read the file
     // note: even though we are sending the file in one block as big as the file itself, I still prefer to
-    // iterate through the file, because it is easier to debug
+    // iterate through the file, because it is easier to DEBUGPRINT
     while(fread(data, 1, filesize, fp) > 0) {
         // Send the data
         if (send(s, (void* )data, filesize, 0) == -1) {
@@ -118,7 +118,7 @@ void sendFile(int s, char* filename, int filesize) {
 // Function to receive a binary file sent through a socket
 void receiveFile(int s, char* filename) {
     int n = 1;                                        // Number of bytes read
-    int i = 0;                                        // Debug counter
+    int i = 0;                                        // DEBUGPRINT counter
     FILE *fp;                                         // File pointer
     char buffer[BUF_SIZE];                            // Buffer to store data
 

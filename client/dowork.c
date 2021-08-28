@@ -248,6 +248,13 @@ askForMessageInForward:
             strcpy(output, "null");
             goto endOfInterpretInput;
         }
+        
+        // Check if there actually are messages to be read
+        if (u->messagesno == 0) {
+            printf("[-] You can only delete messages you sent. Send some messages before deleting them!\n");
+            strcpy(output, "null");
+            goto endOfInterpretInput;
+        }
 
         // Get the list of messages from the user struct
         NODE* messages = u->messages;

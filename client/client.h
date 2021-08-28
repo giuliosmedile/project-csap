@@ -19,6 +19,13 @@
 #define REC "/usr/bin/rec"                         //where rec is located
 #define PLAY "/usr/bin/play"                       //where play is located
 
+// DEBUG STATEMENT
+#ifdef DEBUG
+  #define DEBUGPRINT(a) printf a
+#else
+  #define DEBUGPRINT(a) (void)0
+#endif
+
 // Shared imports
 #include "../shared/structs.h"
 #include "../shared/utils.c"
@@ -35,41 +42,4 @@
 #include "messages.c"
 #include "interaction.c"
 #include "dowork.c"
-
-// // From main.c
-
-// //void dowork(char* buf);                      //command interpreter
-// char* takeUserInput(char* input);                    //take a user's input from keyboard
-// char* interpretInput(char* command, char* output);   //interpret the command
-
-// // From utils.c
-
-// void tokenize(char* input, char*** output);  //splits a string into an array of strings
-
-// // From signin.c
-
-// char* login(char* result, t_user** u);
-// char* signup(char* result, t_user** u);
-// char* logout(char* result, t_user** u);
-
-// // From connectToSocket.c
-
-// int connectToSocket(char* serv_add, unsigned short serv_port);
-// void sendToSocket(int socket, char* str);
-// char* readFromSocket(int socket, char* str);
-// void sendFile(int s, char* filename, int filesize);
-// void receiveFile(int s, char* filename);
-
-// // From handleServerReplies.c
-
-// t_user* handleServerReplies(char* command, char* response, t_user* u);
-
-// // From readConfig.c
-
-// void readConfig (char** serv_add, unsigned short* serv_port);
-
-// //From messages.c
-
-// char* add(char* output, t_user** u_p);
-// char* record(char* result, t_user** u_p, char* filename);
 

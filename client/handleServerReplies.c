@@ -9,7 +9,7 @@
  * @response:	The response from the MDS.
 */
 t_user* decodeUser(char* response, t_user* u) {
-	puts("decodeuser");
+	DEBUGPRINT(("[~] decodeuser"));
 	// Free the user before doing any operation to it
 	if (u != NULL) {
 		puts("user not null");
@@ -22,7 +22,7 @@ t_user* decodeUser(char* response, t_user* u) {
 		printf("User not valid.\n");
 		return NULL;
 	}
-	puts("end readuser in decodeuser");
+	DEBUGPRINT(("[~] end readuser in decodeuser"));
 	printf("Information for user %s: \n", u->username);
 	//char* str = formatPrintUser(u, str);
 	printf("\033[1;31m");
@@ -110,9 +110,7 @@ t_user* handleDelete(char* response, t_user* user)  {
 }
 
 t_user* handleServerReplies(char* command, char* response, t_user* user) {
-#ifdef TEST
-	printf("[-] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response);
-#endif
+	DEBUGPRINT(("[~] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response));
 
 	if (response == NULL) {
 		printf("[-] There has been an error with the server. Please try again.\n");
@@ -129,7 +127,7 @@ t_user* handleServerReplies(char* command, char* response, t_user* user) {
 		user = handleRecord(response, user);
 	} else if (!strcmp(command, "forward")) {
 		user = handleForward(response, user);
-	} else if (!strcmp(command, "list")) {
+	} else if (!strcmp(command, "delete")) {
 		user = handleDelete(response, user);
 	} else if (!strcmp(command, "")){
 		printf("There must have been an error in the response from the server.\n");
