@@ -235,7 +235,8 @@ askForMessageInForward:
         strcpy(filename, m->filename);
 
         // Ask user to choose a user in their addressbook to forward the message to
-        char* userToForwardTo = selectUser(u, userToForwardTo);
+        char* userToForwardTo = (char*) malloc(sizeof(char) * BUF_SIZE);
+        userToForwardTo = selectUser(u, userToForwardTo);
 
         // Send request to server
         sprintf(output, "forward;%s;%s;%s;", u->username, userToForwardTo, filename);

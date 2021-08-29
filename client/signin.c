@@ -36,14 +36,17 @@ char* signup(char* result, t_user** u_p) {
 
     printf("%s", COLOR);	//Red text
     printf("Password for %s: ", username);
-    password = getpass("");
-    // if (fgets(password,sizeof(password),stdin) == NULL) {
-    //     printf("\n");
-    //     exit(0);
-    // }
+    if (fgets(password,sizeof(password),stdin) == NULL) {
+        printf("\n");
+        exit(0);
+    }
 	printf(STD_COL);		//Reset to old color
 
-	sprintf(result, "signup %s %s", username, password);
+    if (password[strlen(password) - 1] == '\n') {
+        password[strlen(password)-1] = '\0';
+    }
+    hash(&password);
+	sprintf(result, "signup;%s;%s", username, password);
 
     free(username);
     free(password);
@@ -51,8 +54,8 @@ char* signup(char* result, t_user** u_p) {
 }
 
 /** Login routine.
- *  @result the line that the client typed in stdin
- *  @u_p address of a user struct. Needed to check if already logged in
+ *  @param result the line that the client typed in stdin
+ *  @param u_p address of a user struct. Needed to check if already logged in
  *  @returns the string to send to the server
 */
 char* login(char* result, t_user** u_p) {
@@ -84,8 +87,14 @@ char* login(char* result, t_user** u_p) {
     }
 	printf(STD_COL);		//Reset to old color
 
-	sprintf(result, "login %s %s", username, password);
-    result[strlen(result)-1] = '\0';    //Avoid \n
+    // Hash the password before sending, for security on the network
+    if (password[strlen(password) - 1] == '\n') {
+        password[strlen(password)-1] = '\0';
+    }
+    hash(&password);
+
+	sprintf(result, "login;%s;%s", username, password);
+    // result[strlen(result)-1] = '\0';    //Avoid \n
     free(username);
     free(password);
 	return result;

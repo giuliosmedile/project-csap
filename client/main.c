@@ -32,6 +32,11 @@ void main (int argc, char** argv) {
     printf("\t ------ Voicemail Service ------\n");
     printf("\t -------------------------------\n");
     printf("\t -------------------------------\n");
+
+    #ifdef DEBUG
+        printf("\tDEBUG MODE ACTIVE\n");
+    #endif
+
     // Main loop
     for (;;) {
         dowork(u, s);

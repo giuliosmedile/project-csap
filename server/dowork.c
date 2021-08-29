@@ -70,7 +70,8 @@ void dowork(int clientSock, int dataRepoSock) {
             output = readFromSocket(dataRepoSock, output);
         } else {
             // Didn't correctly log in
-            output = "NOLOGIN";
+            strcpy(output, "NOLOGIN");
+            goto sendToSocket;
         }
     } else if (!strcmp(command, "signup")) {
         if (result) {
@@ -84,7 +85,7 @@ void dowork(int clientSock, int dataRepoSock) {
             free(tmp);
         } else {
             // Didn't correctly sign up
-            output = "NOSIGNUP";
+            strcpy(output, "NOSIGNUP");
         }
     } else if (!strcmp(command, "add")) {
         if (result) {
@@ -97,7 +98,7 @@ void dowork(int clientSock, int dataRepoSock) {
             output = readFromSocket(dataRepoSock, output);
             free(tmp);
         } else {
-            output = "NOADD";
+            strcpy(output, "NOADD");
         }
     } else if (!strcmp(command, "record")) {
         if (result) {
@@ -122,7 +123,7 @@ void dowork(int clientSock, int dataRepoSock) {
             free(path);
         } else {
             // There has been an error while receiving the file from the client
-            output = "NORECORD";
+            strcpy(output, "NORECORD");
         }
     } else if (!strcmp(command, "listen")) {
         puts("listen");
@@ -153,7 +154,7 @@ void dowork(int clientSock, int dataRepoSock) {
 
         // Check if the message is valid
         if (!strcmp(tmp, "NOMESSAGE")) {
-            output = "NOMESSAGE";
+            strcpy(output, "NOMESSAGE");
             goto sendToSocket;
         }
 
@@ -165,7 +166,7 @@ void dowork(int clientSock, int dataRepoSock) {
         // Listen for the data stream by using record
         if (record(filename, filesize, dataRepoSock) == 0) {
             // Tell the client something went wrong
-            output = "ERROR";
+            strcpy(output, "ERROR");
             goto sendToSocket;    
         }
 
@@ -208,7 +209,7 @@ void dowork(int clientSock, int dataRepoSock) {
 
     } else {
         // If the command is not recognized, send an error
-        output = "ERROR";
+        strcpy(output, "ERROR");
         
         // Send the error to the client
         sendToSocket(clientSock, output);
@@ -217,10 +218,9 @@ void dowork(int clientSock, int dataRepoSock) {
         goto endOfDoWork;
     }
 
-    printf("[+] about to send to client: \"%s\"\n", output);
-
      /* --------------- SEND BACK TO CLIENT ----------------- */
 sendToSocket:
+    printf("[+] about to send to client: \"%s\"\n", output);
     sendToSocket(clientSock, output);
 
     counter++;

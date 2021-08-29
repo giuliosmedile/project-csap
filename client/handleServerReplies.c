@@ -36,7 +36,7 @@ t_user* handleLogin(char* response, t_user* user)  {
 
 	if (!strcmp(response, "NOLOGIN")) {
 		printf("[-] Could not authenticate you. Did you check your password before logging in?\n");
-		return NULL;
+		return user;
 	}
 
 	user = decodeUser(response, user);

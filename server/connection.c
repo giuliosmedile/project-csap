@@ -97,14 +97,13 @@ void sendToSocket(int s, char* buf) {
 }
 
 char* readFromSocket(int s, char* rcv) {
-    free(rcv);
-    rcv = (char*)malloc(BUF_SIZE * sizeof(char));
+    int n;
     // Read (or recv) from socket
-    if (recv(s, rcv, BUF_SIZE, 0)<0) {
+    if ((n = read(s, rcv, BUF_SIZE))<0) {
         perror("read");
         exit(1);
     }
-    // rcv[strlen(rcv)-1] = '\0';
+    rcv[n] = '\0';
     printf("[+] received from %d: \"%s\"\n", s, rcv);
 
     if (!strcmp(rcv, "")) {

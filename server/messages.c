@@ -41,6 +41,8 @@ int add(char* user, char* other) {
 // TODO: add hash check to see if file was sent correctly
 int record(char* filename, int filesize, int socket) {
 
+	if (filesize == 0) return 0;		// This means that the file is empty
+
 	// Create the temp directory, it if is not there
     struct stat st = {0};
     if (stat(TMP_DIR, &st) == -1) {
@@ -57,7 +59,6 @@ int record(char* filename, int filesize, int socket) {
 	// If the file size is not the same, it means the file was not sent correctly
 	printf("\t\tfrom client: %d - mine: %d\n", filesize, get_file_size(path));
 	if (filesize != get_file_size(path)) {
-		//return 0;
-		return 1;
+		return 0;
 	} else return 1;
 }
