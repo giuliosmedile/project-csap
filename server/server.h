@@ -10,6 +10,13 @@
 #define BUF_SIZE 4096
 #define CREDENTIALS_REPO "./data/credentials"
 
+// DEBUG STATEMENT
+#ifdef DEBUG
+  #define DEBUGPRINT(a) printf a
+#else
+  #define DEBUGPRINT(a) (void)0
+#endif
+
 /// SHARED
 
 #include "../shared/structs.h"

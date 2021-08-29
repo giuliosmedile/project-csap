@@ -19,6 +19,13 @@
 #define USERS_REPOSITORY "./data/users.txt"         // Users repository
 #define MESSAGES_REPO "./data/messages.txt"         // Messages repository
 
+// DEBUG STATEMENT
+#ifdef DEBUG
+  #define DEBUGPRINT(a) printf a
+#else
+  #define DEBUGPRINT(a) (void)0
+#endif
+
 /// SHARED
 #include "../shared/structs.h"
 #include "../shared/utils.c"

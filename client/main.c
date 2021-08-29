@@ -34,7 +34,7 @@ void main (int argc, char** argv) {
     printf("\t -------------------------------\n");
 
     #ifdef DEBUG
-        printf("\tDEBUG MODE ACTIVE\n");
+        printf("\t\tDEBUG MODE\n");
     #endif
 
     // Main loop

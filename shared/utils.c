@@ -106,7 +106,7 @@ void hash(char **str) {
     int c;
     char* tmp = *str;
 
-    printf("ABOUT TO HASH: \"%s\"\n", tmp);
+    DEBUGPRINT(("ABOUT TO HASH: \"%s\"\n", tmp));
 
     while (c = *tmp++)
         hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
