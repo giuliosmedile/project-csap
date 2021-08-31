@@ -8,6 +8,7 @@
 #include <signal.h>         /* for sigaction() */
 
 #define BUF_SIZE 4096
+#define MAX_DATAREPO 10
 #define CREDENTIALS_REPO "./data/credentials"
 
 // DEBUG STATEMENT

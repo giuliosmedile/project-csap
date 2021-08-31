@@ -28,6 +28,27 @@ void main (int argc, char** argv) {
     // Read the configuration file
     unsigned short servPort;
     readConfig(&servPort);
+
+    // Check for overrides in command line
+    if (argc > 1) {
+        char opt;
+        while((opt = getopt(argc, argv, ":p:")) != -1)
+        {
+            switch(opt)
+            {
+                case 'p':
+                    DEBUGPRINT(("overriding servport\n"));
+                    servPort = atoi(optarg);
+                case ':':
+                    DEBUGPRINT(("option needs a value\n"));
+                    break;
+                case '?':
+                    printf("unknown option: %c\n", optopt);
+                    break;
+            }
+        }
+    }
+
     printf("My port: %d\n", servPort);
 
     // Connect to the server through the address given in the conf file

@@ -3,7 +3,10 @@
         "stdio.h": "c",
         "compare": "c",
         "cmath": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "server.h": "c",
+        "socket.h": "c",
+        "inet.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

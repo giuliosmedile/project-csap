@@ -8,12 +8,14 @@
 // in the same order as the variables appear in the function. Comments
 // are allowed by putting a character (by default, #, can be changed)
 // that will tell the function to skip the line.
-void readConfig (int *port, int *clients, int *mds, char ***mds_addr) {
+void readConfig (int *port, int *clients, int *mds, char ***mds_addr, int **mds_ports) {
 
 	char* buf = (char*)malloc(BUF_SIZE * sizeof(char));
 	char** args = (char**)malloc(MAX_ARGS);
+	*mds_ports = (int*)malloc(MAX_DATAREPO * sizeof(int));
 	size_t len;
 	int mds_counter = 0;		// counter needed to store each mds variable
+	int port_counter = 0;		// counter needed to store each port variable
 	FILE* fp;
 
 	// Open and check if the file exists
@@ -21,7 +23,7 @@ void readConfig (int *port, int *clients, int *mds, char ***mds_addr) {
 
 	// Read the conf file line per line
 	while (getline(&buf, &len, fp) != -1) {
-		buf[strlen(buf)-1] = '\0';
+		if (buf[strlen(buf) - 1] == '\n') buf[strlen(buf) - 1] = '\0';
 		//If the first line is a comment, skip it
 		if (buf[0] == '#') continue;
 
@@ -47,6 +49,12 @@ void readConfig (int *port, int *clients, int *mds, char ***mds_addr) {
 		    (*mds_addr)[mds_counter] = (char*)malloc(BUF_SIZE * sizeof(char));
 			strcpy((*mds_addr)[mds_counter], args[1]);
 			mds_counter++;
+		}
+
+		// And this to store each mds port
+		if (!strncmp(args[0], "port[", strlen("port["))) {
+		    (*mds_ports)[port_counter] = atoi(args[1]);
+			port_counter++;
 		}
 
 	}

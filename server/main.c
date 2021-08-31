@@ -9,13 +9,17 @@
     int clients;					 // Number of possible clients that the server will allow to connect at the same time
     int vdr_no;						 // Number of mds's that the server will connect to
     char** vdr_addrs; 			 	 // Array containing the IP addresses of the mds's
+    int* vdr_ports;					 // Array containing the ports of the mds's
+    int* vdr;                        // Sockets for the datarepo
 
 void haltProgram(int signum) {
     printf("[-] Intercepted signal %d. Closing program...\n", signum);
     close(servSock);
     close(clntSock);
-    close(echoServPort);
-    close(echoServPort+1);
+    
+    for (int i = 0; i<vdr_no; i++) {
+        close(vdr[i]);
+    }
     exit(0);
 }
 
@@ -30,15 +34,20 @@ int main(int argc, char** argv) {
     signal(SIGINT, haltProgram);
 
     // Read the configuration file
-    readConfig(&echoServPort, &clients, &vdr_no, &vdr_addrs);
+    readConfig(&echoServPort, &clients, &vdr_no, &vdr_addrs, &vdr_ports);
+
+    // Debug print
+    for (int i = 0; i<vdr_no; i++) {
+        DEBUGPRINT(("[+] Connecting to %s:%d\n", vdr_addrs[i], vdr_ports[i]));
+    }
     
     // Connect to all the VDR (I'm the "client", they're the servers)
-    int vdr[vdr_no];
+    vdr=malloc(vdr_no * sizeof(int));
     for (int i = 0; i<vdr_no; i++) {
         printf("%d", i);
         // The ports the server will use to connect to the vdrs are
         // sequentially increased from echoServPort
-        vdr[i] = connectToSocket(vdr_addrs[i], echoServPort+i+1);
+        vdr[i] = connectToSocket(vdr_addrs[i], vdr_ports[i]);
     }
     printf("done");
 
@@ -54,6 +63,7 @@ int main(int argc, char** argv) {
         	printf("[-]Starting to do work for %d\n", clntSock);
             close(servSock);   /* Child closes parent socket */
             for (;;) {
+                // For now, just with the first vdr, later...
             	dowork(clntSock, vdr[0]);
         	}
             exit(0);           /* Child process terminates */
