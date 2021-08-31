@@ -3,10 +3,6 @@
 
 #define MAXARGS 64
 
-// The next two are for handling the color output in the console
-#define COLOR "\033[0;33m"
-#define STD_COL "\033[0m"
-
 void restartOnError(int);  //definition of signal handler
 
 void main (int argc, char** argv) {
@@ -25,8 +21,10 @@ void main (int argc, char** argv) {
     readConfig(&serv_add, &serv_port);
     printf("Server address: %s\n", serv_add);
 
+    // Connect to the server
     s = connectToSocket(serv_add, serv_port);
 
+    // When I see this, I finally connected and I'm ready to go
     printf("\t -------------------------------\n");
     printf("\t -------------------------------\n");
     printf("\t ------ Voicemail Service ------\n");

@@ -13,6 +13,10 @@ void haltProgram(int signum);
 
 void main (int argc, char** argv) {
 
+    #ifdef DEBUG
+        printf("\t\tDEBUG MODE\n");
+    #endif
+
     // Override SIGINT's handler to properly close the socket
     signal(SIGINT, haltProgram);
     signal(SIGSTOP, haltProgram);
@@ -39,8 +43,9 @@ void main (int argc, char** argv) {
         {
         	printf("[-]Starting to do work for %d\n", clntSock);
             close(servSock);   /* Child closes parent socket */
-            for (;;) {
+            while (1) {
             	dowork(clntSock);
+                DEBUGPRINT(("before next iteration"));
         	}
             exit(0);           /* Child process terminates */
         }

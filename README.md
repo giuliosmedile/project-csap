@@ -32,13 +32,13 @@ Currently implemented commands are:
 - logout
 - info [shows currently logged in user's information]
 - add [adds another user to one's addressbook]
+- remove [removes user from one's addressbook]
 - record [record audio message]
 - listen [listens to an audio message]
 - delete [deletes a received message]
 
 Commands that will be eventually implemented are:
 - search [searches for message in a given time range]
-- remove [removes user from one's addressbook]
 
 # TODO
 - Better user experience:
@@ -52,6 +52,7 @@ Commands that will be eventually implemented are:
 Tools used while creating this project:
 - **Visual Studio Code** as the IDE
 - **Nemiver**, a visual interface for `gdb`. Saved me a lot while debugging.
+- **Valgrind**, a tool to analyze memory leaks and fix stack overflow errors (I had a lot o'those)
 - **GitHub** (duh) that helped me recover my work in case of some disastrous modifications
 - **StackOverflow** for teaching how to fix my stupid mistakes
 - **Check**, a library for unit testing

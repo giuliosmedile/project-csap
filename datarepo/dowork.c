@@ -1,8 +1,10 @@
 
 void dowork(int socket) {
+	DEBUGPRINT(("inside dowork\n"));
 	puts("[] Inside dowork\n");
 	char* rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
 
+	DEBUGPRINT(("waiting for replies from %d\n", socket));
     // Wait for requests
  	if (read(socket, rcvString, BUF_SIZE) < 0) {
 		perror("read");
@@ -14,14 +16,16 @@ void dowork(int socket) {
  	char* result;
 	t_user* user;
 
+	DEBUGPRINT(("before tokenizing"));
 	printf("[-] Received: \"%s\"\n", rcvString);
 	// Insert the string received from the socket into the ops array
 	tokenize(rcvString, &ops);
 
 	printf("Inside dowork\n");
-	printf("ops: \"%s\"\n", ops[0]);
+	DEBUGPRINT(("ops: \"%s\"\n", ops[0]));
 	sprintf(command, "%s", ops[0]);
 
+	DEBUGPRINT(("handling operations\n"));
 	// HANDLE LOGIN
 	if (!strcmp(command, "login")) {
 		printf("login\n");
@@ -113,13 +117,6 @@ void dowork(int socket) {
 	// HANDLE FIRST PART OF LISTEN AND FORWARD
 	} else if (!strcmp(command, "get_messages_for")) {
 		printf("get_messages_for\n");
-
-		// // Get all the messages that the user has received
-		// puts("before getting messages");
-		// NODE* listOfMessages = getByReceiverFromFile(MESSAGES_REPO, ops[1]);
-		// puts("after getting messages");
-		// char* listOfMessagesString = print_list_to_string(listOfMessages);
-		// printf("list of messages: %s\n", listOfMessagesString);
 
 		char* listOfMessagesString = getByReceiverFromFile(MESSAGES_REPO, ops[1]);
 
@@ -258,10 +255,44 @@ void dowork(int socket) {
 			saveUser(u, USERS_REPOSITORY);
 
 			// Send the result back to the server, with the updated user
-			sprintf(result, "%s", printUser(u, ""));
-
-			free(u);
+			strcpy(result, printUser(u, ""));
 		}
+
+	// HANDLE REMOVE
+	} else if (!strcmp(command, "remove")) {
+		printf("remove\n");
+
+		// Get the client's user from the repository
+		DEBUGPRINT(("before search\n"));
+		t_user* u = (t_user*)malloc(sizeof(t_user));
+		u = searchUser(ops[1], USERS_REPOSITORY);
+
+		DEBUGPRINT(("test user: %s\n", formatPrintUser(u, "")));
+
+		// Remove the user from the addressbook
+		u = removeUserFromAddressBook(u, ops[2]);
+
+		// Save the user in the repository
+		puts("save user");
+		saveUser(u, USERS_REPOSITORY);
+
+		// Send the result back to the server, with the updated user
+		sprintf(result, "%s", printUser(u, ""));
+
+		free(u);
+
+	// HANDLE SEARCH
+	} else if (!strcmp(command, "search")) {
+		printf("search\n");
+
+		// Search all the messages in the time range
+		char* listOfMessagesString = getByReceiverFromFileInRange(MESSAGES_REPO, ops[1], atoi(ops[2]), atoi(ops[3]));
+
+		// Send the result back to the server
+		strcpy(result, listOfMessagesString);
+
+		// Free the memory
+		free(listOfMessagesString);
 
 	// HANDLE DEFAULT
 	} else {
@@ -269,12 +300,18 @@ void dowork(int socket) {
 		strcpy(result, "noop");
 	}
 
+	DEBUGPRINT(("before send\n"));
 	// Send the result back to the server
 	sendToSocket(socket, result);
 
+puts("before free");
 	free(ops);
 	free(rcvString);
 	free(command);
 	free(result);
+puts("after free");
+
+	DEBUGPRINT(("before next it\n"));
+	return;
 
 } 	

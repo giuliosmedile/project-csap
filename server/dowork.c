@@ -207,6 +207,28 @@ void dowork(int clientSock, int dataRepoSock) {
         // Wait for the mdr's response
         output = readFromSocket(dataRepoSock, output);
 
+    } else if (!strcmp(command, "remove")) {
+        puts("remove");
+
+        // Contrary to add, I don't have to check if the user actually exists,
+        // because I already checked that the user exists on the client side
+
+        // Send to mdr the request to remove the user
+        char* tmp = malloc(BUF_SIZE * sizeof(char));
+        sprintf(tmp, "remove;%s;%s", ops[1], ops[2]);
+
+        sendToSocket(dataRepoSock, tmp);
+
+        // Wait for the mdr's response
+        output = readFromSocket(dataRepoSock, output);
+    } else if (!strcmp(command, "search")) {
+        puts("search");
+        char* tmp = malloc(BUF_SIZE * sizeof(char));
+        sprintf(tmp, "search;%s;%s;%s", ops[1], ops[2], ops[3]);
+        sendToSocket(dataRepoSock, tmp);
+
+        // Get the list of messages from the data repo to send it back to the client
+        output = readFromSocket(dataRepoSock, output);
     } else {
         // If the command is not recognized, send an error
         strcpy(output, "ERROR");

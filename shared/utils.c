@@ -113,3 +113,5 @@ void hash(char **str) {
 
     itoa(hash, *str, 10);
 }
+
+

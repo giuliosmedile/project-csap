@@ -109,6 +109,18 @@ t_user* handleDelete(char* response, t_user* user)  {
 	return user;
 }
 
+t_user* handleRemove(char* response, t_user* user)  {
+	// Check for various errors
+	if (!strcmp(response, "REMOVEERROR") || !strcmp(response, "null")) {
+		printf("[!] There has been an error while processing the removal operation. Please perform the operation again.\n");
+		return user;
+	}
+
+	// If there are no errors, decode the response
+	user = decodeUser(response, user);
+	return user;
+}
+
 t_user* handleServerReplies(char* command, char* response, t_user* user) {
 	DEBUGPRINT(("[~] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response));
 
@@ -129,6 +141,8 @@ t_user* handleServerReplies(char* command, char* response, t_user* user) {
 		user = handleForward(response, user);
 	} else if (!strcmp(command, "delete")) {
 		user = handleDelete(response, user);
+	} else if (!strcmp(command, "remove")) {
+		user = handleRemove(response, user);
 	} else if (!strcmp(command, "")){
 		printf("There must have been an error in the response from the server.\n");
 	} else {

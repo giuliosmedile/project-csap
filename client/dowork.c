@@ -22,6 +22,8 @@ void help() {
     printf("\trecord\t\trecords a new voice message\n");
     printf("\tlisten\t\tlistens to incoming voice messages\n");
     printf("\tforward\t\tforwards a voice message to another user\n");
+    printf("\tdelete\t\tdeletes a voice message you have sent\n");
+    printf("\tremove\t\tremoves a user from your addressbook\n");
     printf("\tclear\t\tclears the console screen\n");
     printf("\texit\t\tterminates the program\n");
     printf("%s", STD_COL);
@@ -85,54 +87,14 @@ char* interpretInput(char* command, char* output) {
         char* response = (char*) malloc(sizeof(char) * BUF_SIZE);
         response = readFromSocket(s, response);
 
-        // Check if there actually are messages to be read
-        if (!strcmp(response, "") || !strcmp(response, "0")) {
-            printf("[-] No messages to read.\n");
-            strcpy(output, "null");
-            goto endOfInterpretInput;
+        askForMessage(request, response);
+
+        if (!strcmp(output, "null")) {
+            free(request);
+            free(response);
+            return output;
         }
 
-        // Parse the response, creating a list of messages
-        NODE* messages = get_list_from_string(response);
-        
-        // Ask the user to choose a message
-askForMessage:
-        printf("%s", COLOR);
-        printf("\n\n%s\n\n", print_list(messages, ""));
-
-        printf("[-] Choose a message to listen to: ");
-        char* choice = (char*) malloc(sizeof(char) * BUF_SIZE);
-        if (fgets(choice,BUF_SIZE,stdin) == NULL) {
-            printf("\n");
-            exit(0);
-        }
-        choice[strlen(choice)-1] = '\0';
-
-        // Check if the user wants to exit
-        if (!strcmp("exit", choice) || !strcmp("quit", choice) || !strcmp("cancel", choice)) {
-            printf("[-] Cancelling operation.\n");
-            strcpy(output, "null");
-            goto endOfInterpretInput;
-        }
-
-        // Evaluate the user's choice
-        int choice_int = atoi(choice);
-        if (choice_int < 1 || choice_int > count_messages(messages)) {
-            // If the user's choice is not valid, ask again
-            printf("[-] \"%s\" is an invalid choice.\n", choice);
-            goto askForMessage;
-        }
-        printf("%s", STD_COL);
-
-        // Get the message
-        t_message* m = getMessage(messages, choice_int-1);
-        char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
-        strcpy(filename, m->filename);
-
-        // At this point, ask the server to actually send the message
-        free(request);
-        request = (char*) malloc(sizeof(char) * BUF_SIZE);
-        sprintf(request, "get_message;%s;", filename);
         sendToSocket(s, request);
 
         // Decode metadata from the server, sent before actual message
@@ -149,8 +111,7 @@ askForMessage:
         }
 
         // Prepare for the message
-        free(filename);
-        filename = (char*) malloc(sizeof(char) * BUF_SIZE);
+        char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
         strcpy(filename, args[1]);
         int filesize = atoi(args[2]); 
         char* path = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -311,6 +272,65 @@ askForMessageInDelete:
         }
 
 
+    } else if (!strcmp(command, "remove")) {
+        output = removeUser(output, &u);
+
+    } else if (!strcmp(command, "search")) {
+        output = search(output, &u);
+
+        sendToSocket(s, output);
+
+        // Wait for the server to send the messages
+        char* response = (char*) malloc(sizeof(char) * BUF_SIZE);
+        response = readFromSocket(s, response);
+
+        free(output);
+        output = (char*) malloc(sizeof(char) * BUF_SIZE);
+        askForMessage(output, response);
+
+        if (!strcmp(output, "null")) {
+            free(response);
+            return output;
+        }
+
+        sendToSocket(s, output);
+
+        // Decode metadata from the server, sent before actual message
+        char* listen = (char*) malloc(sizeof(char) * BUF_SIZE);
+        listen = readFromSocket(s, listen);
+        char** args = (char**) malloc(3 * sizeof(char*));
+        tokenize(listen, &args);
+
+        // Check if the message was successfully received
+        if (!strcmp(args[0], "ERROR") || strcmp(args[0], "listen")) {
+            printf("[-] Error while getting the message.\n");
+            strcpy(output, "null");
+            goto endOfInterpretInput;
+        }
+
+        // Prepare for the message
+        char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
+        strcpy(filename, args[1]);
+        int filesize = atoi(args[2]); 
+        char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+        sprintf(path, "%s/%s", TMP_DIR, filename);
+
+        // Receive the message
+        receiveFile(s, path);
+
+        // Play the message
+        play(path);
+
+        // Free the memory
+        free(filename);
+        free(path);
+        free(listen);
+        free(args);
+        
+        // Return null to the main function
+        strcpy(output, "null");
+
+
     } else if (!strcmp(command, "exit") || !strcmp(command, "quit")) {
         printf("Thank you for using the voicemail service. \n\t ~ So long and thanks for all the fish!\n\n");
 
@@ -324,7 +344,6 @@ askForMessageInDelete:
         free(u);
         close(s);
         exit(0);
-
     } else if (!strcmp(command, "help")) {
         help();
         strcpy(output, "null");

@@ -87,6 +87,34 @@ char* add(char* result, t_user** u_p) {
 
 }
 
+/**
+ * Function to remove a user from the currently logged in user's addressbook
+ * @param result the string that will be sent to the server
+ * @param u_p pointer to the current user
+ * @returns the result string
+**/
+char* removeUser(char* result, t_user** u_p) {
+    // the user i am trying to remove
+    char* other = (char*)malloc(BUF_SIZE * sizeof(char));
+
+    printf("%s", COLOR);
+
+    // Check if i am logged in
+    if (*u_p == NULL) {
+        printf("[!] Before removing a user from your addressbook, perhaps you should try logging in first.\n");
+        return "null";
+    }
+
+    if ((*u_p)->addressbook_size == 0 || (*u_p)->addressbook == NULL) {
+        printf("[!] Your addressbook is empty.\n");
+        return "null";
+    }
+
+    other = selectUser(*u_p, other);
+
+    sprintf(result, "remove;%s;%s", (*u_p)->username, other);
+}
+
 /** 
  * Client function for message recording
  * @param result the string that will be sent to the server
@@ -122,7 +150,6 @@ char* record(char* result, t_user** u_p, char* file) {
     if (stat(TMP_DIR, &st) == -1) {
         mkdir(TMP_DIR, 0755);
     }
-
     // Take input
     selectUser(*u_p, other);
     
@@ -214,4 +241,113 @@ void play(char* filename) {
             pid = wait(&status);
             break;
     }
+}
+
+/**
+ * Function that receives input from the user to ask server to look for messages in a certain time range.
+ * @param u_p pointer to the current user
+ * @param start_p pointer to the start time
+ * @param end_p pointer to the end time
+ * @returns both times as pointers, to be used as request for the server
+**/
+char* search(char* result, t_user** u_p) {
+    DEBUGPRINT(("inside search\n"));
+
+    time_t start, end;
+
+    // Start fancy color
+    printf("%s", COLOR);
+
+    // Check if i am logged in
+    if (*u_p == NULL) {
+        printf("[!] Before searching for messages, perhaps you should try logging in first.\n");
+        sprintf(result, "null");
+        return "null";
+    }
+
+    // Take input
+    printf("Enter the first time in the range. \n");
+    start = getDate();
+    DEBUGPRINT(( "start: %s\n", ctime(&start)));
+
+    printf("Enter the second time in the range. \n");
+    end = getDate();
+    DEBUGPRINT(( "end: %s\n", ctime(&end)));
+
+    // End fancy color
+    printf("%s", STD_COL);
+
+    // Check if start is before end
+    if (start > end) {
+        time_t tmp = start;
+        start = end;
+        end = tmp;
+    }
+
+    // If the times are exactly the same, add 1 second to the end, just to make them different
+    if (start == end) {
+        end += 1;
+    }
+
+    // Format the times to be sent to the server
+    sprintf(result, "search;%s;%ld;%ld", (*u_p)->username, start, end);
+    return result;
+}
+
+
+/**
+ * Function that allows a user to select a message in a list of messages.
+ * 
+ * @param result the string to be returned to the server
+ * @param response the response from the server
+ * @returns result
+**/
+char* askForMessage(char* result, char* response) {
+        // Check if there actually are messages to be read
+        if (!strcmp(response, "") || !strcmp(response, "0")) {
+            printf("[-] No messages to read.\n");
+            strcpy(result, "null");
+            return result;
+        }
+
+        // Parse the response, creating a list of messages
+        NODE* messages = get_list_from_string(response);
+        
+        // Ask the user to choose a message
+askForMessage:
+        printf("%s", COLOR);
+        printf("\n\n%s\n\n", print_list(messages, ""));
+
+        printf("[-] Choose a message to listen to: ");
+        char* choice = (char*) malloc(sizeof(char) * BUF_SIZE);
+        if (fgets(choice,BUF_SIZE,stdin) == NULL) {
+            printf("\n");
+            exit(0);
+        }
+        choice[strlen(choice)-1] = '\0';
+
+        // Check if the user wants to exit
+        if (!strcmp("exit", choice) || !strcmp("quit", choice) || !strcmp("cancel", choice)) {
+            printf("[-] Cancelling operation.\n");
+            strcpy(result, "null");
+            return result;
+        }
+
+        // Evaluate the user's choice
+        int choice_int = atoi(choice);
+        if (choice_int < 1 || choice_int > count_messages(messages)) {
+            // If the user's choice is not valid, ask again
+            printf("[-] \"%s\" is an invalid choice.\n", choice);
+            goto askForMessage;
+        }
+        printf("%s", STD_COL);
+
+        // Get the message
+        t_message* m = getMessage(messages, choice_int-1);
+        char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
+        strcpy(filename, m->filename);
+
+        // At this point, ask the server to actually send the message
+        sprintf(result, "get_message;%s;", filename);
+        return result;
 }

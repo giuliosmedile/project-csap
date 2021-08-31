@@ -73,9 +73,10 @@ char* printUser(t_user* u, char* string) {
 
 	// Write the messages
 	NODE* temp = u->messages;
+	char* tmpList = (char*)malloc(BUF_SIZE* sizeof(char));
 	for (int i = 1; i<=u->messagesno; i++) {
 		printf("testing filename in printuser: %s\n", temp->message->filename);
-		sprintf(tmp, "%s;", printMessage(temp->message, ""));
+		sprintf(tmp, "%s", printMessage(temp->message, tmp));
 		strcat(buf, tmp);
 		temp = temp->next;
 	}
@@ -223,6 +224,43 @@ t_user* addUserToAddressBook(t_user* u, char* username) {
 	return u;
 }
 
+/**
+ * Function that removes a user from another's addressbook
+ * @param u the user that will have the addressbook updated
+ * @param username the user that will be removed from the addressbook
+**/
+t_user* removeUserFromAddressBook(t_user* u, char* username) {
+	DEBUGPRINT(("entering removeuserfromaddressbook\n"));
+
+	// I create a temporary addressbook,s that will be used to replace the original one
+	char** tmp = malloc(u->addressbook_size * sizeof(char*));
+	int i, j = 1;
+	for (i = 1; i <= u->addressbook_size; i++) {
+		DEBUGPRINT(("u->[i]: \"%s\", username: \"%s\"\n", u->addressbook[i], username));
+		if (strcmp(u->addressbook[i], username) != 0) {
+			DEBUGPRINT(("copying over %s\n", u->addressbook[i]));
+			tmp[j] = malloc(BUF_SIZE * sizeof(char));
+			strcpy(tmp[j], u->addressbook[i]);
+			j++;
+		}
+	}
+
+	// Now I can replace the addressbook
+	// *(u->addressbook) = *tmp;
+	u->addressbook_size--;
+	for (i = 1; i <= u->addressbook_size; i++) {
+		free(u->addressbook[i]);
+		u->addressbook[i] = malloc(BUF_SIZE * sizeof(char));
+		strcpy(u->addressbook[i], tmp[i]);
+	}
+
+	// Free the memory
+	DEBUGPRINT(("exiting removeuserfromaddressbook\n"));
+
+	return u;
+}
+
+
 
 /** 
  * Function that search a user in the repository
@@ -244,7 +282,7 @@ t_user* searchUser(char* username, char* filename) {
 		if (buf[strlen(buf)-1] == '\n') {
 			buf[strlen(buf)-1] = '\0';
 		}
-		printf("searchuser BUF: \"%s\"\n", buf);
+		printf("searchuser buf: \"%s\"\n", buf);
 
 		// To make it more efficient, I first tokenize the file line, and compare just if the username (first arg) is the same
 		char** args = malloc((2+MAX_ADDRESSBOOK_SIZE+MAX_MESSAGES) * sizeof(char*));
@@ -307,6 +345,10 @@ void removeDuplicates(char* username, char* filename) {
     fclose(tmp_fp);
     remove(filename);  		    // remove the original file 
     rename(temp, filename); 	// rename the temporary file to original name
+
+	free(buf);
+	free(args);
+	return;
 }
 
 /**

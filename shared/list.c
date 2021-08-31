@@ -195,10 +195,9 @@ char* print_list(NODE* head, char* result) {
  * Function that reads messages from a file, and returns a list of all the messages with the same receiver
  * @param filename the name of the file
  * @param username the username of the user who received the messages
- * @return the list of messages
+ * @return the list of messages, in form of a string
 */
 char* getByReceiverFromFile(char* filename, char* username) {
-	// NODE* result = (NODE*)malloc(MAX_MESSAGES * sizeof(NODE));
 	FILE* fp;
 	char* buf = malloc(BUF_SIZE * sizeof(char));
 	char* result = malloc(BUF_SIZE * sizeof(char));	//TEMP
@@ -228,16 +227,10 @@ char* getByReceiverFromFile(char* filename, char* username) {
 		if (strcmp(args[1], username) == 0) {
 			printf("adding message from %s to list\n", args[0]);
 			// If the receiver is the same, add the message to the list
-			t_message* m = (t_message*) malloc(sizeof(t_message));
 			buf[strlen(buf)-1] = '|';
 
 			strcat(result, buf);
 			i++;
-
-			//// TEMP TEMP TEMP
-			// m = readMessage(buf);
-			// result = add_node(&result, m);
-			//// TEMP TEMP TEMP
 		}
 		free(args);
 		free(tmp);
@@ -247,7 +240,64 @@ char* getByReceiverFromFile(char* filename, char* username) {
 	sprintf(tempS, "%d|%s", i, result);
 	tempS[strlen(tempS)-1] = '\0';
 
-	//printf("testing if messages added correctly in getByReceiverFromFile: %s\n", print_list(result, ""));
+	free(buf);
+	fclose(fp);
+	return tempS;
+}
+
+
+/**
+ * Function that reads messages from a file, and returns a list of all the messages with the same receiver and in the same time range
+ * @param filename the name of the file
+ * @param username the username of the user who received the messages
+ * @param start_time the start time of the messages
+ * @param end_time the end time of the messages
+ * @return the list of messages, in form of a string
+**/
+char* getByReceiverFromFileInRange(char* filename, char* username, time_t start_time, time_t end_time) {
+	FILE* fp;
+	char* buf = malloc(BUF_SIZE * sizeof(char));
+	char* result = malloc(BUF_SIZE * sizeof(char));	//TEMP
+	char* temp = malloc(BUF_SIZE * sizeof(char));	//TEMP
+	size_t len;
+	int i = 0;
+
+	if ((fp = fopen(filename, "r")) == NULL) {
+		return NULL;
+	}
+
+	// Read the file line by line
+	while (getline(&buf, &len, fp) != -1) {		
+		// If the string is newline terminated, remove '\n'
+		if (buf[strlen(buf)-1] == '\n') {
+			buf[strlen(buf)-1] = '\0';
+		}
+
+		// To make it more efficient, I first tokenize the file line, and compare just if the receiver (second arg) is the same
+		char** args = malloc(MAX_MESSAGES * sizeof(char*));
+		// I must use a temp variable or else the original buf will be modified
+		char* tmp = malloc(BUF_SIZE * sizeof(char));
+		strcpy(tmp, buf);
+		tokenize(tmp, &args);
+		printf("Compare: args: %s, username: %s\n", args[1], username);
+		
+		time_t current = atoi(args[2]);
+
+		if (strcmp(args[1], username) == 0 && (current >= start_time && current <= end_time)) {
+			printf("adding message from %s to list\n", args[0]);
+			// If the receiver is the same, add the message to the list
+			buf[strlen(buf)-1] = '|';
+
+			strcat(result, buf);
+			i++;
+		}
+		free(args);
+		free(tmp);
+	}
+
+	char* tempS = (char*)malloc(BUF_SIZE * sizeof(char));
+	sprintf(tempS, "%d|%s", i, result);
+	tempS[strlen(tempS)-1] = '\0';
 
 	free(buf);
 	fclose(fp);

@@ -39,7 +39,7 @@
 #include "connection.c"
 #include "readConfig.c"
 #include "handleServerReplies.c"
-#include "messages.c"
 #include "interaction.c"
+#include "messages.c"
 #include "dowork.c"
 

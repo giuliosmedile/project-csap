@@ -31,6 +31,8 @@ void readConfig (short unsigned int* serv_port) {
 			*serv_port = atoi(args[1]);
 		}
 	}
+	free(buf);
+	free(args);
 	fclose(fp);
 	return;
 }

@@ -21,6 +21,11 @@ void haltProgram(int signum) {
 
 int main(int argc, char** argv) {
 
+
+    #ifdef DEBUG
+        printf("\t\tDEBUG MODE\n");
+    #endif
+
     // Override SIGINT's handler to properly close the socket
     signal(SIGINT, haltProgram);
 
