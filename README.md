@@ -7,7 +7,7 @@ Tested on Ubuntu 20.04 LTS, Ubuntu 21.04, Linux Mint Cinnamon 20.2, macOS 11 (ev
 
 # Installation
 Use `make all` to compile all programs.
-The executables will be found as 	`main` in the directories `client`, `server` and `datarepo`.
+The executables will be found as `main` in the directories `client`, `server` and `datarepo`.
 
 Alternatively, each program can be made indipendently, by calling its name.
 
@@ -16,12 +16,16 @@ Calling `make client ARGS="-D=DEBUG"` explicitely shows debug prints.
 
 Albeit the "debug mode" is defined in all programs, and calling `make all ARGS="-D=DEBUG"` won't raise any errors, currently both `server` and `datarepo` programs do not make use of any debug print.
 
+Of course, calling the `ARGS` flag on `make` allows to set all kinds of compiler variables.
+
 
 # Usage
 By default, `server` will run on localhost on port 16000, `datarepo` on 16001.
 
 Client will attempt to connect to those ports and addresses.
 These properties can be changed by modifying the `.config` file of each program.
+
+It is possible, however, to change `datarepo`'s port by calling the option `-p` when running the program, for example `datarepo -p 15151`.
 
 The machine running `client` will need to have installed `sox` as it is needed for both the `record` and `play` commands. 
 If the machine does not have `sox`, the user will be prompted to install it via apt.
@@ -36,8 +40,6 @@ Currently implemented commands are:
 - record [record audio message]
 - listen [listens to an audio message]
 - delete [deletes a received message]
-
-Commands that will be eventually implemented are:
 - search [searches for message in a given time range]
 
 # TODO
@@ -52,7 +54,7 @@ Commands that will be eventually implemented are:
 Tools used while creating this project:
 - **Visual Studio Code** as the IDE
 - **Nemiver**, a visual interface for `gdb`. Saved me a lot while debugging.
-- **Valgrind**, a tool to analyze memory leaks and fix stack overflow errors (I had a lot o'those)
+- **Valgrind**, a tool to analyze memory leaks and fix overflow errors (I had a lot o'those)
 - **GitHub** (duh) that helped me recover my work in case of some disastrous modifications
 - **StackOverflow** for teaching how to fix my stupid mistakes
 - **Check**, a library for unit testing
