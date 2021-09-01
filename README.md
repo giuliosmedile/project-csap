@@ -14,7 +14,7 @@ Alternatively, each program can be made indipendently, by calling its name.
 All programs use some sort of debug to show whoever runs them what is going on behind the hood. However, for a _smoother_ user experience, `client` has them disabled by default.
 Calling `make client ARGS="-D=DEBUG"` explicitely shows debug prints.
 
-Albeit the "debug mode" is defined in all programs, and calling `make all ARGS="-D=DEBUG"` won't raise any errors, currently both `server` and `datarepo` programs do not make use of any debug print.
+All programs make use of those debug prints. A message showing `DEBUG MODE` will be the first thing printed by the programs if the debug prints are active.
 
 Of course, calling the `ARGS` flag on `make` allows to set all kinds of compiler variables.
 

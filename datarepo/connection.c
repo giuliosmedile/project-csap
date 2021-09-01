@@ -14,6 +14,10 @@ int CreateTCPServerSocket(unsigned short port)
     /* Create socket for incoming connections */
     if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
         DieWithError("socket() failed");
+
+    /* Set options */
+    if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
+        DieWithError("setsockopt(SO_REUSEADDR) failed");
       
     /* Construct local address structure */
     memset(&echoServAddr, 0, sizeof(echoServAddr));   /* Zero out structure */

@@ -66,7 +66,6 @@ void main (int argc, char** argv) {
             close(servSock);   /* Child closes parent socket */
             while (1) {
             	dowork(clntSock);
-                DEBUGPRINT(("before next iteration"));
         	}
             exit(0);           /* Child process terminates */
         }

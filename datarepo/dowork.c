@@ -1,19 +1,29 @@
+/**
+ * Function that does the main work of the program. It is called by dowork only if server signals that this is a Slave datarepo
+ * TODO
+**/
+void doworkAsSlave() {
 
-void dowork(int socket) {
-	DEBUGPRINT(("inside dowork\n"));
-	puts("[] Inside dowork\n");
-	char* rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
+	// Read request from server
 
-	DEBUGPRINT(("waiting for replies from %d\n", socket));
-    // Wait for requests
- 	if (read(socket, rcvString, BUF_SIZE) < 0) {
-		perror("read");
-		exit(1);
-	}
+	// Process request by tokenizing
 
+	// Understand which file was modified
+
+	// Call appropriate function to update modified files
+
+	// Send response to server
+
+}
+
+/** 
+ * Function that does the main work of the program. It is called by dowork only if server signals that this is a Leader datarepo
+ * TODO
+**/
+char* doworkForClient(char* rcvString, int socket) {
 	char** ops = (char**)malloc(10*BUF_SIZE);
 	char* command = (char*)malloc(BUF_SIZE * sizeof(char));
- 	char* result;
+ 	char* result = (char*)malloc(BUF_SIZE * sizeof(char));
 	t_user* user;
 
 	DEBUGPRINT(("before tokenizing"));
@@ -152,7 +162,7 @@ void dowork(int socket) {
 			sendFile(socket, path, get_file_size(path));
 
 			// Update the repository, flagging the message as read
-			t_message* m = (t_message*)malloc(sizeof(t_message));
+			t_message* m;			
 			m = getFromRepository(MESSAGES_REPO, filename);
 			flagMessageRead(m);
 			saveInRepository(m, MESSAGES_REPO);
@@ -168,8 +178,8 @@ void dowork(int socket) {
 			free(m);
 			free(u);
 
-			// Go to next main iteration
-			return;
+			// Go to next main iteration and tell dowork not to send the result
+			strcpy(result, "null");
 		}
 
 
@@ -300,18 +310,39 @@ void dowork(int socket) {
 		strcpy(result, "noop");
 	}
 
-	DEBUGPRINT(("before send\n"));
-	// Send the result back to the server
-	sendToSocket(socket, result);
-
-puts("before free");
+DEBUGPRINT(("before free"));
 	free(ops);
-	free(rcvString);
 	free(command);
-	free(result);
-puts("after free");
+DEBUGPRINT(("after free"));
+
+	return result;
+}
+
+
+void dowork(int socket) {
+	puts("\n----------------------- Inside dowork ----------------------------\n");
+	char* rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
+
+	DEBUGPRINT(("waiting for replies from %d\n", socket));
+    // Wait for requests
+ 	if (read(socket, rcvString, BUF_SIZE) < 0) {
+		perror("read");
+		exit(1);
+	}
+
+	// TODO switch if i'm a slave or a leader
+	char* result = doworkForClient(rcvString, socket);
+
+	// Send to server only if result is NOT "null"
+	if (strcmp(result, "null")) {
+		DEBUGPRINT(("before send\n"));
+		// Send the result back to the server
+		sendToSocket(socket, result);
+	}
 
 	DEBUGPRINT(("before next it\n"));
+	free(rcvString);
+	free(result);
 	return;
 
 } 	
