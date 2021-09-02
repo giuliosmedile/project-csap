@@ -1,4 +1,10 @@
 //	GENERAL PURPOSE UTILITIES
+#ifdef DEBUG
+  #define DEBUGPRINT(a) printf a
+#else
+  #define DEBUGPRINT(a) (void)0
+#endif
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,7 +79,13 @@ void strreverse(char* begin, char* end) {
 	while(end>begin)	
 		aux=*end, *end--=*begin, *begin++=aux;	
 }
-	
+
+/**
+ * Function that takes an integer and converts it to a string
+ * @param value the integer to be converted
+ * @param str the result string
+ * @param base the base of the integer
+**/	
 void itoa(int value, char* str, int base) {
 	
 	static char num[] = "0123456789abcdefghijklmnopqrstuvwxyz";	
@@ -101,6 +113,9 @@ void itoa(int value, char* str, int base) {
 	
 }
 
+/**
+ * Simple hashing function.
+**/
 void hash(char **str) {
     unsigned long hash = 5381;
     int c;
@@ -114,4 +129,51 @@ void hash(char **str) {
     itoa(hash, *str, 10);
 }
 
+/**
+ * Function that prints a file back to a string.
+ * @param filename the file to be printed
+ * @param str the string to be printed to
+ * @param size the size of the string (to be eventually reallocated)
+ * @return the string containing the file
+**/
+char* printFileToString(char* filename, char* str, int size) {
+    FILE *fp;
+    fp = fopen(filename, "r");
+    char c;
+    int i = 0;
+    while ((c = fgetc(fp)) != EOF) {
+        // If i exceed the original string size, i realloc it to double the size
+        if (i > size) {
+            size *= 2;
+            str = (char*)realloc(str, size * sizeof(char));
+        }
+        str[i] = c;
+        i++;
+    }
+    fclose(fp);
+    str[i] = '\0';
+    return str;
+}
 
+/**
+ * Function that writes a string to a file.
+ * Attention: rewrites the original file!
+ * @param filename the file to be written to
+ * @param str the string to be written
+ * @return 1 if the operation was successful, 0 otherwise
+**/
+int writeStringToFile(char* filename, char* str) {
+    FILE *fp;
+    fp = fopen(filename, "w");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        return 0;
+    }
+    int result = fprintf(fp, "%s", str);
+    if (result < 0) {
+        printf("Error writing to file!\n");
+        return 0;
+    }
+    fclose(fp);
+    return 1;
+}

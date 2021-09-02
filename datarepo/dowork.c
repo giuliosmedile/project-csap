@@ -1,8 +1,39 @@
+// Boolean to tell if I'm a leader or a slave
+int amLeader = 0;
+
+// Set of booleans to tell if a file was modified
+// Will use those to decide if we need to tell the slaves to update the file
+int wasMessagesModified, wasUsersModified, wasMessageAdded = 0;
+
+/**
+ * Function that gets modified files to send them back to the server
+ * @return the modified files
+**/
+char* getModifiedFiles() {
+	char* result = malloc(sizeof(char) * BUF_SIZE);
+	if (wasMessagesModified) {
+		// Set the flag back to zero
+		wasMessagesModified = 0;
+		printFileToString(result, MESSAGES_REPO, BUF_SIZE);	
+	} else if (wasUsersModified) {
+		// Set the flag back to zero
+		wasUsersModified = 0;
+		printFileToString(result, USERS_REPO, BUF_SIZE);
+	} else if (wasMessageAdded) {
+		// Set the flag back to zero
+		wasMessageAdded = 0;
+
+		// Get the last message
+		char* lastMessage = getLastMessage(MESSAGES_REPO);
+	}
+
+}
+
 /**
  * Function that does the main work of the program. It is called by dowork only if server signals that this is a Slave datarepo
  * TODO
 **/
-void doworkAsSlave() {
+char* doworkAsSlave(char* rcvString, int socket) {
 
 	// Read request from server
 
@@ -321,6 +352,7 @@ DEBUGPRINT(("after free"));
 
 void dowork(int socket) {
 	puts("\n----------------------- Inside dowork ----------------------------\n");
+	char* result = (char*)malloc(BUF_SIZE * sizeof(char));
 	char* rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
 
 	DEBUGPRINT(("waiting for replies from %d\n", socket));
@@ -331,12 +363,27 @@ void dowork(int socket) {
 	}
 
 	// TODO switch if i'm a slave or a leader
-	char* result = doworkForClient(rcvString, socket);
+	if (amLeader) {
+		result = doworkForClient(rcvString, socket);
 
-	// Send to server only if result is NOT "null"
-	if (strcmp(result, "null")) {
-		DEBUGPRINT(("before send\n"));
-		// Send the result back to the server
+		// Send to server only if result is NOT "null"
+		if (strcmp(result, "null")) {
+			DEBUGPRINT(("before send\n"));
+			// Send the result back to the server
+			sendToSocket(socket, result);
+		}
+
+		// Tell server to handle slaves
+		result = getModifiedFiles();
+
+		// Send to server
+		sendToSocket(socket, result);
+
+
+	} else {
+		result = doworkAsSlave(rcvString, socket);
+
+		// Send result back to server
 		sendToSocket(socket, result);
 	}
 

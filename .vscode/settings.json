@@ -6,7 +6,8 @@
         "cstdlib": "c",
         "server.h": "c",
         "socket.h": "c",
-        "inet.h": "c"
+        "inet.h": "c",
+        "structs.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

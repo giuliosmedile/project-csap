@@ -32,12 +32,12 @@ void main (int argc, char** argv) {
     // Check for overrides in command line
     if (argc > 1) {
         char opt;
-        while((opt = getopt(argc, argv, ":p:")) != -1)
+        while((opt = getopt(argc, argv, "p:")) != -1)
         {
             switch(opt)
             {
                 case 'p':
-                    DEBUGPRINT(("overriding servport\n"));
+                    printf("overriding servport\n");
                     servPort = atoi(optarg);
                 case ':':
                     DEBUGPRINT(("option needs a value\n"));

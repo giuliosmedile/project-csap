@@ -334,6 +334,45 @@ int checkIfMessageExists(char* filename, char* repository) {
 }
 
 /**
+ * Function that gets the last message from a repository and returns it as a string.
+ * @param repository The name of the file to read from
+ * @returns the last message in the repository, represented as a string
+**/
+char* getLastMessage(char* repository) {
+    FILE *fd;                           
+
+    if ((fd = fopen(repository, "r")) == NULL)  {
+        return "null";
+    }
+    char* line = (char*)malloc(BUF_SIZE * sizeof(char));
+    
+    // Iterate through the file until the end of the file
+    while ((line = fgets(line, BUF_SIZE, fd)) != NULL) {
+        printf("line: %s\n", line);
+    }
+    fclose(fd);
+
+    printf("finaline: %s\n", line);
+    
+
+    // Now I tokenize the last line and return the last argument
+    char* last_line_copy = (char*)malloc(BUF_SIZE * sizeof(char));
+    strcpy(last_line_copy, line);
+    char** tokens = (char**)malloc(5 * sizeof(char*));
+    tokenize(last_line_copy, &tokens);
+
+    DEBUGPRINT(("last token is: %s\n", tokens[4]));
+    char* filename = (char*)malloc(BUF_SIZE * sizeof(char));
+    strcpy(filename, tokens[4]);
+
+    // Now print the file to result
+    char* result = (char*)malloc(BUF_SIZE * sizeof(char));
+    result = printFileToString(filename, result, BUF_SIZE);
+
+    return result;
+}
+
+/**
  * Function that checks if two messages are equal
  * @param m1 The first message to compare
  * @param m2 The second message to compare
