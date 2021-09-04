@@ -87,6 +87,13 @@ char* interpretInput(char* command, char* output) {
         char* response = (char*) malloc(sizeof(char) * BUF_SIZE);
         response = readFromSocket(s, response);
 
+        // Check if server crashed
+        if (!strcmp(response, "null")) {
+            printf("[-] Server crashed.\n");
+            strcpy(output, "null");
+            return output;
+        }
+
         askForMessage(request, response);
 
         if (!strcmp(output, "null")) {
@@ -150,6 +157,11 @@ char* interpretInput(char* command, char* output) {
         // Wait for the server to send the messages
         char* response = (char*) malloc(sizeof(char) * BUF_SIZE);
         response = readFromSocket(s, response);
+        if (!strcmp(response, "null")) {
+            printf("[-] Server crashed.\n");
+            strcpy(output, "null");
+            return output;
+        }
 
         // Check if there actually are messages to be read
         if (!strcmp(response, "") || !strcmp(response, "0")) {
@@ -198,6 +210,10 @@ askForMessageInForward:
         // Ask user to choose a user in their addressbook to forward the message to
         char* userToForwardTo = (char*) malloc(sizeof(char) * BUF_SIZE);
         userToForwardTo = selectUser(u, userToForwardTo);
+
+        if (!strcmp(userToForwardTo, "null") || !strcmp(userToForwardTo, "")) {
+            return "null";
+        }
 
         // Send request to server
         sprintf(output, "forward;%s;%s;%s;", u->username, userToForwardTo, filename);
@@ -388,13 +404,13 @@ void dowork(t_user* user, int socket) {
         command[strlen(command)-1] = '\0';
 
         // interpret it basing on the command
-        interpretInput(buf, output);
+        output = interpretInput(buf, output);
         // if input is invalid (null) restart
         if (!strcmp(output, "null")) {
-            free(buf);
-            free(command);
-            free(output);
-            free(response);
+            // free(buf);
+            // free(command);
+            // free(output);
+            // free(response);
         	return;
         }
 

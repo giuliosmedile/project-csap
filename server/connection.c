@@ -79,28 +79,28 @@ int connectToSocket(char* serv_add, unsigned short port) {
     saddr.sin_port=htons(port);
 
     // Connect to other socket
-    if (connect(s,(struct sockaddr *)&saddr,sizeof(saddr))<0){
-    perror("connect");
-    // exit(1);
-    } else {
-        puts("connect done");
+    if (connect(s, (struct sockaddr*)&saddr, sizeof(saddr)) < 0) {
+        perror("connect");
+        return -1;
     }
 
     return s;
 }
 
-void sendToSocket(int s, char* buf) {
+int sendToSocket(int s, char* buf) {
     printf("[-] About to send to socket %d: \"%s\"\n", s, buf);
     // Write (or send) to socket
-    if (write(s, buf, strlen(buf)+1)<0) {
+    int n = write(s, buf, strlen(buf)+1);
+    if (n < 0 || n < strlen(buf)+1) {
         perror("write");
-        exit(1);
+        return 0;
     }
     
-    return;
+    return 1;
 }
 
 char* readFromSocket(int s, char* rcv) {
+    int size = sizeof(rcv);
     int n;
     // Read (or recv) from socket
     if ((n = read(s, rcv, BUF_SIZE))<0) {
@@ -182,4 +182,29 @@ void receiveFile(int s, char* filename) {
 
     // This won't be reached, but still...
     return;
+}
+
+/**
+ * Function to test if a socket connection is still alive
+ * @param s Socket descriptor
+ * @return 1 if the connection is still alive, 0 otherwise
+**/
+int ping(int s) {
+    int error = 0;
+    socklen_t len = sizeof (error);
+    int retval = getsockopt (s, SOL_SOCKET, SO_ERROR, &error, &len);
+
+    if (retval != 0) {
+        /* there was a problem getting the error code */
+        fprintf(stderr, "error getting socket error code: %s\n", strerror(retval));
+        return 0;
+    }
+
+    if (error != 0) {
+        /* socket has a non zero error status */
+        fprintf(stderr, "socket error: %s\n", strerror(error));
+        return 0;
+    }
+
+    return 1;
 }

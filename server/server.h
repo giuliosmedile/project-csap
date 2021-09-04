@@ -34,6 +34,7 @@
 #include "readConfig.c"
 #include "messages.c"
 #include "dowork.c"
+#include "consensus.c"
 
 // // From main.c
 // void DieWithError(char* str);

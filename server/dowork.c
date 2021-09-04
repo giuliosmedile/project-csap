@@ -10,7 +10,14 @@ char* command;
 char* output;
 int result;
 
-void dowork(int clientSock, int dataRepoSock) {
+/**
+ * Main function loop for the server, tasked with running operations regarding the voicemail service at its core.
+ * @param clientSock the socket to communicate with the client
+ * @param leader the leader socket of the datarepos
+ * @param allDataRepo all the datarepo sockets
+ * @param dataRepoStatus the status of the datarepos
+**/
+void dowork(int clientSock, int leader, int* allDataRepo, int* dataRepoStatus, int datarepoCount) {
     startLoop: printf("-- Dowork-- \n");
 
 	rcvString = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -65,9 +72,9 @@ void dowork(int clientSock, int dataRepoSock) {
             char* tmp = malloc(BUF_SIZE * sizeof(char));
             sprintf(tmp, "login;%s", ops[1]);
             printf("tmp: %s\n", tmp);
-            sendToSocket(dataRepoSock, tmp);
+            sendToSocket(leader, tmp);
             // Wait for response from the data repo
-            output = readFromSocket(dataRepoSock, output);
+            output = readFromSocket(leader, output);
         } else {
             // Didn't correctly log in
             strcpy(output, "NOLOGIN");
@@ -79,9 +86,9 @@ void dowork(int clientSock, int dataRepoSock) {
             // the new user in the database
             char* tmp = malloc(BUF_SIZE * sizeof(char));
             sprintf(tmp, "signup;%s", ops[1]);
-            sendToSocket(dataRepoSock, tmp);
+            sendToSocket(leader, tmp);
             // Wait for response from the data repo
-            output = readFromSocket(dataRepoSock, output);
+            output = readFromSocket(leader, output);
             free(tmp);
         } else {
             // Didn't correctly sign up
@@ -93,9 +100,9 @@ void dowork(int clientSock, int dataRepoSock) {
             // the mdr to add it into the user struct
             char* tmp = malloc(BUF_SIZE * sizeof(char));
             sprintf(tmp, "add;%s;%s", ops[1], ops[2]);
-            sendToSocket(dataRepoSock, tmp);
+            sendToSocket(leader, tmp);
             // Wait for response from the data repo
-            output = readFromSocket(dataRepoSock, output);
+            output = readFromSocket(leader, output);
             free(tmp);
         } else {
             strcpy(output, "NOADD");
@@ -109,14 +116,14 @@ void dowork(int clientSock, int dataRepoSock) {
             // Tell the mdr to wait for the file
             char* tmp = malloc(BUF_SIZE * sizeof(char));
             sprintf(tmp, "record;%s;%s", ops[1], ops[2]);
-            sendToSocket(dataRepoSock, tmp);
+            sendToSocket(leader, tmp);
             sleep(1);
 
             // Send the file to mdr
-            sendFile(dataRepoSock, path, get_file_size(path));
+            sendFile(leader, path, get_file_size(path));
 
             // Wait for response from the data repo
-            output = readFromSocket(dataRepoSock, output);
+            output = readFromSocket(leader, output);
 
             // Finally free local variables
             free(tmp);
@@ -130,10 +137,10 @@ void dowork(int clientSock, int dataRepoSock) {
 
         char* tmp = malloc(BUF_SIZE * sizeof(char));
         sprintf(tmp, "get_messages_for;%s", ops[1]);
-        sendToSocket(dataRepoSock, tmp);
+        sendToSocket(leader, tmp);
 
         // Get the list of messages from the data repo to send it back to the client
-        output = readFromSocket(dataRepoSock, output);
+        output = readFromSocket(leader, output);
 
     } else if (!strcmp(command, "get_message")) {
         puts("get_message");
@@ -141,7 +148,7 @@ void dowork(int clientSock, int dataRepoSock) {
         // Ask the mdr for the message
         char* tmp = malloc(BUF_SIZE * sizeof(char));
         sprintf(tmp, "get_message;%s", ops[1]);
-        sendToSocket(dataRepoSock, tmp);
+        sendToSocket(leader, tmp);
 
         // Wait for the mdr to send the message
         char* filename = (char*)malloc(BUF_SIZE * sizeof(char));
@@ -150,7 +157,7 @@ void dowork(int clientSock, int dataRepoSock) {
 
         // The datarepo response will be in the format:
         // get_message;<filename>;<filesize>
-        tmp = readFromSocket(dataRepoSock, tmp);
+        tmp = readFromSocket(leader, tmp);
 
         // Check if the message is valid
         if (!strcmp(tmp, "NOMESSAGE")) {
@@ -164,7 +171,7 @@ void dowork(int clientSock, int dataRepoSock) {
         int filesize = atoi(args[2]);
         
         // Listen for the data stream by using record
-        if (record(filename, filesize, dataRepoSock) == 0) {
+        if (record(filename, filesize, leader) == 0) {
             // Tell the client something went wrong
             strcpy(output, "ERROR");
             goto sendToSocket;    
@@ -190,10 +197,10 @@ void dowork(int clientSock, int dataRepoSock) {
         char* tmp = malloc(BUF_SIZE * sizeof(char));
         sprintf(tmp, "forward;%s;%s;%s", ops[1], ops[2], ops[3]);
 
-        sendToSocket(dataRepoSock, tmp);
+        sendToSocket(leader, tmp);
 
         // Wait for the mdr's response
-        output = readFromSocket(dataRepoSock, output);
+        output = readFromSocket(leader, output);
 
     } else if (!strcmp(command, "delete")) {
         puts("delete");
@@ -202,10 +209,10 @@ void dowork(int clientSock, int dataRepoSock) {
         char* tmp = malloc(BUF_SIZE * sizeof(char));
         sprintf(tmp, "delete;%s;%s;%s", ops[1], ops[2], ops[3]);
 
-        sendToSocket(dataRepoSock, tmp);
+        sendToSocket(leader, tmp);
 
         // Wait for the mdr's response
-        output = readFromSocket(dataRepoSock, output);
+        output = readFromSocket(leader, output);
 
     } else if (!strcmp(command, "remove")) {
         puts("remove");
@@ -217,18 +224,19 @@ void dowork(int clientSock, int dataRepoSock) {
         char* tmp = malloc(BUF_SIZE * sizeof(char));
         sprintf(tmp, "remove;%s;%s", ops[1], ops[2]);
 
-        sendToSocket(dataRepoSock, tmp);
+        sendToSocket(leader, tmp);
 
         // Wait for the mdr's response
-        output = readFromSocket(dataRepoSock, output);
+        output = readFromSocket(leader, output);
     } else if (!strcmp(command, "search")) {
         puts("search");
         char* tmp = malloc(BUF_SIZE * sizeof(char));
         sprintf(tmp, "search;%s;%s;%s", ops[1], ops[2], ops[3]);
-        sendToSocket(dataRepoSock, tmp);
+        sendToSocket(leader, tmp);
 
         // Get the list of messages from the data repo to send it back to the client
-        output = readFromSocket(dataRepoSock, output);
+        output = readFromSocket(leader, output);
+
     } else {
         // If the command is not recognized, send an error
         strcpy(output, "ERROR");

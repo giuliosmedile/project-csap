@@ -25,7 +25,7 @@ int chooseNewLeader(int *repos, int* status, int repos_count) {
  * @param repos_count Number of datarepos
  * @param status Array of datarepos status, 0 if available, 1 if unavailable
 **/
-void markRepoAlive(int alive, int *repos, int repos_count, int* status) {
+int* markRepoAlive(int alive, int *repos, int repos_count, int* status) {
     // First get the index of the alive datarepo
     int alive_index = -1;
     for (int i = 0; i < repos_count; i++) {
@@ -38,7 +38,12 @@ void markRepoAlive(int alive, int *repos, int repos_count, int* status) {
     // Mark the datarepo as alive
     status[alive_index] = 1;
 
-    return;
+    DEBUGPRINT(("seeing all statuses\n"));
+    for(int i = 0; i < repos_count; i++) {
+        DEBUGPRINT(("%d\t%d\n", repos[i], status[i]));
+    }
+
+    return status;
 }
 
 /**
@@ -47,8 +52,9 @@ void markRepoAlive(int alive, int *repos, int repos_count, int* status) {
  * @param repos Array of datarepos socket descriptors
  * @param repos_count Number of datarepos
  * @param status Array of datarepos status, 0 if available, 1 if unavailable
+ * @returns status
 **/
-void markRepoDead(int dead, int *repos, int repos_count, int* status) {
+int* markRepoDead(int dead, int *repos, int repos_count, int* status) {
     // First get the index of the dead datarepo
     int dead_index = -1;
     for (int i = 0; i < repos_count; i++) {
@@ -61,5 +67,27 @@ void markRepoDead(int dead, int *repos, int repos_count, int* status) {
     // Mark the datarepo as dead
     status[dead_index] = 0;
 
-    return;
+    DEBUGPRINT(("seeing all statuses\n"));
+    for(int i = 0; i < repos_count; i++) {
+        DEBUGPRINT(("%d\t%d\n", repos[i], status[i]));
+    }
+
+    return status;
+}
+
+/**
+ * Function that tells if all repos are dead.
+ * @param status the array of statuses of the datarepos
+ * @param repos_count Number of datarepos
+ * @return 1 if all datarepos are dead, 0 otherwise
+**/
+int allReposDead(int* status, int repos_count) {
+    int result = 1;
+    for (int i = 0; i < repos_count; i++) {
+        if (status[i] == 1) {
+            result = 0;
+            break;
+        }
+    }
+    return result;
 }

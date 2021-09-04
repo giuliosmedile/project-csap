@@ -387,6 +387,12 @@ char* getUser(char* username, char* filename) {
  *  @returns the username of the user selected
 */
 char* selectUser(t_user* u, char* result) {
+
+	if (u->addressbook_size == 0) {
+		printf("[!] You have no users in your addressbook.\n");
+		return "";
+	}
+
 	// Print the addressbook
 	for (int i = 1; i<=u->addressbook_size; i++) {
 		printf("%d\t%s\n", i, u->addressbook[i]);

@@ -1,5 +1,5 @@
 // Boolean to tell if I'm a leader or a slave
-int amLeader = 0;
+int amLeader = 1;	// TEMPORARILY SET AT 1
 
 // Set of booleans to tell if a file was modified
 // Will use those to decide if we need to tell the slaves to update the file
@@ -14,18 +14,22 @@ char* getModifiedFiles() {
 	if (wasMessagesModified) {
 		// Set the flag back to zero
 		wasMessagesModified = 0;
-		printFileToString(result, MESSAGES_REPO, BUF_SIZE);	
+		sprintf(result, "messages*");
+		strcat(result, printFileToString(USERS_REPO, result, BUF_SIZE));
 	} else if (wasUsersModified) {
 		// Set the flag back to zero
 		wasUsersModified = 0;
-		printFileToString(result, USERS_REPO, BUF_SIZE);
+		sprintf(result, "users*");
+		strcat(result, printFileToString(USERS_REPO, result, BUF_SIZE));
 	} else if (wasMessageAdded) {
 		// Set the flag back to zero
+		// In this case, it is useless to jump the message back and forth between datarepos,
+		// I just make it so the server sends it back "automatically"
 		wasMessageAdded = 0;
-
-		// Get the last message
-		char* lastMessage = getLastMessage(MESSAGES_REPO);
+		sprintf(result, "messageAdded");
 	}
+
+	return result;
 
 }
 
@@ -35,15 +39,90 @@ char* getModifiedFiles() {
 **/
 char* doworkAsSlave(char* rcvString, int socket) {
 
+	char** ops = (char**)malloc(10*BUF_SIZE);
+	char* command = (char*)malloc(BUF_SIZE * sizeof(char));
+ 	char* result = (char*)malloc(BUF_SIZE * sizeof(char));
+
 	// Read request from server
+	DEBUGPRINT(("before tokenizing"));
+	printf("[-] Slave Received: \"%s\"\n", rcvString);
 
-	// Process request by tokenizing
+	// Insert the string received from the socket into the ops array
+	tokenizeWithSeparators(rcvString, &ops, "*");
 
-	// Understand which file was modified
+	// Process request by tokenizing it
+	printf("Inside dowork\n");
+	DEBUGPRINT(("ops: \"%s\"\n", ops[0]));
+	sprintf(command, "%s", ops[0]);
 
-	// Call appropriate function to update modified files
+	// Understand which file was modified and update it correctly
+	if (strcmp(command, "messages") == 0) {
+		puts("updating messages repository");
 
-	// Send response to server
+		// Update the messages repository
+		if (printStringToFile(MESSAGES_REPO, ops[1])) {
+			strcpy(result, "success");
+		} else {
+			strcpy(result, "failure");
+		}
+	} else if (strcmp(command, "users") == 0) {
+		puts("updating users repository");
+
+		// Update the users repository
+		if (printStringToFile(USERS_REPO, ops[1])) {
+			strcpy(result, "success");
+		} else {
+			strcpy(result, "failure");
+		}
+
+	} else if (strcmp(command, "messageAdded") == 0) {
+
+		printf("messageAdded\n");
+
+		// Create the temp directory, it if is not there
+		struct stat st = {0};
+		if (stat(TMP_DIR, &st) == -1) {
+			mkdir(TMP_DIR, 0755);
+		}
+
+		// Define the path I'll save into
+		char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+		sprintf(path, "%s/%s", TMP_DIR, ops[1]);
+
+		// Wait for the file from the socket
+		receiveFile(socket, path);
+
+		// If the file size is not the same, it means the file was not sent correctly
+		if (get_file_size(path) != atoi(ops[2])) {
+			strcpy(result, "failure");
+		} else {            
+			// To get the username of the sender, I need to tokenize ops[1]
+			char* tmp = (char*)malloc(BUF_SIZE * sizeof(char));
+			char** tmp_ops = (char**)malloc(10*BUF_SIZE);
+			strcpy(tmp, ops[1]);
+			tokenizeWithSeparators(tmp, &tmp_ops, "-:");
+			char* user = (char*)malloc(BUF_SIZE * sizeof(char));
+			sprintf(user, "%s", tmp_ops[0]);
+			
+			// Update the sender's messages
+			t_user* u = (t_user*)malloc(sizeof(t_user));
+			u = searchUser(user, USERS_REPOSITORY);
+			u = addMessageToUser(u, ops[1]);
+
+			// Update the user on the repo
+			saveUser(u, USERS_REPOSITORY);
+			
+			free(tmp);
+			free(tmp_ops);
+			free(user);
+
+			strcpy(result, "success");
+		}
+		free(path);
+
+	}
+
+	return result;
 
 }
 
@@ -58,7 +137,7 @@ char* doworkForClient(char* rcvString, int socket) {
 	t_user* user;
 
 	DEBUGPRINT(("before tokenizing"));
-	printf("[-] Received: \"%s\"\n", rcvString);
+	printf("[-] Leader Received: \"%s\"\n", rcvString);
 	// Insert the string received from the socket into the ops array
 	tokenize(rcvString, &ops);
 
@@ -336,15 +415,18 @@ char* doworkForClient(char* rcvString, int socket) {
 		free(listOfMessagesString);
 
 	// HANDLE DEFAULT
+	} else if (!strcmp(command, "ping")) {
+		printf("ping\n");
+		strcpy(result, "null");
+		return result;
 	} else {
-		printf("operation not supported");
+		puts("operation not supported");
 		strcpy(result, "noop");
+		return result;
 	}
 
-DEBUGPRINT(("before free"));
 	free(ops);
 	free(command);
-DEBUGPRINT(("after free"));
 
 	return result;
 }
@@ -357,9 +439,29 @@ void dowork(int socket) {
 
 	DEBUGPRINT(("waiting for replies from %d\n", socket));
     // Wait for requests
- 	if (read(socket, rcvString, BUF_SIZE) < 0) {
-		perror("read");
-		exit(1);
+ 	rcvString = readFromSocket(socket, rcvString);
+
+	if (!strcmp(rcvString, "ping")) {
+		printf("[!] Pinged from %d\n", socket);
+		free(rcvString);
+		free(result);
+		return;
+	}
+
+	if (!strcmp(rcvString, "LEADER")) {
+		printf("[!] I'm a leader\n");
+		amLeader = 1;
+		free(rcvString);
+		free(result);
+		return;
+	}
+
+	if (!strcmp(rcvString, "SLAVE")) {
+		printf("[!] I'm a slave\n");
+		amLeader = 0;
+		free(rcvString);
+		free(result);
+		return;
 	}
 
 	// TODO switch if i'm a slave or a leader
@@ -372,13 +474,6 @@ void dowork(int socket) {
 			// Send the result back to the server
 			sendToSocket(socket, result);
 		}
-
-		// Tell server to handle slaves
-		result = getModifiedFiles();
-
-		// Send to server
-		sendToSocket(socket, result);
-
 
 	} else {
 		result = doworkAsSlave(rcvString, socket);

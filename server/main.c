@@ -10,7 +10,8 @@
     int vdr_no;						 // Number of mds's that the server will connect to
     char** vdr_addrs; 			 	 // Array containing the IP addresses of the mds's
     int* vdr_ports;					 // Array containing the ports of the mds's
-    int* vdr;                        // Sockets for the datarepo
+    int* vdr;                        // Sockets for the datarepos
+    int* vdr_status;                 // Status of the datarepos
 
 void haltProgram(int signum) {
     printf("[-] Intercepted signal %d. Closing program...\n", signum);
@@ -38,18 +39,43 @@ int main(int argc, char** argv) {
 
     // Debug print
     for (int i = 0; i<vdr_no; i++) {
-        DEBUGPRINT(("[+] Connecting to %s:%d\n", vdr_addrs[i], vdr_ports[i]));
+        DEBUGPRINT(("[+] Will attempt to connect to %s:%d\n", vdr_addrs[i], vdr_ports[i]));
     }
     
-    // Connect to all the VDR (I'm the "client", they're the servers)
+    // Connect to all the VDRs (I'm the "client", they're the servers)
     vdr=malloc(vdr_no * sizeof(int));
+    vdr_status=malloc(vdr_no * sizeof(int));
     for (int i = 0; i<vdr_no; i++) {
-        printf("%d", i);
+        printf("%d: ", i);
         // The ports the server will use to connect to the vdrs are
         // sequentially increased from echoServPort
         vdr[i] = connectToSocket(vdr_addrs[i], vdr_ports[i]);
     }
-    printf("done");
+
+    // Set the status for all the vdrs, so that we know which ones are up
+    for (int i = 0; i<vdr_no; i++) {
+        if (vdr[i] == -1) {
+            printf("[-] Could not connect to VDR %d\n", vdr[i]);
+            vdr_status[i] = 0;
+        } else {
+            printf("[+] Connected to VDR %d\n", vdr[i]);
+            vdr_status[i] = 1;
+        }
+    }
+
+    // Choose the first leader
+    int leader = chooseNewLeader(vdr, vdr_status, vdr_no);
+
+    // Tell the leader that they're leader, tell slaves that they're not
+    for (int i = 0; i<vdr_no; i++) {
+        if (vdr[i] == leader && vdr_status[i] == 1) {
+            // Tell them they're the leader
+            sendToSocket(vdr[i], "LEADER");
+        } else if (vdr_status[i] == 1) {
+            // Tell them they're not the leader
+            sendToSocket(vdr[i], "SLAVE");
+        }
+    }
 
     servSock = CreateTCPServerSocket(echoServPort);
     for (;;) /* Run forever */
@@ -63,8 +89,45 @@ int main(int argc, char** argv) {
         	printf("[-]Starting to do work for %d\n", clntSock);
             close(servSock);   /* Child closes parent socket */
             for (;;) {
+                // Check if the leader is still alive
+                if (!ping(leader)) {
+                    printf("[!!] Leader %d is down.\n", leader);
+                    vdr_status = markRepoDead(leader, vdr, vdr_no, vdr_status);
+
+                    // Debug print
+                    DEBUGPRINT(("Printing status of all repos\n"));
+                    for (int i = 0; i<vdr_no; i++) {
+                        DEBUGPRINT(("%d\t%d\n", vdr[i], vdr_status[i]));
+                    }
+
+                    // Check status of other repos
+                    for (int i = 0; i<vdr_no; i++) {
+                        if (ping(vdr[i]) && vdr_status[i] == 1) 
+                            vdr_status[i] = 1; 
+                        else 
+                            vdr_status[i] = 0;
+                    }
+
+                    // Debug print
+                    DEBUGPRINT(("Printing status of all repos\n"));
+                    for (int i = 0; i<vdr_no; i++) {
+                        DEBUGPRINT(("%d\t%d\n", vdr[i], vdr_status[i]));
+                    }
+
+                    // Check if all other repos are dead
+                    if (allReposDead(vdr_status, vdr_no)) {
+                        printf("[-] All VDRs are down. Exiting.\n");
+                        close(clntSock);
+                        exit(0);
+                    }
+
+                    leader = chooseNewLeader(vdr, vdr_status, vdr_no);
+                    sendToSocket(leader, "LEADER");
+
+                }
+
                 // For now, just with the first vdr, later...
-            	dowork(clntSock, vdr[0]);
+            	dowork(clntSock, leader, vdr, vdr_status, vdr_no);
         	}
             exit(0);           /* Child process terminates */
         }

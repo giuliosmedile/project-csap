@@ -90,6 +90,12 @@ void main (int argc, char** argv) {
 void haltProgram(int signum) {
 
     printf("Halting program with signal %d.\n", signum);
+
+    // Tell server that I'm dead
+    char* message = "crashed";
+    sendToSocket(dataRepoSock, message);
+    free(message);
+
     // Close all sockets
     close(dataRepoSock);
     close(servSock);

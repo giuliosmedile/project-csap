@@ -139,6 +139,10 @@ void hash(char **str) {
 char* printFileToString(char* filename, char* str, int size) {
     FILE *fp;
     fp = fopen(filename, "r");
+    if (fp == NULL) {
+        printf("Error opening file!\n");
+        exit(1);
+    }
     char c;
     int i = 0;
     while ((c = fgetc(fp)) != EOF) {
@@ -162,7 +166,7 @@ char* printFileToString(char* filename, char* str, int size) {
  * @param str the string to be written
  * @return 1 if the operation was successful, 0 otherwise
 **/
-int writeStringToFile(char* filename, char* str) {
+int printStringToFile(char* filename, char* str) {
     FILE *fp;
     fp = fopen(filename, "w");
     if (fp == NULL) {

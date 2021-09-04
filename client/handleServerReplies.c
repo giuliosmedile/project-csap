@@ -39,6 +39,11 @@ t_user* handleLogin(char* response, t_user* user)  {
 		return user;
 	}
 
+	if (!strcmp(response, "null") || !strcmp(response, "NULL") || !strcmp(response, "ERROR") || strstr(response, ";") == NULL) {
+		printf("[!] There has been a connection error. You are not the cause of such error. Please try again.\n");
+		return user;
+	}
+
 	user = decodeUser(response, user);
 	return user;
 
@@ -124,7 +129,7 @@ t_user* handleRemove(char* response, t_user* user)  {
 t_user* handleServerReplies(char* command, char* response, t_user* user) {
 	DEBUGPRINT(("[~] PREHANDLING: cmd: \"%s\", rsp: \"%s\"\n", command, response));
 
-	if (response == NULL) {
+	if (response == NULL || !strcmp(response, "null")) {
 		printf("[-] There has been an error with the server. Please try again.\n");
 		return user;
 	}
