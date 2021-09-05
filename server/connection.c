@@ -208,6 +208,7 @@ void receiveFile(int s, char* filename) {
 int ping(int s) {
     int error = 0;
     socklen_t len = sizeof (error);
+    DEBUGPRINT(("[-] Pinging socket %d\n", s));
     int retval = getsockopt (s, SOL_SOCKET, SO_ERROR, &error, &len);
 
     if (retval != 0) {
@@ -222,5 +223,6 @@ int ping(int s) {
         return 0;
     }
 
+    DEBUGPRINT(("[+] Socket %d is alive\n", s));
     return 1;
 }
