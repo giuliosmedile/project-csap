@@ -11,26 +11,32 @@ int wasMessagesModified, wasUsersModified, wasMessageAdded = 0;
 **/
 char* getModifiedFiles() {
 	char* result = malloc(sizeof(char) * BUF_SIZE);
+	sprintf(result, "%d*", wasMessagesModified+wasUsersModified+wasMessageAdded);
+
+	if (!wasMessagesModified && !wasUsersModified && !wasMessageAdded) {
+		sprintf(result + strlen(result), "noModifiedFiles");
+	}
+
 	if (wasMessagesModified) {
 		// Set the flag back to zero
 		wasMessagesModified = 0;
 		char* temp = malloc(sizeof(char) * BUF_SIZE);
 		temp = printFileToString(MESSAGES_REPO, result, BUF_SIZE);
-		sprintf(result, "messages*%s", temp);
-	} else if (wasUsersModified) {
+		sprintf(result + strlen(result), "messages*%s", temp);
+	} 
+	if (wasUsersModified) {
 		// Set the flag back to zero
 		wasUsersModified = 0;
 		char* temp = malloc(sizeof(char) * BUF_SIZE);
 		temp = printFileToString(USERS_REPO, result, BUF_SIZE);
-		sprintf(result, "users\\%s", printFileToString(USERS_REPO, result, BUF_SIZE));
-	} else if (wasMessageAdded) {
+		sprintf(result + strlen(result), "users\\%s", printFileToString(USERS_REPO, result, BUF_SIZE));
+	} 
+	if (wasMessageAdded) {
 		// Set the flag back to zero
 		// In this case, it is useless to jump the message back and forth between datarepos,
 		// I just make it so the server sends it back "automatically"
 		wasMessageAdded = 0;
-		sprintf(result, "messageAdded");
-	} else {
-		sprintf(result, "noModifiedFiles");
+		sprintf(result + strlen(result), "messageAdded");
 	}
 	return result;
 
@@ -47,84 +53,101 @@ char* doworkAsSlave(char* rcvString, int socket) {
  	char* result = (char*)malloc(BUF_SIZE * sizeof(char));
 
 	// Read request from server
-	DEBUGPRINT(("before tokenizing"));
+	DEBUGPRINT(("before tokenizing\n"));
 	printf("[-] Slave Received: \"%s\"\n", rcvString);
 
-	// Insert the string received from the socket into the ops array
-	tokenizeWithSeparators(rcvString, &ops, "*");
-
-	// Process request by tokenizing it
-	printf("Inside dowork\n");
-	DEBUGPRINT(("ops: \"%s\"\n", ops[0]));
-	sprintf(command, "%s", ops[0]);
-
-	// Understand which file was modified and update it correctly
-	if (strcmp(command, "messages") == 0) {
-		puts("updating messages repository");
-
-		// Update the messages repository
-		if (printStringToFile(MESSAGES_REPO, ops[1])) {
-			strcpy(result, "success");
-		} else {
-			strcpy(result, "failure");
-		}
-	} else if (strcmp(command, "users") == 0) {
-		puts("updating users repository");
-
-		// Update the users repository
-		if (printStringToFile(USERS_REPO, ops[1])) {
-			strcpy(result, "success");
-		} else {
-			strcpy(result, "failure");
-		}
-
-	} else if (strcmp(command, "messageAdded") == 0) {
-
-		printf("messageAdded\n");
-
-		// Create the temp directory, it if is not there
-		struct stat st = {0};
-		if (stat(TMP_DIR, &st) == -1) {
-			mkdir(TMP_DIR, 0755);
-		}
-
-		// Define the path I'll save into
-		char* path = (char*)malloc(BUF_SIZE * sizeof(char));
-		sprintf(path, "%s/%s", TMP_DIR, ops[1]);
-
-		// Wait for the file from the socket
-		receiveFile(socket, path);
-
-		// If the file size is not the same, it means the file was not sent correctly
-		if (get_file_size(path) != atoi(ops[2])) {
-			strcpy(result, "failure");
-		} else {            
-			// To get the username of the sender, I need to tokenize ops[1]
-			char* tmp = (char*)malloc(BUF_SIZE * sizeof(char));
-			char** tmp_ops = (char**)malloc(10*BUF_SIZE);
-			strcpy(tmp, ops[1]);
-			tokenizeWithSeparators(tmp, &tmp_ops, "-:");
-			char* user = (char*)malloc(BUF_SIZE * sizeof(char));
-			sprintf(user, "%s", tmp_ops[0]);
-			
-			// Update the sender's messages
-			t_user* u = (t_user*)malloc(sizeof(t_user));
-			u = searchUser(user, USERS_REPOSITORY);
-			u = addMessageToUser(u, ops[1]);
-
-			// Update the user on the repo
-			saveUser(u, USERS_REPOSITORY);
-			
-			free(tmp);
-			free(tmp_ops);
-			free(user);
-
-			strcpy(result, "success");
-		}
-		free(path);
-
+	if (strcmp(rcvString, "noModifiedFiles") == 0) {
+		// No files were modified, just return
+		return rcvString;
 	}
 
+	// Insert the string received from the socket into the ops array
+	tokenizeWithSeparators(rcvString, &ops, "*\\");
+
+	// Process request by tokenizing it
+	printf("Inside dowork %s\n", ops[0]);
+	int count = atoi(ops[0]);
+	DEBUGPRINT(("count: %s\n", ops[0]));
+
+	// For each modified file
+	for (int i = 0; i < count; i++) {
+		// Understand which file was modified and update it correctly
+		strcpy(command, ops[i+1]);
+		printf("%d\t%s\n", i, command);
+		if (strcmp(command, "messages") == 0) {
+			puts("updating messages repository");
+
+			// Update the messages repository
+			if (printStringToFile(MESSAGES_REPO, ops[i+2])) {
+				strcpy(result, "success");
+			} else {
+				strcpy(result, "failure");
+			}
+		} else if (strcmp(command, "users") == 0) {
+			puts("updating users repository");
+
+			// Update the users repository
+			if (printStringToFile(USERS_REPO, ops[i+2])) {
+				strcpy(result, "success");
+			} else {
+				strcpy(result, "failure");
+			}
+
+		} else if (strcmp(command, "messageAdded") == 0) {
+
+			printf("messageAdded\n");
+
+			// Wait for the server to send back metadata about the file
+			// which will be structured as "message;[filename];[size]"
+			bzero(ops, 10*BUF_SIZE);
+			bzero(rcvString, BUF_SIZE);
+			rcvString = readFromSocket(socket, rcvString);
+			tokenizeWithSeparators(rcvString, &ops, ";");
+			
+			// Create the temp directory, it if is not there
+			struct stat st = {0};
+			if (stat(TMP_DIR, &st) == -1) {
+				mkdir(TMP_DIR, 0755);
+			}
+
+			// Define the path I'll save into
+			char* path = (char*)malloc(BUF_SIZE * sizeof(char));
+			sprintf(path, "%s/%s", TMP_DIR, ops[i+1]);
+
+			// Wait for the file from the socket
+			receiveFile(socket, path);
+
+			// If the file size is not the same, it means the file was not sent correctly
+			if (get_file_size(path) != atoi(ops[2])) {
+				strcpy(result, "failure");
+			} else {            
+				// To get the username of the sender, I need to tokenize ops[1]
+				char* tmp = (char*)malloc(BUF_SIZE * sizeof(char));
+				char** tmp_ops = (char**)malloc(10*BUF_SIZE);
+				strcpy(tmp, ops[1]);
+				tokenizeWithSeparators(tmp, &tmp_ops, "-:");
+				char* user = (char*)malloc(BUF_SIZE * sizeof(char));
+				sprintf(user, "%s", tmp_ops[0]);
+				
+				// Update the sender's messages
+				t_user* u = (t_user*)malloc(sizeof(t_user));
+				u = searchUser(user, USERS_REPO);
+				u = addMessageToUser(u, ops[1]);
+
+				// Update the user on the repo
+				saveUser(u, USERS_REPO);
+				
+				free(tmp);
+				free(tmp_ops);
+				free(user);
+
+				strcpy(result, "success");
+			}
+			free(path);
+
+		}
+
+	}
 	return result;
 
 }
@@ -152,7 +175,7 @@ char* doworkForClient(char* rcvString, int socket) {
 	// HANDLE LOGIN
 	if (!strcmp(command, "login")) {
 		printf("login\n");
-		result = getUser(ops[1], USERS_REPOSITORY);
+		result = getUser(ops[1], USERS_REPO);
 		if (result == NULL) {
 			result = "USERNOTFOUND";
 		} else {
@@ -164,8 +187,8 @@ char* doworkForClient(char* rcvString, int socket) {
 	} else if (!strcmp(command, "signup")) {
 		printf("signup\n");
 		user = createUser(ops[1]);
-		saveUser(user, USERS_REPOSITORY);
-		result = getUser(user->username, USERS_REPOSITORY);
+		saveUser(user, USERS_REPO);
+		result = getUser(user->username, USERS_REPO);
 
 		printf("result: \"%s\"\n", result);
 		printf("end signups\n");
@@ -176,13 +199,13 @@ char* doworkForClient(char* rcvString, int socket) {
 	// HANDLE ADD
 	} else if (!strcmp(command, "add")) {
 		printf("add\n");
-		user = searchUser(ops[1], USERS_REPOSITORY);
+		user = searchUser(ops[1], USERS_REPO);
 		printf("\t1\n");
 		user = addUserToAddressBook(user, ops[2]);
 		printf("\t%s\n", formatPrintUser(user, ""));
-		saveUser(user, USERS_REPOSITORY);
+		saveUser(user, USERS_REPO);
 		printf("\t3\n");
-		result = getUser(user->username, USERS_REPOSITORY);
+		result = getUser(user->username, USERS_REPO);
 
 		printf("result: \"%s\"\n", result);
 		printf("end add\n");
@@ -221,17 +244,17 @@ char* doworkForClient(char* rcvString, int socket) {
 			
 			// Update the sender's messages
 			t_user* u = (t_user*)malloc(sizeof(t_user));
-			u = searchUser(user, USERS_REPOSITORY);
+			u = searchUser(user, USERS_REPO);
 			u = addMessageToUser(u, ops[1]);
 
 			// Update the user on the repo
-			saveUser(u, USERS_REPOSITORY);
+			saveUser(u, USERS_REPO);
 
 			// Move the file on the final directory
 			// TODO? Nah.
 			
 			// Send the result back to server
-			result = getUser(user, USERS_REPOSITORY);
+			result = getUser(user, USERS_REPO);
 			result[strlen(result)-1] = '\0'; 			// Make sure the string is null terminated, not \n terminated
 			printf("result: \"%s\"\n", result);
 			printf("end record\n");
@@ -291,9 +314,9 @@ char* doworkForClient(char* rcvString, int socket) {
 
 			// Update the sender's messages, flagging the message as read
 			t_user* u = (t_user*)malloc(sizeof(t_user));
-			u = searchUser(m->sender, USERS_REPOSITORY);
+			u = searchUser(m->sender, USERS_REPO);
 			flagMessageAsReadInList(u->messages, m);
-			saveUser(u, USERS_REPOSITORY);
+			saveUser(u, USERS_REPO);
 
 			wasMessagesModified = 1;
 			wasUsersModified = 1;
@@ -336,9 +359,9 @@ char* doworkForClient(char* rcvString, int socket) {
 
 			// Update the sender with the information about the message
 			t_user* u = (t_user*)malloc(sizeof(t_user));
-			u = searchUser(ops[1], USERS_REPOSITORY);
+			u = searchUser(ops[1], USERS_REPO);
 			u = addMessageToUserNoRepo(u, m);
-			saveUser(u, USERS_REPOSITORY);
+			saveUser(u, USERS_REPO);
 
 			// Send the result back to the server, with the updated user
 			sprintf(result, "%s", printUser(u, ""));
@@ -387,9 +410,9 @@ char* doworkForClient(char* rcvString, int socket) {
 			puts("\t2");
 			// Update the sender
 			t_user* u = (t_user*)malloc(sizeof(t_user));
-			u = searchUser(ops[1], USERS_REPOSITORY);
+			u = searchUser(ops[1], USERS_REPO);
 			u = removeMessageFromUserNoRepo(u, m);
-			saveUser(u, USERS_REPOSITORY);
+			saveUser(u, USERS_REPO);
 
 			wasMessagesModified = 1;
 			wasUsersModified = 1;
@@ -405,7 +428,7 @@ char* doworkForClient(char* rcvString, int socket) {
 		// Get the client's user from the repository
 		DEBUGPRINT(("before search\n"));
 		t_user* u = (t_user*)malloc(sizeof(t_user));
-		u = searchUser(ops[1], USERS_REPOSITORY);
+		u = searchUser(ops[1], USERS_REPO);
 
 		DEBUGPRINT(("test user: %s\n", formatPrintUser(u, "")));
 
@@ -414,7 +437,7 @@ char* doworkForClient(char* rcvString, int socket) {
 
 		// Save the user in the repository
 		puts("save user");
-		saveUser(u, USERS_REPOSITORY);
+		saveUser(u, USERS_REPO);
 
 		// Send the result back to the server, with the updated user
 		char* temp = malloc(BUF_SIZE * sizeof(char));
@@ -508,7 +531,7 @@ void dowork(int socket) {
 
 
 	} else {
-		result = doworkAsSlave(rcvString, socket);
+		doworkAsSlave(rcvString, socket);
 	}
 
 	DEBUGPRINT(("before next it\n"));

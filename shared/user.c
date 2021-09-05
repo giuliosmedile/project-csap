@@ -52,27 +52,23 @@ char* printUser(t_user* u, char* string) {
 
 	// Write the username
 	sprintf(buf, "%s;", u->username);
-	DEBUGPRINT(("buf: %s\n", buf));
 
 	// Write the number of messages sent
 	char tmp[BUF_SIZE];
 	sprintf(tmp, "%d", u->messagesno);
 	strcat(buf, tmp);
 	strcat(buf, ";");
-	DEBUGPRINT(("buf: %s\n", buf));
 
 	// Write the addressbook size
 	sprintf(tmp, "%d", u->addressbook_size);
 	strcat(buf, tmp);
 	strcat(buf, ";");
-	DEBUGPRINT(("buf: %s\n", buf));
 
 	// Write the addressbook
 	for (int i = 1; i<u->addressbook_size+1; i++) {
 		strcat(buf, u->addressbook[i]);
 		strcat(buf, ";");
 	}
-	DEBUGPRINT(("buf: %s\n", buf));
 
 	// Write the messages
 	NODE* temp = u->messages;
@@ -83,7 +79,6 @@ char* printUser(t_user* u, char* string) {
 		strcat(buf, tmp);
 		temp = temp->next;
 	}
-	DEBUGPRINT(("buf: %s\n", buf));
 
 
 	return buf;

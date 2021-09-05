@@ -1,5 +1,5 @@
-#define USERS_REPOSITORY "./data/users.txt"         // Users repository
-#define MESSAGES_REPO "./data/messages.txt"         // Messages repository
+#define USERS_REPOSITORY "data/users.txt"         // Users repository
+#define MESSAGES_REPO "data/messages.txt"         // Messages repository
 
 typedef struct node NODE;
 typedef struct s_user t_user;

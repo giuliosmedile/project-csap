@@ -10,6 +10,12 @@ int CreateTCPServerSocket(unsigned short port)
 {
     int sock;                        /* socket to create */
     struct sockaddr_in echoServAddr; /* Local address */
+    struct timeval rcvtimeo = {
+        .tv_sec = 5
+    };
+    struct timeval sendtimeo = {
+        .tv_sec = 5
+    };
 
     /* Create socket for incoming connections */
     if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
@@ -17,7 +23,17 @@ int CreateTCPServerSocket(unsigned short port)
 
     /* Set options */
     if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &(int){1}, sizeof(int)) < 0)
-        DieWithError("setsockopt(SO_REUSEADDR) failed");
+        DieWithError("reuseaddr failed");
+
+    rcvtimeo.tv_sec = 10;
+    sendtimeo.tv_sec = 10;
+
+    if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &rcvtimeo, sizeof(rcvtimeo)) < 0)
+        DieWithError("rcvtimeo failed");
+
+    if (setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &sendtimeo, sizeof(sendtimeo)) < 0)
+        DieWithError("sendtimeo failed");
+
       
     /* Construct local address structure */
     memset(&echoServAddr, 0, sizeof(echoServAddr));   /* Zero out structure */

@@ -7,10 +7,6 @@
 #include <string.h>
 //#include "user.c"
 
-//#define BUF_SIZE 4096
-#define REPO "../datarepo/data/messages/"
-#define USERS_REPO "../datarepo/data/users.txt"
-
 // Type definition
 // struct s_message {
 //     char* sender;     // The user that sent the message

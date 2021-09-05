@@ -54,6 +54,17 @@ void main (int argc, char** argv) {
     // Connect to the server through the address given in the conf file
     dataRepoSock = CreateTCPServerSocket(servPort);
 
+    // Create data files
+    struct stat st = {0};
+    if (stat("data", &st) == -1) {
+        mkdir("data", 0755);
+    }
+    FILE* msg = fopen(MESSAGES_REPO, "a");
+    fclose(msg);
+    FILE* usr = fopen(USERS_REPO, "a");
+    fclose(usr);
+    
+
     for (;;) /* Run forever */
     {
         clntSock = AcceptTCPConnection(dataRepoSock);
