@@ -7,7 +7,12 @@
         "server.h": "c",
         "socket.h": "c",
         "inet.h": "c",
-        "structs.h": "c"
+        "structs.h": "c",
+        "types.h": "c",
+        "datarepo.h": "c",
+        "netdb.h": "c",
+        "unistd.h": "c",
+        "string.h": "c"
     },
     "C_Cpp.errorSquiggles": "Disabled"
 }

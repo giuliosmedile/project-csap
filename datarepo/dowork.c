@@ -22,21 +22,21 @@ char* getModifiedFiles() {
 		wasMessagesModified = 0;
 		char* temp = malloc(sizeof(char) * BUF_SIZE);
 		temp = printFileToString(MESSAGES_REPO, result, BUF_SIZE);
-		sprintf(result + strlen(result), "messages*%s", temp);
+		sprintf(result + strlen(result), "messages*%s*", temp);
 	} 
 	if (wasUsersModified) {
 		// Set the flag back to zero
 		wasUsersModified = 0;
 		char* temp = malloc(sizeof(char) * BUF_SIZE);
 		temp = printFileToString(USERS_REPO, result, BUF_SIZE);
-		sprintf(result + strlen(result), "users\\%s", printFileToString(USERS_REPO, result, BUF_SIZE));
+		sprintf(result + strlen(result), "users*%s*", printFileToString(USERS_REPO, result, BUF_SIZE));
 	} 
 	if (wasMessageAdded) {
 		// Set the flag back to zero
 		// In this case, it is useless to jump the message back and forth between datarepos,
 		// I just make it so the server sends it back "automatically"
 		wasMessageAdded = 0;
-		sprintf(result + strlen(result), "messageAdded");
+		sprintf(result + strlen(result), "messageAdded*");
 	}
 	return result;
 
@@ -69,11 +69,15 @@ char* doworkAsSlave(char* rcvString, int socket) {
 	int count = atoi(ops[0]);
 	DEBUGPRINT(("count: %s\n", ops[0]));
 
+	// The received string is structured in this fasihon:
+	//n*[fileName]*[fileContent]*[fileName]*[fileContent]*...
+
 	// For each modified file
-	for (int i = 0; i < count; i++) {
+	for (int i = 0; i < 2*count; i+=2) {
 		// Understand which file was modified and update it correctly
 		strcpy(command, ops[i+1]);
-		printf("%d\t%s\n", i, command);
+		DEBUGPRINT(("command: %s\n", command));
+
 		if (strcmp(command, "messages") == 0) {
 			puts("updating messages repository");
 
@@ -112,7 +116,7 @@ char* doworkAsSlave(char* rcvString, int socket) {
 
 			// Define the path I'll save into
 			char* path = (char*)malloc(BUF_SIZE * sizeof(char));
-			sprintf(path, "%s/%s", TMP_DIR, ops[i+1]);
+			sprintf(path, "%s/%s", TMP_DIR, ops[1]);
 
 			// Wait for the file from the socket
 			receiveFile(socket, path);

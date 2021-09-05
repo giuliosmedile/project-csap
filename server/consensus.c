@@ -115,6 +115,31 @@ void sendModifiedFiles(int leader, int* datarepos, int count) {
         }
     }
 
+    // Ulterior step if a file must be sent
+    if (strstr(rcvString, "messageAdded") != NULL) {
+        // Get the latest recording
+        char* filename = getNewestFileFromDirectory(TMP_DIR);
+        char* path = malloc(sizeof(char) * BUF_SIZE);
+        sprintf(path, "%s/%s", TMP_DIR, filename);
+
+        // Send instruction to the slaves to wait for the file
+        char* output = malloc(sizeof(char) * BUF_SIZE);
+        sprintf(output, "message;%s;%d", filename, get_file_size(path));
+        for (int i = 0; i < count; i++) {
+            if (datarepos[i] != leader) {
+                sendToSocket(datarepos[i], output);
+            }
+        }
+        sleep(1);
+
+        // Send the file to the slaves
+        for (int i = 0; i < count; i++) {
+            if (datarepos[i] != leader) {
+                sendFile(datarepos[i], path, get_file_size(path));
+            }
+        }
+    }
+
     return;
 
 }

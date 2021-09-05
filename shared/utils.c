@@ -183,3 +183,61 @@ int printStringToFile(char* filename, char* str) {
     fclose(fp);
     return 1;
 }
+
+/**
+ * Function that prints out the path of the filename of the latest file in a directory.
+ * Uses the command "ls -t" to get the latest file.
+ * @param directory the directory to be searched
+ * @returns the filename of the latest file in directory 
+**/
+char* getNewestFileFromDirectory(char* directory) {
+    char* result = (char*)malloc(BUF_SIZE * sizeof(char));
+    pid_t pid;          // Pid for the fork
+    int fd[2];          // File descriptors for the pipe
+
+    // Create the pipe
+    if (pipe(fd) == -1) {
+        printf("Error creating pipe!\n");
+        return NULL;
+    }
+
+    // Fork the process to execute the command
+    switch(pid = fork()) {
+        // Error
+        case -1:
+            printf("Fork failed!\n");
+            exit(1);
+        
+        // Child process
+        case 0:
+            // Close the read end of the pipe
+            close(fd[0]);
+            // Setup the write end of the pipe
+            dup2(fd[1], STDOUT_FILENO);
+            // Execute the command
+            execlp("ls", "ls", "-t", directory, NULL);
+            exit(1);
+
+        // Parent process
+        default:
+            // Close the write end of the pipe
+            close(fd[1]);
+            // Read the output of the command
+            read(fd[0], result, BUF_SIZE);
+            // Close the read end of the pipe
+            close(fd[0]);
+            // Wait for the child process to finish
+            wait(NULL);
+
+            // Take just up to the first newline
+            char* tmp = strchr(result, '\n');
+            if (tmp != NULL) {
+                *tmp = '\0';
+            }
+            return result;
+    }   
+
+}
+
+
+

@@ -28,11 +28,11 @@ int CreateTCPServerSocket(unsigned short port)
     rcvtimeo.tv_sec = 10;
     sendtimeo.tv_sec = 10;
 
-    if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &rcvtimeo, sizeof(rcvtimeo)) < 0)
-        DieWithError("rcvtimeo failed");
+    // if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &rcvtimeo, sizeof(rcvtimeo)) < 0)
+    //     DieWithError("rcvtimeo failed");
 
-    if (setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &sendtimeo, sizeof(sendtimeo)) < 0)
-        DieWithError("sendtimeo failed");
+    // if (setsockopt(sock, SOL_SOCKET, SO_SNDTIMEO, &sendtimeo, sizeof(sendtimeo)) < 0)
+    //     DieWithError("sendtimeo failed");
 
       
     /* Construct local address structure */

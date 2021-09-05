@@ -15,13 +15,15 @@
 
 void haltProgram(int signum) {
     printf("[-] Intercepted signal %d. Closing program...\n", signum);
-    close(servSock);
-    close(clntSock);
     
-    for (int i = 0; i<vdr_no; i++) {
+    for (int i = 0; i < vdr_no; i++) {
+        sendToSocket(vdr[i], "exit");
         close(vdr[i]);
     }
-    exit(0);
+
+    close(servSock);
+    close(clntSock);
+    exit(signum);
 }
 
 int main(int argc, char** argv) {
@@ -119,7 +121,7 @@ int main(int argc, char** argv) {
                     if (allReposDead(vdr_status, vdr_no)) {
                         printf("[-] All VDRs are down. Exiting.\n");
                         close(clntSock);
-                        exit(0);
+                        exit(1);
                     }
 
                     leader = chooseNewLeader(vdr, vdr_status, vdr_no);
