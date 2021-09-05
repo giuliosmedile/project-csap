@@ -137,6 +137,8 @@ void hash(char **str) {
  * @return the string containing the file
 **/
 char* printFileToString(char* filename, char* str, int size) {
+    str = (char*)malloc(size * sizeof(char));
+    DEBUGPRINT(("enter printfiletostring\n"));
     FILE *fp;
     fp = fopen(filename, "r");
     if (fp == NULL) {

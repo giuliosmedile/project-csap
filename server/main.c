@@ -65,6 +65,7 @@ int main(int argc, char** argv) {
 
     // Choose the first leader
     int leader = chooseNewLeader(vdr, vdr_status, vdr_no);
+    
 
     // Tell the leader that they're leader, tell slaves that they're not
     for (int i = 0; i<vdr_no; i++) {
@@ -89,16 +90,15 @@ int main(int argc, char** argv) {
         	printf("[-]Starting to do work for %d\n", clntSock);
             close(servSock);   /* Child closes parent socket */
             for (;;) {
+
+                // Main program code
+                dowork(clntSock, leader, vdr, vdr_status, vdr_no);
+
+                DEBUGPRINT(("Before pinging leader\n"));
                 // Check if the leader is still alive
                 if (!ping(leader)) {
                     printf("[!!] Leader %d is down.\n", leader);
                     vdr_status = markRepoDead(leader, vdr, vdr_no, vdr_status);
-
-                    // Debug print
-                    DEBUGPRINT(("Printing status of all repos\n"));
-                    for (int i = 0; i<vdr_no; i++) {
-                        DEBUGPRINT(("%d\t%d\n", vdr[i], vdr_status[i]));
-                    }
 
                     // Check status of other repos
                     for (int i = 0; i<vdr_no; i++) {
@@ -110,8 +110,9 @@ int main(int argc, char** argv) {
 
                     // Debug print
                     DEBUGPRINT(("Printing status of all repos\n"));
+                    DEBUGPRINT(("address\t\tsocket id\tstatus\n"));
                     for (int i = 0; i<vdr_no; i++) {
-                        DEBUGPRINT(("%d\t%d\n", vdr[i], vdr_status[i]));
+                        DEBUGPRINT(("%s:%d\t%d\t%d\n", vdr_addrs[i], vdr_ports[i], vdr[i], vdr_status[i]));
                     }
 
                     // Check if all other repos are dead
@@ -123,11 +124,10 @@ int main(int argc, char** argv) {
 
                     leader = chooseNewLeader(vdr, vdr_status, vdr_no);
                     sendToSocket(leader, "LEADER");
-
                 }
 
-                // For now, just with the first vdr, later...
-            	dowork(clntSock, leader, vdr, vdr_status, vdr_no);
+                // Send modified files to slaves
+                sendModifiedFiles(leader, vdr, vdr_no);
         	}
             exit(0);           /* Child process terminates */
         }

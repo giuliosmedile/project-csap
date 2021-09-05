@@ -47,6 +47,13 @@ char* interpretInput(char* command, char* output) {
     } else if (!strcmp(command, "add")) {
         add(output, &u);
     } else if (!strcmp(command, "record")) {
+
+        if (u->addressbook_size == 0) {
+            printf("[-] You don't have any contacts. Add someone before trying to send messages.\n");
+            strcpy(output, "null");
+            return output;
+        }
+
         // Set a filename for the recording
         char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
         record(output, &u, filename);
@@ -114,7 +121,7 @@ char* interpretInput(char* command, char* output) {
         if (!strcmp(args[0], "ERROR") || strcmp(args[0], "listen")) {
             printf("[-] Error while getting the message.\n");
             strcpy(output, "null");
-            goto endOfInterpretInput;
+            return output;
         }
 
         // Prepare for the message

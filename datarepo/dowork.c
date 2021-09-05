@@ -14,21 +14,24 @@ char* getModifiedFiles() {
 	if (wasMessagesModified) {
 		// Set the flag back to zero
 		wasMessagesModified = 0;
-		sprintf(result, "messages*");
-		strcat(result, printFileToString(USERS_REPO, result, BUF_SIZE));
+		char* temp = malloc(sizeof(char) * BUF_SIZE);
+		temp = printFileToString(MESSAGES_REPO, result, BUF_SIZE);
+		sprintf(result, "messages*%s", temp);
 	} else if (wasUsersModified) {
 		// Set the flag back to zero
 		wasUsersModified = 0;
-		sprintf(result, "users*");
-		strcat(result, printFileToString(USERS_REPO, result, BUF_SIZE));
+		char* temp = malloc(sizeof(char) * BUF_SIZE);
+		temp = printFileToString(USERS_REPO, result, BUF_SIZE);
+		sprintf(result, "users\\%s", printFileToString(USERS_REPO, result, BUF_SIZE));
 	} else if (wasMessageAdded) {
 		// Set the flag back to zero
 		// In this case, it is useless to jump the message back and forth between datarepos,
 		// I just make it so the server sends it back "automatically"
 		wasMessageAdded = 0;
 		sprintf(result, "messageAdded");
+	} else {
+		sprintf(result, "noModifiedFiles");
 	}
-
 	return result;
 
 }
@@ -166,6 +169,8 @@ char* doworkForClient(char* rcvString, int socket) {
 
 		printf("result: \"%s\"\n", result);
 		printf("end signups\n");
+
+		wasUsersModified = 1;
 		free(user);
 	
 	// HANDLE ADD
@@ -181,6 +186,8 @@ char* doworkForClient(char* rcvString, int socket) {
 
 		printf("result: \"%s\"\n", result);
 		printf("end add\n");
+
+		wasUsersModified = 1;
 		free(user);
 
 	// HANDLE RECORD
@@ -228,6 +235,11 @@ char* doworkForClient(char* rcvString, int socket) {
 			result[strlen(result)-1] = '\0'; 			// Make sure the string is null terminated, not \n terminated
 			printf("result: \"%s\"\n", result);
 			printf("end record\n");
+
+			wasUsersModified = 1;
+			wasMessagesModified = 1;
+			wasMessageAdded = 1;
+
 			free(tmp);
 			free(tmp_ops);
 			free(user);
@@ -283,6 +295,9 @@ char* doworkForClient(char* rcvString, int socket) {
 			flagMessageAsReadInList(u->messages, m);
 			saveUser(u, USERS_REPOSITORY);
 
+			wasMessagesModified = 1;
+			wasUsersModified = 1;
+
 			free(path);
 			free(filename);
 			free(m);
@@ -327,6 +342,8 @@ char* doworkForClient(char* rcvString, int socket) {
 
 			// Send the result back to the server, with the updated user
 			sprintf(result, "%s", printUser(u, ""));
+
+			wasUsersModified = 1;
 		}
 		free(m);
 
@@ -374,6 +391,9 @@ char* doworkForClient(char* rcvString, int socket) {
 			u = removeMessageFromUserNoRepo(u, m);
 			saveUser(u, USERS_REPOSITORY);
 
+			wasMessagesModified = 1;
+			wasUsersModified = 1;
+
 			// Send the result back to the server, with the updated user
 			strcpy(result, printUser(u, ""));
 		}
@@ -397,8 +417,13 @@ char* doworkForClient(char* rcvString, int socket) {
 		saveUser(u, USERS_REPOSITORY);
 
 		// Send the result back to the server, with the updated user
-		sprintf(result, "%s", printUser(u, ""));
+		char* temp = malloc(BUF_SIZE * sizeof(char));
+		temp = printUser(u, temp);
+		sprintf(result, "%s", temp);
+		DEBUGPRINT(("result: %s\n", result));
+		free(temp);
 
+		wasUsersModified = 1;
 		free(u);
 
 	// HANDLE SEARCH
@@ -475,11 +500,15 @@ void dowork(int socket) {
 			sendToSocket(socket, result);
 		}
 
+		// Send modified files back to the server
+		result = getModifiedFiles(socket);
+		DEBUGPRINT(("Before sending to slaves: %s\n", result));
+		sendToSocket(socket, result);
+		DEBUGPRINT(("After sending to slaves\n"));
+
+
 	} else {
 		result = doworkAsSlave(rcvString, socket);
-
-		// Send result back to server
-		sendToSocket(socket, result);
 	}
 
 	DEBUGPRINT(("before next it\n"));

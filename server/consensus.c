@@ -91,3 +91,30 @@ int allReposDead(int* status, int repos_count) {
     }
     return result;
 }
+
+
+/**
+ * Function to get modified files from the leader and send them to the client
+ * @param leader the leader datarepo
+ * @param datarepos the array of datarepos
+ * @param count the number of datarepos 
+**/
+void sendModifiedFiles(int leader, int* datarepos, int count) {
+
+    char* rcvString = malloc(sizeof(char) * BUF_SIZE);
+
+    // Get the modified files from the leader
+    readFromSocket(leader, rcvString);
+
+    DEBUGPRINT(("Received from socket before sending to slaves: %s\n", rcvString));
+
+    // Send the result back to the datarepos
+    for (int i = 0; i < count; i++) {
+        if (datarepos[i] != leader) {
+            sendToSocket(datarepos[i], rcvString);
+        }
+    }
+
+    return;
+
+}

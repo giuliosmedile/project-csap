@@ -111,8 +111,10 @@ char* removeUser(char* result, t_user** u_p) {
     }
 
     other = selectUser(*u_p, other);
+    DEBUGPRINT(("Selected %s\n", other));
 
     sprintf(result, "remove;%s;%s", (*u_p)->username, other);
+    return result;
 }
 
 /** 
