@@ -1,7 +1,8 @@
 CC=gcc
 OPTS=
 
-all: client server datarepo
+all: FORCE client server datarepo
+FORCE: ;
 
 clean:
 	rm -rf ./*/main
@@ -15,4 +16,3 @@ server: ./server/* ./shared/*
 datarepo: ./datarepo/* ./shared/*
 	cd datarepo; \
 	$(CC) $(OPTS) -o main main.c
-
