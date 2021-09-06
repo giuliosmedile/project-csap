@@ -99,7 +99,7 @@ void sendFile(int s, char* filename, int filesize) {
 
     // Read the file
     // note: even though we are sending the file in one block as big as the file itself, I still prefer to
-    // iterate through the file, because it is easier to DEBUGPRINT
+    // iterate through the file, because it is easier to debug
     while(fread(data, 1, filesize, fp) > 0) {
         // Send the data
         if (send(s, (void* )data, filesize, 0) == -1) {

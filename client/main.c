@@ -29,7 +29,8 @@ void main (int argc, char** argv) {
     printf("\t -------------------------------\n");
     printf("\t ------ Voicemail Service ------\n");
     printf("\t -------------------------------\n");
-    printf("\t -------------------------------\n");
+    printf("\t -------------------------------\n\n");
+    printf("Type \"help\" to see all commands or start inserting one.\n");
 
     #ifdef DEBUG
         printf("\t\tDEBUG MODE\n");
