@@ -41,15 +41,7 @@ Currently implemented commands are:
 - listen [listens to an audio message]
 - delete [deletes a received message]
 - search [searches for message in a given time range]
-
-# TODO
-- Better user experience:
-	- ability to listen to own messages
-- 1-1-n communication, with multiple datarepos listening to the server
-- Error correction and extensive testing
-- Test on actual network, not on my local computer
-- Ability to pipe stdout to a file, for easy logging
-
+- 
 # Misc
 Tools used while creating this project:
 - **Visual Studio Code** as the IDE
@@ -57,4 +49,3 @@ Tools used while creating this project:
 - **Valgrind**, a tool to analyze memory leaks and fix overflow errors (I had a lot o'those)
 - **GitHub** (duh) that helped me recover my work in case of some disastrous modifications
 - **StackOverflow** for teaching how to fix my stupid mistakes
-- **Check**, a library for unit testing
