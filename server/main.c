@@ -129,7 +129,7 @@ int main(int argc, char** argv) {
                 }
 
                 // Send modified files to slaves
-                sendModifiedFiles(leader, vdr, vdr_no);
+                sendModifiedFiles(leader, vdr, vdr_status, vdr_no);
         	}
             exit(0);           /* Child process terminates */
         }

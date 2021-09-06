@@ -243,13 +243,12 @@ t_user* removeUserFromAddressBook(t_user* u, char* username) {
 			j++;
 		}
 	}
-
-	// Now I can replace the addressbook
-	// *(u->addressbook) = *tmp;
+	DEBUGPRINT(("end of loop in removeuser\n"));
 	u->addressbook_size--;
 	for (i = 1; i <= u->addressbook_size; i++) {
-		free(u->addressbook[i]);
-		u->addressbook[i] = malloc(BUF_SIZE * sizeof(char));
+		DEBUGPRINT(("Copyinng %s to the %d i in addressbook\n", tmp[i], i));
+		// free(u->addressbook[i]);
+		// u->addressbook[i] = malloc(BUF_SIZE * sizeof(char));
 		strcpy(u->addressbook[i], tmp[i]);
 	}
 

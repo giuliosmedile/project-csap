@@ -440,7 +440,7 @@ char* doworkForClient(char* rcvString, int socket) {
 		u = removeUserFromAddressBook(u, ops[2]);
 
 		// Save the user in the repository
-		puts("save user");
+		DEBUGPRINT(("save user"));
 		saveUser(u, USERS_REPO);
 
 		// Send the result back to the server, with the updated user

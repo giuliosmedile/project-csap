@@ -74,14 +74,32 @@ char* add(char* result, t_user** u_p) {
     // Check if i am logged in
     if (*u_p == NULL) {
         printf("[!] Before adding a user to your addressbook, perhaps you should try logging in first.\n");
-        return "null";
+        strcpy(result, "null");
+        return result;
     }
 
     printf("Username of the user you want to add: ");
 	if (fgets(other,BUF_SIZE,stdin) == NULL) {
-        return "null";
+        strcpy(result, "null");
+        return result;
     }
     other[strlen(other)-1] ='\0';
+
+    DEBUGPRINT(("before checks in add\n"));
+    // Check if the user is already in the addressbook
+    if (isInAddressBook(other, *u_p)) {
+        printf("[!] The user you are trying to add is already in your addressbook.\n");
+        strcpy(result, "null");
+        return result;
+    }
+    // Check if the user is myself, you never know...
+    if (strcmp(other, (*u_p)->username) == 0) {
+        printf("[!] You cannot add yourself to your addressbook.\n");
+        strcpy(result, "null");
+        return result;
+    }
+    DEBUGPRINT(("after checks in add\n"));
+
     sprintf(result, "add %s %s", (*u_p)->username, other);
     return result;
 

@@ -32,6 +32,14 @@ char* signup(char* result, t_user** u_p) {
         exit(0);
     }
     username[strlen(username) - 1] = '\0';
+
+    // Check if the username is alphanumeric
+    if (!isAlphanumeric(username)) {
+        printf("[!] Username must be alphanumeric.\n");
+        sprintf(result, "null");
+        return result;
+    }
+
     printf(STD_COL);		//Reset to old color
 
     printf("%s", COLOR);	//Red text

@@ -73,6 +73,20 @@ int isNumber(char s[])
     return 1;
 }
 
+/**
+ * Function that tells if a string is only composed of alphanumeric characters.
+ * @param s the string to be checked
+ * @return 1 if the string is alphanumeric, 0 otherwise
+**/
+int isAlphanumeric(char* s) {
+    for (int i = 0; s[i] != '\0'; i++) {
+        if (!isalnum(s[i])) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
 //Function needed for itoa
 void strreverse(char* begin, char* end) {	
 	char aux;	

@@ -99,7 +99,7 @@ int allReposDead(int* status, int repos_count) {
  * @param datarepos the array of datarepos
  * @param count the number of datarepos 
 **/
-void sendModifiedFiles(int leader, int* datarepos, int count) {
+void sendModifiedFiles(int leader, int* datarepos, int* status, int count) {
 
     char* rcvString = malloc(sizeof(char) * BUF_SIZE);
 
@@ -110,7 +110,7 @@ void sendModifiedFiles(int leader, int* datarepos, int count) {
 
     // Send the result back to the datarepos
     for (int i = 0; i < count; i++) {
-        if (datarepos[i] != leader) {
+        if (datarepos[i] != leader && status[i] == 1) {
             sendToSocket(datarepos[i], rcvString);
         }
     }
@@ -126,7 +126,7 @@ void sendModifiedFiles(int leader, int* datarepos, int count) {
         char* output = malloc(sizeof(char) * BUF_SIZE);
         sprintf(output, "message;%s;%d", filename, get_file_size(path));
         for (int i = 0; i < count; i++) {
-            if (datarepos[i] != leader) {
+            if (datarepos[i] != leader && status[i] == 1) {
                 sendToSocket(datarepos[i], output);
             }
         }
@@ -134,7 +134,7 @@ void sendModifiedFiles(int leader, int* datarepos, int count) {
 
         // Send the file to the slaves
         for (int i = 0; i < count; i++) {
-            if (datarepos[i] != leader) {
+            if (datarepos[i] != leader && status[i] == 1) {
                 sendFile(datarepos[i], path, get_file_size(path));
             }
         }
