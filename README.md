@@ -7,6 +7,7 @@ Tested on Ubuntu 20.04 LTS, Ubuntu 21.04, Linux Mint Cinnamon 20.2, macOS 11 (ev
 
 # Installation
 Use `make all` to compile all programs. (if `make all` does not work, try `make all -B` instead)
+
 The executables will be found as `main` in the directories `client`, `server` and `datarepo`.
 
 Alternatively, each program can be made indipendently, by calling its name.
