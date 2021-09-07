@@ -13,7 +13,7 @@ The executables will be found as `main` in the directories `client`, `server` an
 Alternatively, each program can be made indipendently, by calling its name.
 
 All programs use some sort of debug to show whoever runs them what is going on behind the hood. However, for a _smoother_ user experience, `client` has them disabled by default.
-Calling `make client ARGS="-D=DEBUG"` explicitely shows debug prints.
+Calling `make client OPTS="-D=DEBUG"` explicitely shows debug prints.
 
 All programs make use of those debug prints. A message showing `DEBUG MODE` will be the first thing printed by the programs if the debug prints are active.
 
