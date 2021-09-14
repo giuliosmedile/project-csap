@@ -6,13 +6,14 @@ Tested on Ubuntu 20.04 LTS, Ubuntu 21.04, Linux Mint Cinnamon 20.2, macOS 11 (ev
 
 
 # Installation
-Use `make all` to compile all programs.
+Use `make all` to compile all programs. (if `make all` does not work, try `make all -B` instead)
+
 The executables will be found as `main` in the directories `client`, `server` and `datarepo`.
 
 Alternatively, each program can be made indipendently, by calling its name.
 
 All programs use some sort of debug to show whoever runs them what is going on behind the hood. However, for a _smoother_ user experience, `client` has them disabled by default.
-Calling `make client ARGS="-D=DEBUG"` explicitely shows debug prints.
+Calling `make client OPTS="-D=DEBUG"` explicitely shows debug prints.
 
 All programs make use of those debug prints. A message showing `DEBUG MODE` will be the first thing printed by the programs if the debug prints are active.
 
@@ -41,15 +42,7 @@ Currently implemented commands are:
 - listen [listens to an audio message]
 - delete [deletes a received message]
 - search [searches for message in a given time range]
-
-# TODO
-- Better user experience:
-	- ability to listen to own messages
-- 1-1-n communication, with multiple datarepos listening to the server
-- Error correction and extensive testing
-- Test on actual network, not on my local computer
-- Ability to pipe stdout to a file, for easy logging
-
+- 
 # Misc
 Tools used while creating this project:
 - **Visual Studio Code** as the IDE
@@ -57,4 +50,3 @@ Tools used while creating this project:
 - **Valgrind**, a tool to analyze memory leaks and fix overflow errors (I had a lot o'those)
 - **GitHub** (duh) that helped me recover my work in case of some disastrous modifications
 - **StackOverflow** for teaching how to fix my stupid mistakes
-- **Check**, a library for unit testing
