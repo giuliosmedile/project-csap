@@ -87,7 +87,7 @@ char* readFromSocket(int s, char* rcv) {
 // Function that sends a file through a socket
 void sendFile(int s, char* filename, int filesize) {
     int n;                                  // Number of bytes sent
-    int i = 0;                              // debug counter
+    int i = 1;                              // debug counter
     void* data = (void*)malloc(filesize);   // Pointer to the data to be sent
 
     // Open the file
@@ -100,14 +100,16 @@ void sendFile(int s, char* filename, int filesize) {
     // Read the file
     // note: even though we are sending the file in one block as big as the file itself, I still prefer to
     // iterate through the file, because it is easier to debug
-    while(fread(data, 1, filesize, fp) > 0) {
+    while((n = fread(data, 1, BUF_SIZE, fp)) > 0) {
         // Send the data
-        if (send(s, (void* )data, filesize, 0) == -1) {
+        if (send(s, (void* )data, n, 0) == -1) {
             perror("[-]Error in sending file.");
             exit(1);
         }
+        DEBUGPRINT(("%d\t%d\n", i, n));
 
         bzero(data, BUF_SIZE);
+        i++;
     }
 
     // Close the file

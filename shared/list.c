@@ -210,10 +210,16 @@ char* getByReceiverFromFile(char* filename, char* username) {
 	}
 
 	// Read the file line by line
-	while (getline(&buf, &len, fp) != -1) {		
+	while (getline(&buf, &len, fp) != -1) {	
+
 		// If the string is newline terminated, remove '\n'
 		if (buf[strlen(buf)-1] == '\n') {
 			buf[strlen(buf)-1] = '\0';
+		}
+
+		// If the line is empty, continue, it will eventually exit later
+		if (buf == NULL || strlen(buf) == 0) {
+			continue;
 		}
 
 		// To make it more efficient, I first tokenize the file line, and compare just if the receiver (second arg) is the same
@@ -222,10 +228,10 @@ char* getByReceiverFromFile(char* filename, char* username) {
 		char* tmp = malloc(BUF_SIZE * sizeof(char));
 		strcpy(tmp, buf);
 		tokenize(tmp, &args);
-		printf("Compare: args: %s, username: %s\n", args[1], username);
+		DEBUGPRINT(("Compare: args: %s, username: %s\n", args[1], username));
 
 		if (strcmp(args[1], username) == 0) {
-			printf("adding message from %s to list\n", args[0]);
+			DEBUGPRINT(("adding message from %s to list\n", args[0]));
 			// If the receiver is the same, add the message to the list
 			buf[strlen(buf)-1] = '|';
 

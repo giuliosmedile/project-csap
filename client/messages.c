@@ -150,7 +150,10 @@ char* record(char* result, t_user** u_p, char* file) {
     int res;
 
     // to exit rec, a SIGINT must be sent, so we intercept it and do nothing, or else the program will exit
-    signal(SIGINT, interceptSigInt);
+    struct sigaction act;
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = interceptSigInt;
+    sigaction(SIGINT, &act, NULL);
 
     printf("%s", COLOR);
     // Check if i am logged in
@@ -208,12 +211,19 @@ char* record(char* result, t_user** u_p, char* file) {
         // Parent
         default:
         	// Let's wait for the child to finish...
-            pid = wait(&status);printf("[-] Recorded audio at\n\t%s\n", path);
+            pid = wait(&status);
+            printf("[-] Recorded audio at\n\t%s\n", path);
             printf("%s", STD_COL);
 
+            // Reset signal handler to default
+            act.sa_handler = SIG_DFL;
+            sigaction(SIGINT, &act, NULL);
+            
+
             // Data is then formatted to be sent to the server as
-            // record [filename]
-            sprintf(result, "record %s %d", file, get_file_size(path));
+            // record;[filename];[hash]
+            char* hash = getFileHash(path);
+            sprintf(result, "record;%s;%s", file, hash);
             return result;
     }
 

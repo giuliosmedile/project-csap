@@ -206,23 +206,38 @@ void receiveFile(int s, char* filename) {
  * @return 1 if the connection is still alive, 0 otherwise
 **/
 int ping(int s) {
+    DEBUGPRINT(("About to ping %d\n", s));
+    
+    // Check if socket is actually "legal"
+    if (s == -1) return 0;
+
+    // Set the socket as non blocking
+    int flags = fcntl(s, F_GETFL, 0);
+    if (flags == -1) return 0;
+    if (fcntl(s, F_SETFL, flags | O_NONBLOCK) == -1) return 0;
+
+    // Check connection status
     int error = 0;
     socklen_t len = sizeof (error);
-    DEBUGPRINT(("[-] Pinging socket %d\n", s));
     int retval = getsockopt (s, SOL_SOCKET, SO_ERROR, &error, &len);
-
     if (retval != 0) {
         /* there was a problem getting the error code */
-        fprintf(stderr, "error getting socket error code: %s\n", strerror(retval));
         return 0;
     }
 
     if (error != 0) {
         /* socket has a non zero error status */
-        fprintf(stderr, "socket error: %s\n", strerror(error));
         return 0;
     }
 
-    DEBUGPRINT(("[+] Socket %d is alive\n", s));
+    // Set back the socket as blocking, you never know
+    DEBUGPRINT(("before fcntl\n"));
+    flags = fcntl(s, F_GETFL, 0);
+    if (flags == -1) return 0;
+    if (fcntl(s, F_SETFL, flags & ~O_NONBLOCK) == -1) return 0;
+    DEBUGPRINT(("after fcntl\n"));
+
     return 1;
+
+
 }

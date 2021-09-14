@@ -103,10 +103,10 @@ char* interpretInput(char* command, char* output) {
 
         askForMessage(request, response);
 
-        if (!strcmp(output, "null")) {
+        if (!strcmp(request, "null")) {
             free(request);
             free(response);
-            return output;
+            return "null";
         }
 
         sendToSocket(s, request);
@@ -127,7 +127,8 @@ char* interpretInput(char* command, char* output) {
         // Prepare for the message
         char* filename = (char*) malloc(sizeof(char) * BUF_SIZE);
         strcpy(filename, args[1]);
-        int filesize = atoi(args[2]); 
+        char* hash = (char*) malloc(sizeof(char) * BUF_SIZE);
+        strcpy(hash, args[2]);
         char* path = (char*)malloc(BUF_SIZE * sizeof(char));
         sprintf(path, "%s/%s", TMP_DIR, filename);
 

@@ -9,7 +9,7 @@
  * @response:	The response from the MDS.
 */
 t_user* decodeUser(char* response, t_user* u) {
-	DEBUGPRINT(("[~] decodeuser"));
+	DEBUGPRINT(("[~] decodeuser\n"));
 	// Free the user before doing any operation to it
 	if (u != NULL) {
 		puts("user not null");
@@ -22,7 +22,7 @@ t_user* decodeUser(char* response, t_user* u) {
 		printf("User not valid.\n");
 		return NULL;
 	}
-	DEBUGPRINT(("[~] end readuser in decodeuser"));
+	DEBUGPRINT(("[~] end readuser in decodeuser\n"));
 	printf("Information for user %s: \n", u->username);
 	//char* str = formatPrintUser(u, str);
 	printf("\033[1;31m");

@@ -97,7 +97,7 @@ char* formatPrintUser(t_user* u, char* string) {
 	string = malloc(BUF_SIZE * sizeof(char));
 
 	sprintf(tmp, "username: %s\n", u->username);
-	strcat(string, tmp);
+	sprintf(string, "%s", tmp);
 
 	sprintf(tmp, "number of messages sent: %d\n", u->messagesno);
 	strcat(string, tmp);

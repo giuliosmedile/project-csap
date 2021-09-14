@@ -253,5 +253,58 @@ char* getNewestFileFromDirectory(char* directory) {
 
 }
 
+/**
+ * Function that returns the sha1sum hash of a file.
+ * Uses the command "md5sum [filename]" to get the hash.
+ * @param filename the path of the file to be hashed
+ * @returns the sha1sum hash of the file
+**/
+char* getFileHash(char* filename) {
+    char* result = (char*)malloc(BUF_SIZE * sizeof(char));
+    pid_t pid;          // Pid for the fork
+    int fd[2];          // File descriptors for the pipe
 
+    // Create the pipe
+    if (pipe(fd) == -1) {
+        printf("Error creating pipe!\n");
+        return NULL;
+    }
+
+    // Fork the process to execute the command
+    switch(pid = fork()) {
+        // Error
+        case -1:
+            printf("Fork failed!\n");
+            exit(1);
+        
+        // Child process
+        case 0:
+            // Close the read end of the pipe
+            close(fd[0]);
+            // Setup the write end of the pipe
+            dup2(fd[1], STDOUT_FILENO);
+            // Execute the command
+            execlp("md5sum", "md5sum", filename, NULL);
+            exit(1);
+
+        // Parent process
+        default:
+            // Close the write end of the pipe
+            close(fd[1]);
+            // Read the output of the command
+            read(fd[0], result, BUF_SIZE);
+            // Close the read end of the pipe
+            close(fd[0]);
+            // Wait for the child process to finish
+            wait(NULL);
+
+            // Take just up to the first space
+            char* tmp = strchr(result, ' ');
+            if (tmp != NULL) {
+                *tmp = '\0';
+            }
+            return result;
+    }
+
+}
 

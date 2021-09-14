@@ -6,6 +6,7 @@
 #include <unistd.h>     /* for close() */
 #include <sys/wait.h>       /* for waitpid() */
 #include <signal.h>         /* for sigaction() */
+#include <fcntl.h>      /* for fcntl() */
 
 #define BUF_SIZE 4096
 #define MAX_DATAREPO 10
@@ -33,8 +34,8 @@
 #include "connection.c"
 #include "readConfig.c"
 #include "messages.c"
-#include "dowork.c"
 #include "consensus.c"
+#include "dowork.c"
 
 // // From main.c
 // void DieWithError(char* str);

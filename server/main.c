@@ -98,7 +98,9 @@ int main(int argc, char** argv) {
 
                 DEBUGPRINT(("Before pinging leader\n"));
                 // Check if the leader is still alive
-                if (!ping(leader)) {
+                int leader_status = ping(leader);
+                DEBUGPRINT(("After pinging leader\n"));
+                if (leader_status == 0) {
                     printf("[!!] Leader %d is down.\n", leader);
                     vdr_status = markRepoDead(leader, vdr, vdr_no, vdr_status);
 
@@ -127,9 +129,6 @@ int main(int argc, char** argv) {
                     leader = chooseNewLeader(vdr, vdr_status, vdr_no);
                     sendToSocket(leader, "LEADER");
                 }
-
-                // Send modified files to slaves
-                sendModifiedFiles(leader, vdr, vdr_status, vdr_no);
         	}
             exit(0);           /* Child process terminates */
         }

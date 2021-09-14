@@ -60,7 +60,7 @@ void dowork(int clientSock, int leader, int* allDataRepo, int* dataRepoStatus, i
         printf("- Adding to addressbook - \n");
         result = add(ops[1], ops[2]);
     } else if (!strcmp(command, "record")) {
-        result = record(ops[1], atoi(ops[2]), clientSock);
+        result = record(ops[1], ops[2], clientSock);
     }
 
      /* --------------- COMMUNICATIONS WITH DATA REPO ----------------- */
@@ -168,10 +168,11 @@ void dowork(int clientSock, int leader, int* allDataRepo, int* dataRepoStatus, i
         tokenize(tmp, &args);
         strcpy(filename, args[1]);
         sprintf(path, "%s/%s", TMP_DIR, filename);
-        int filesize = atoi(args[2]);
+        char* hash = malloc(BUF_SIZE * sizeof(char));
+        strcpy(hash, args[2]);
         
         // Listen for the data stream by using record
-        if (record(filename, filesize, leader) == 0) {
+        if (record(filename, hash, leader) == 0) {
             // Tell the client something went wrong
             strcpy(output, "ERROR");
             goto sendToSocket;    
@@ -180,11 +181,11 @@ void dowork(int clientSock, int leader, int* allDataRepo, int* dataRepoStatus, i
         // Send the message to the client
         free(tmp);
         tmp = (char*)malloc(BUF_SIZE * sizeof(char));
-        sprintf(tmp, "listen;%s;%d", filename, filesize);
+        sprintf(tmp, "listen;%s;%s", filename, hash);
         sendToSocket(clientSock, tmp);
         sleep(1);
         puts("sending file to client");
-        sendFile(clientSock, path, filesize);
+        sendFile(clientSock, path, get_file_size(path));
 
         // Skip to next iteration
         free(tmp);
@@ -255,10 +256,15 @@ sendToSocket:
 
     counter++;
 
+    /* ----------------- HANDLE SLAVES --------------------- */
+    sendModifiedFiles(leader, allDataRepo, dataRepoStatus, datarepoCount);
+
 endOfDoWork:
 	free(ops);
     free(output);
     free(rcvString);
     free(command);
+
+
     return;
 }

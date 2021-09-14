@@ -13,7 +13,11 @@ void main (int argc, char** argv) {
     char **args;
     char* str = (char*)malloc(BUF_SIZE * sizeof(char));
 
-    signal(SIGSEGV, restartOnError);
+    // Signal handling
+    struct sigaction act;
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = restartOnError;
+    sigaction(SIGSEGV, &act, NULL);
 
     // Read the configuration file
     char* serv_add = (char*)malloc(sizeof(BUF_SIZE * sizeof(char)));
