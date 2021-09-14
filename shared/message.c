@@ -217,6 +217,12 @@ void removeDuplicateMessages(char* sender, char* filename, char* repository) {
 
     // copy all contents to the temporary file except the specific line
     while (getline(&buf, &len, fp) != -1) {
+
+        // If the line ends with a newline, remove it
+        if (buf[strlen(buf)-1] == '\n') buf[strlen(buf)-1] = '\0';
+
+        // If the buffer is empty, just continue, function will eventually return later
+        if (strlen(buf) == 0) continue;
         
         // Tokenize the line
         char* temp = (char*)malloc(BUF_SIZE * sizeof(char));

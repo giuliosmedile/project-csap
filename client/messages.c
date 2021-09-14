@@ -222,6 +222,8 @@ char* record(char* result, t_user** u_p, char* file) {
 
             // Data is then formatted to be sent to the server as
             // record;[filename];[hash]
+            // Sleep is needed for the hash: if sleep is removed, the hash will be wrong
+            sleep(1);
             char* hash = getFileHash(path);
             sprintf(result, "record;%s;%s", file, hash);
             return result;

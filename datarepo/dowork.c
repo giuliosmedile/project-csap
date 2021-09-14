@@ -235,7 +235,8 @@ char* doworkForClient(char* rcvString, int socket) {
 		receiveFile(socket, path);
 
 		// If the file size is not the same, it means the file was not sent correctly
-		if (get_file_size(path) != atoi(ops[2])) {
+		char* hash = getFileHash(path);
+		if (strcmp(hash, ops[2]) != 0) {
 			result = "FILESIZEERROR";
 		} else {            
 			// To get the username of the sender, I need to tokenize ops[1]
@@ -301,7 +302,7 @@ char* doworkForClient(char* rcvString, int socket) {
 
 			// Tell the server that I'm about to send the file
 			char* buf = (char*)malloc(BUF_SIZE * sizeof(char));
-			sprintf(buf, "get_message;%s;%d", ops[1], get_file_size(path));
+			sprintf(buf, "get_message;%s;%s", ops[1], getFileHash(path));
 			sendToSocket(socket, buf);
 
 			sleep(1);
@@ -371,6 +372,7 @@ char* doworkForClient(char* rcvString, int socket) {
 			sprintf(result, "%s", printUser(u, ""));
 
 			wasUsersModified = 1;
+			wasMessagesModified = 1;
 		}
 		free(m);
 
