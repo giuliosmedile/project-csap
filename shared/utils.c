@@ -260,6 +260,9 @@ char* getNewestFileFromDirectory(char* directory) {
  * @returns the sha1sum hash of the file
 **/
 char* getFileHash(char* filename) {
+
+    DEBUGPRINT(("Getting hash of \"%s\"\n", filename));
+
     char* result = (char*)malloc(BUF_SIZE * sizeof(char));
     pid_t pid;          // Pid for the fork
     int fd[2];          // File descriptors for the pipe
