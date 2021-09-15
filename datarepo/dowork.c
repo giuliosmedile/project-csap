@@ -385,7 +385,7 @@ char* doworkForClient(char* rcvString, int socket) {
 		if (!checkIfMessageExists(ops[3], MESSAGES_REPO)) {
 			result = "MESSAGEERROR";
 		} else {
-
+			DEBUGPRINT(("Message still exists\n"));
 			// Get the message struct, will need it later when updating the user
 			t_message* m = (t_message*)malloc(sizeof(t_message));
 			m = getFromRepository(MESSAGES_REPO, ops[3]);

@@ -287,6 +287,9 @@ t_message* getFromRepository(char* filename, char* name) {
 			buf[strlen(buf)-1] = '\0';
 		}
 
+        // If the buffer is empty, just continue, function will eventually return later
+        if (strlen(buf) == 0) continue;
+
         // If the string is the one we want, read the message
         if (strstr(buf, name) != NULL) {
             t_message* message = readMessage(buf);
@@ -320,6 +323,9 @@ int checkIfMessageExists(char* filename, char* repository) {
         if (line[strlen(line)-1] == '\n') {
             line[strlen(line)-1] = '\0';
         }
+
+        // If line is empty, it will eventually return
+        if (strlen(line) == 0) continue;
 
         puts("before strstr in check");
         // If the line contains the filename, return 1
