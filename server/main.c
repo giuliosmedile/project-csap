@@ -33,8 +33,12 @@ int main(int argc, char** argv) {
         printf("\t\tDEBUG MODE\n");
     #endif
 
-    // Override SIGINT's handler to properly close the socket
-    signal(SIGINT, haltProgram);
+    // Signal handling
+    struct sigaction act;
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = haltProgram;
+    sigaction(SIGSEGV, &act, NULL);
+    sigaction(SIGINT, &act, NULL);
 
     // Read the configuration file
     readConfig(&echoServPort, &clients, &vdr_no, &vdr_addrs, &vdr_ports);

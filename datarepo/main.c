@@ -18,9 +18,13 @@ void main (int argc, char** argv) {
     #endif
 
     // Override SIGINT's handler to properly close the socket
-    signal(SIGINT, haltProgram);
-    signal(SIGSTOP, haltProgram);
-    signal(SIGSEGV, haltProgram);
+     // Signal handling
+    struct sigaction act;
+    memset(&act, 0, sizeof(act));
+    act.sa_handler = haltProgram;
+    sigaction(SIGSEGV, &act, NULL);
+    sigaction(SIGINT, &act, NULL);
+    sigaction(SIGSTOP, &act, NULL);
 
 	char* request = (char*)malloc(BUF_SIZE *  sizeof(char));
 	char* reply = (char*)malloc(BUF_SIZE * sizeof(char));
